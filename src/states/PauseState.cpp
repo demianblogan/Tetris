@@ -36,6 +36,9 @@ namespace
 	// How long the frame takes to solidify (and, in reverse, to melt back).
 	constexpr float SolidifyDuration = 0.32f;
 
+	// The fade to black when leaving for the main menu.
+	constexpr float QuitFadeDuration = 0.22f;
+
 	// Where the "PAUSE" header flies in from / out to: just above the top edge.
 	constexpr sf::Vector2f HeaderFrom{ 960.f, -150.f };
 	constexpr float HeaderFromHeight = 72.f;
@@ -113,15 +116,17 @@ void PauseState::PerformPendingAction()
 	pendingAction = PendingAction::None;
 
 	context.audioPlayer.Play(Assets::SoundID::MenuItemPressed);
-	RequestClear();
 
 	switch (action)
 	{
 	case PendingAction::Restart:
+		RequestClear();
 		RequestPush(std::make_unique<GameplayState>(context));
 		break;
 	case PendingAction::QuitToMainMenu:
-		RequestPush(std::make_unique<MenuShell>(context));
+		// Fade to black first; the swap happens in Update when the fade is done.
+		quitting = true;
+		quitFade = 0.f;
 		break;
 	case PendingAction::None:
 		break;
@@ -130,9 +135,9 @@ void PauseState::PerformPendingAction()
 
 void PauseState::HandleEvent(const sf::Event& event)
 {
-	// Ignore input until the frame has finished solidifying and once Resume is
-	// under way.
-	if (resuming || reveal < 1.f)
+	// Ignore input until the frame has finished solidifying, and once Resume or
+	// a quit-to-menu fade is under way.
+	if (resuming || quitting || reveal < 1.f)
 	{
 		return;
 	}
@@ -163,12 +168,30 @@ void PauseState::Update(float deltaTime)
 	}
 
 	ScreenHost::Update(deltaTime);
+
+	if (quitting)
+	{
+		quitFade = std::min(1.f, quitFade + deltaTime / QuitFadeDuration);
+		if (quitFade >= 1.f)
+		{
+			quitting = false;
+			RequestClear();
+			RequestPush(std::make_unique<MenuShell>(context));
+		}
+	}
 }
 
 void PauseState::Render(sf::RenderTarget& target)
 {
 	ScreenHost::Render(target);
 	confirmDialog.Render(target);
+
+	if (quitFade > 0.f)
+	{
+		sf::RectangleShape blackout(target.getView().getSize());
+		blackout.setFillColor(sf::Color(0, 0, 0, static_cast<std::uint8_t>(std::clamp(quitFade, 0.f, 1.f) * 255.f)));
+		target.draw(blackout);
+	}
 }
 
 void PauseState::UpdateBackground(float deltaTime)

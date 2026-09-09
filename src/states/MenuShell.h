@@ -44,4 +44,8 @@ private:
 	// its whole current frame and hands over to the PlayTransition.
 	bool playPending = false;
 	float playLead = 0.f;
+
+	// Fades the shell up from black on entry (from the splash, or back from
+	// gameplay). 1 = fully black, 0 = done.
+	float enterFade = 1.f;
 };

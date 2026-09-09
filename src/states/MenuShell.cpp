@@ -1,9 +1,12 @@
 #include "MenuShell.h"
 
+#include <algorithm>
+#include <cstdint>
 #include <memory>
 #include <string>
 
 #include <SFML/Audio/Music.hpp>
+#include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/RenderTexture.hpp>
 #include <SFML/Graphics/View.hpp>
@@ -52,6 +55,9 @@ namespace
 {
 	// How long the "Play" press pulse plays on the live menu before it freezes.
 	constexpr float PlayPressLead = 0.14f;
+
+	// How long the shell takes to fade up from black on entry.
+	constexpr float EnterFadeDuration = 0.28f;
 }
 
 void MenuShell::HandleEvent(const sf::Event& event)
@@ -67,6 +73,11 @@ void MenuShell::HandleEvent(const sf::Event& event)
 void MenuShell::Update(float deltaTime)
 {
 	ScreenHost::Update(deltaTime);
+
+	if (enterFade > 0.f)
+	{
+		enterFade = std::max(0.f, enterFade - deltaTime / EnterFadeDuration);
+	}
 
 	if (!playPending)
 	{
@@ -134,6 +145,13 @@ void MenuShell::RenderOverlay(sf::RenderTarget& target)
 {
 	versionText.setPosition(target.getView().getSize() - VersionMargin);
 	target.draw(versionText);
+
+	if (enterFade > 0.f)
+	{
+		sf::RectangleShape blackout(target.getView().getSize());
+		blackout.setFillColor(sf::Color(0, 0, 0, static_cast<std::uint8_t>(std::clamp(enterFade, 0.f, 1.f) * 255.f)));
+		target.draw(blackout);
+	}
 }
 
 std::unique_ptr<MenuScreen> MenuShell::BuildHomeScreen(std::size_t returnEntryIndex)
