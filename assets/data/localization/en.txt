@@ -89,11 +89,14 @@ credits.programming = My Programming Channel: youtube.com/@BloganProgrammer
 credits.gaming      = My Gaming Channel: youtube.com/@BloganGamer
 credits.back        = Back to Main Menu
 
-stats.title         = TOP-{count} BEST PLAYERS
-stats.footer_return = ESC - RETURN TO MAIN MENU
-stats.footer_delete = DEL - DELETE ALL RECORDS
-stats.row           = {rank}. {name} = {score}
-stats.row_empty     = {rank}. ...
+records.title         = RECORDS
+records.header_name   = NAME
+records.header_score  = SCORE
+records.header_lines  = LINES
+records.header_level  = LEVEL
+records.reset         = Reset
+records.back          = Back to Main Menu
+records.confirm_reset = Delete every record?
 
 loading.audio     = Loading Audio...
 loading.music     = Loading Music...

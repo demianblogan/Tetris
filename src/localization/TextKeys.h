@@ -114,13 +114,16 @@ namespace TextKey
 		inline constexpr std::string_view Back        = "credits.back";
 	}
 
-	namespace Stats
+	namespace Records
 	{
-		inline constexpr std::string_view Title        = "stats.title";         // {count}
-		inline constexpr std::string_view FooterReturn = "stats.footer_return";
-		inline constexpr std::string_view FooterDelete = "stats.footer_delete";
-		inline constexpr std::string_view Row          = "stats.row";           // {rank} {name} {score}
-		inline constexpr std::string_view RowEmpty     = "stats.row_empty";     // {rank}
+		inline constexpr std::string_view Title        = "records.title";
+		inline constexpr std::string_view HeaderName   = "records.header_name";
+		inline constexpr std::string_view HeaderScore  = "records.header_score";
+		inline constexpr std::string_view HeaderLines  = "records.header_lines";
+		inline constexpr std::string_view HeaderLevel  = "records.header_level";
+		inline constexpr std::string_view Reset        = "records.reset";
+		inline constexpr std::string_view Back         = "records.back";
+		inline constexpr std::string_view ConfirmReset = "records.confirm_reset";
 	}
 
 	namespace Loading

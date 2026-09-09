@@ -21,8 +21,8 @@
 #include "../ui/TetrominoPalette.h"
 #include "CreditsScreen.h"
 #include "OptionsScreen.h"
+#include "RecordsScreen.h"
 #include "ScreenHost.h"
-#include "StatisticsState.h"
 
 namespace
 {
@@ -111,7 +111,12 @@ MainMenuScreen::MainMenuScreen(ScreenHost& host, bool animate, std::size_t front
 		},
 		true, OptionsColour);
 	carousel.AddItem(context.localization.GetText(TextKey::MainMenu::Records),
-		[this] { this->host.ExitTo(std::make_unique<StatisticsState>(context)); },
+		[this]
+		{
+			this->host.BeginForward(std::make_unique<RecordsScreen>(this->host, RecordsColour),
+				context.localization.GetText(TextKey::Records::Title), RecordsColour,
+				carousel.FrontEntryCentre(), carousel.FrontEntryHeight(), carousel.CurrentFrontIndex());
+		},
 		true, RecordsColour);
 	carousel.AddItem(context.localization.GetText(TextKey::MainMenu::Credits),
 		[this]

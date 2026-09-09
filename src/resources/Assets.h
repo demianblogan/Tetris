@@ -36,7 +36,6 @@ namespace Assets
 	{
 		BlockSpritesheetWithOutline,
 		ButtonBackground,
-		MenuBackground,
 		PanelBackground,
 		GameBackground,
 		CompanyLogo,
@@ -108,7 +107,6 @@ namespace Assets
 		{
 			inline constexpr const char* BlockSpritesheetWithOutline = "assets/textures/block_spritesheet_with_outline.png";
 			inline constexpr const char* ButtonBackground = "assets/textures/button_background.png";
-			inline constexpr const char* MenuBackground = "assets/textures/menu_background.png";
 			inline constexpr const char* PanelBackground = "assets/textures/panel_background.png";
 			inline constexpr const char* GameBackground = "assets/textures/game_background.png";
 			inline constexpr const char* CompanyLogo = "assets/other/alone_bull_splash_logo.jpg";
