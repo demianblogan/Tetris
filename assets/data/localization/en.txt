@@ -79,7 +79,7 @@ common.no  = No
 
 credits.title       = CREDITS
 credits.intro       = This game is made by me, Demian Blogan.
-credits.blurb       = This is the second project in my portfolio. It's small and\ncompact, but I'm proud of how the visuals and the menu\nanimations turned out - building those was the whole point\nof this project, and I hope you enjoyed it.
+credits.blurb       = This is the second project in my portfolio. It's small and compact, but I'm\nproud of how the visuals and the menu animations turned out - building those\nwas the whole point of this project, and I hope you enjoyed it.
 credits.email       = My email: demianblogan@gmail.com
 credits.linkedin    = LinkedIn: linkedin.com/in/demianblogan
 credits.instagram   = Instagram: instagram.com/demianblogan

@@ -22,11 +22,11 @@
 
 namespace
 {
-	constexpr sf::FloatRect PanelBounds{ { 330.f, 210.f }, { 1260.f, 710.f } };
+	constexpr sf::FloatRect PanelBounds{ { 260.f, 210.f }, { 1400.f, 710.f } };
 	constexpr unsigned int PanelSourceBorder = 28u;   // of the 96px frame texture
 	constexpr sf::Vector2f PanelTargetBorder{ 44.f, 44.f };
 
-	constexpr float LineMaxWidth = PanelBounds.size.x - 160.f;
+	constexpr float LineMaxWidth = PanelBounds.size.x - 140.f;
 	constexpr float CentreX = PanelBounds.position.x + PanelBounds.size.x * 0.5f;
 
 	constexpr unsigned int ButtonTextSize = 40;
@@ -53,15 +53,15 @@ namespace
 	// line. y is the vertical centre of the row, palette: 0 body, 1 dim, 2 accent,
 	// 3 accent-bright.
 	constexpr std::array<LineSpec, 9> Lines{ {
-		{ TextKey::Credits::Intro,       38u, 280.f, 3 },
-		{ TextKey::Credits::Blurb,       28u, 398.f, 0 },
-		{ TextKey::Credits::Email,       29u, 524.f, 2 },
-		{ TextKey::Credits::LinkedIn,    29u, 569.f, 2 },
-		{ TextKey::Credits::Instagram,   29u, 614.f, 2 },
-		{ TextKey::Credits::Code,        29u, 659.f, 2 },
-		{ TextKey::Credits::Portfolio,   29u, 704.f, 2 },
-		{ TextKey::Credits::Programming, 29u, 749.f, 2 },
-		{ TextKey::Credits::Gaming,      29u, 794.f, 2 },
+		{ TextKey::Credits::Intro,       42u, 282.f, 3 },
+		{ TextKey::Credits::Blurb,       32u, 378.f, 0 },
+		{ TextKey::Credits::Email,       32u, 496.f, 2 },
+		{ TextKey::Credits::LinkedIn,    32u, 542.f, 2 },
+		{ TextKey::Credits::Instagram,   32u, 588.f, 2 },
+		{ TextKey::Credits::Code,        32u, 634.f, 2 },
+		{ TextKey::Credits::Portfolio,   32u, 680.f, 2 },
+		{ TextKey::Credits::Programming, 32u, 726.f, 2 },
+		{ TextKey::Credits::Gaming,      32u, 772.f, 2 },
 	} };
 
 	[[nodiscard]] sf::Color PaletteColour(int palette, sf::Color accent)
