@@ -101,19 +101,17 @@ namespace TextKey
 
 	namespace Credits
 	{
-		inline constexpr std::string_view Title      = "credits.title";
-		inline constexpr std::string_view Line1      = "credits.line_1";
-		inline constexpr std::string_view Line2      = "credits.line_2";
-		inline constexpr std::string_view Line3      = "credits.line_3";
-		inline constexpr std::string_view Line4      = "credits.line_4";
-		inline constexpr std::string_view Line5      = "credits.line_5";
-		inline constexpr std::string_view Line6      = "credits.line_6";
-		inline constexpr std::string_view Contact    = "credits.contact";
-		inline constexpr std::string_view Email      = "credits.email";
-		inline constexpr std::string_view YouTube    = "credits.youtube";
-		inline constexpr std::string_view Source     = "credits.source";
-		inline constexpr std::string_view Repository = "credits.repository";
-		inline constexpr std::string_view Back       = "credits.back";
+		inline constexpr std::string_view Title       = "credits.title";
+		inline constexpr std::string_view Intro       = "credits.intro";
+		inline constexpr std::string_view Blurb       = "credits.blurb";   // one multi-line block
+		inline constexpr std::string_view Email       = "credits.email";
+		inline constexpr std::string_view LinkedIn    = "credits.linkedin";
+		inline constexpr std::string_view Instagram   = "credits.instagram";
+		inline constexpr std::string_view Code        = "credits.code";
+		inline constexpr std::string_view Portfolio   = "credits.portfolio";
+		inline constexpr std::string_view Programming = "credits.programming";
+		inline constexpr std::string_view Gaming      = "credits.gaming";
+		inline constexpr std::string_view Back        = "credits.back";
 	}
 
 	namespace Stats

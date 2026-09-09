@@ -49,18 +49,19 @@ namespace
 		int palette;   // 0 body, 1 dim, 2 accent, 3 accent-bright
 	};
 
-	constexpr std::array<LineSpec, 11> Lines{ {
-		{ TextKey::Credits::Line1,      40u, 300.f, 3 },
-		{ TextKey::Credits::Line2,      34u, 358.f, 0 },
-		{ TextKey::Credits::Line3,      33u, 404.f, 0 },
-		{ TextKey::Credits::Line4,      33u, 448.f, 0 },
-		{ TextKey::Credits::Line5,      33u, 492.f, 0 },
-		{ TextKey::Credits::Line6,      36u, 546.f, 0 },
-		{ TextKey::Credits::Contact,    30u, 622.f, 1 },
-		{ TextKey::Credits::Email,      34u, 664.f, 2 },
-		{ TextKey::Credits::YouTube,    29u, 718.f, 1 },
-		{ TextKey::Credits::Source,     29u, 766.f, 1 },
-		{ TextKey::Credits::Repository, 32u, 804.f, 2 },
+	// The blurb is one multi-line key (\n in en.txt); every other row is a single
+	// line. y is the vertical centre of the row, palette: 0 body, 1 dim, 2 accent,
+	// 3 accent-bright.
+	constexpr std::array<LineSpec, 9> Lines{ {
+		{ TextKey::Credits::Intro,       38u, 280.f, 3 },
+		{ TextKey::Credits::Blurb,       28u, 398.f, 0 },
+		{ TextKey::Credits::Email,       29u, 524.f, 2 },
+		{ TextKey::Credits::LinkedIn,    29u, 569.f, 2 },
+		{ TextKey::Credits::Instagram,   29u, 614.f, 2 },
+		{ TextKey::Credits::Code,        29u, 659.f, 2 },
+		{ TextKey::Credits::Portfolio,   29u, 704.f, 2 },
+		{ TextKey::Credits::Programming, 29u, 749.f, 2 },
+		{ TextKey::Credits::Gaming,      29u, 794.f, 2 },
 	} };
 
 	[[nodiscard]] sf::Color PaletteColour(int palette, sf::Color accent)
