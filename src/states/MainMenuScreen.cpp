@@ -47,11 +47,13 @@ namespace
 	// How long the exit animation runs before the shell swaps this screen out.
 	constexpr float ExitDuration = 0.40f;
 
-	// A couple of ring entries pin their own hue rather than taking the
-	// per-slot tetromino colour.
+	// Every ring entry pins its own hue -- the per-slot tetromino fallback would
+	// otherwise hand Quit the same red as Options now that the ring has 5 items.
 	constexpr sf::Color PlayColour{ 80, 200, 140 };      // emerald
 	constexpr sf::Color OptionsColour{ 240, 60, 70 };    // red
+	constexpr sf::Color RecordsColour{ 180, 60, 240 };   // purple
 	constexpr sf::Color CreditsColour{ 255, 194, 92 };   // warm gold
+	constexpr sf::Color QuitColour{ 70, 110, 240 };      // blue
 
 	// haptics.json keys for the DualSense resting colour, one per ring entry
 	// in AddItem order. A missing key falls back to the on-screen hue.
@@ -110,7 +112,8 @@ MainMenuScreen::MainMenuScreen(ScreenHost& host, bool animate, std::size_t front
 		},
 		true, OptionsColour);
 	carousel.AddItem(context.localization.GetText(TextKey::MainMenu::Records),
-		[this] { this->host.ExitTo(std::make_unique<StatisticsState>(context)); });
+		[this] { this->host.ExitTo(std::make_unique<StatisticsState>(context)); },
+		true, RecordsColour);
 	carousel.AddItem(context.localization.GetText(TextKey::MainMenu::Credits),
 		[this]
 		{
@@ -120,7 +123,8 @@ MainMenuScreen::MainMenuScreen(ScreenHost& host, bool animate, std::size_t front
 		},
 		true, CreditsColour);
 	carousel.AddItem(context.localization.GetText(TextKey::MainMenu::Quit),
-		[this] { context.window.close(); });
+		[this] { context.window.close(); },
+		true, QuitColour);
 
 	if (!animate)
 	{
