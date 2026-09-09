@@ -46,7 +46,8 @@ PauseState::PauseState(Context& context, std::unique_ptr<sf::RenderTexture> froz
 	, frozenFrame(std::move(frozenFrame))
 	, confirmDialog(context.fonts.Get(Assets::FontID::Main), context.fonts.Get(Assets::FontID::Menu),
 		context.textures.Get(Assets::TextureID::UiFrameWarning),
-		context.shaders.Get(Assets::ShaderID::NeonDilate), context.shaders.Get(Assets::ShaderID::NeonBlur))
+		context.shaders.Get(Assets::ShaderID::NeonDilate), context.shaders.Get(Assets::ShaderID::NeonBlur),
+		context.audioPlayer)
 {
 	SetInitialScreen(std::make_unique<PauseMenuScreen>(*this, 0));
 }

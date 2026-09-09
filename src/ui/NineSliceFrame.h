@@ -10,6 +10,7 @@
 namespace sf
 {
 	class RenderTarget;
+	struct RenderStates;
 	class Texture;
 }
 
@@ -40,6 +41,9 @@ namespace UI
 		void SetColor(sf::Color color);
 
 		void Draw(sf::RenderTarget& target) const;
+		// Same, but through extra render states -- e.g. a transform that slides
+		// the whole frame without rebuilding it.
+		void Draw(sf::RenderTarget& target, const sf::RenderStates& states) const;
 
 	private:
 		std::vector<sf::Sprite> slices;

@@ -4,6 +4,7 @@
 #include <array>
 #include <cstddef>
 
+#include <SFML/Graphics/RenderStates.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/Texture.hpp>
 
@@ -115,6 +116,14 @@ namespace UI
 		for (const sf::Sprite& slice : slices)
 		{
 			target.draw(slice);
+		}
+	}
+
+	void NineSliceFrame::Draw(sf::RenderTarget& target, const sf::RenderStates& states) const
+	{
+		for (const sf::Sprite& slice : slices)
+		{
+			target.draw(slice, states);
 		}
 	}
 }

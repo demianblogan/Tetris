@@ -10,6 +10,8 @@
 #include "MenuLabel.h"
 #include "NineSliceFrame.h"
 
+class AudioPlayer;
+
 namespace sf
 {
 	class Font;
@@ -29,7 +31,8 @@ namespace UI
 	{
 	public:
 		ConfirmDialog(const sf::Font& messageFont, const sf::Font& buttonFont,
-			const sf::Texture& frameTexture, sf::Shader& neonDilate, sf::Shader& neonBlur);
+			const sf::Texture& frameTexture, sf::Shader& neonDilate, sf::Shader& neonBlur,
+			AudioPlayer& audio);
 
 		void Show(const sf::String& message, const sf::String& yesLabel, const sf::String& noLabel);
 
@@ -53,6 +56,7 @@ namespace UI
 		MenuLabel yesLabel;
 		MenuLabel noLabel;
 		NeonGlow glow;
+		AudioPlayer& audio;
 
 		Phase phase = Phase::Closed;
 		bool yesSelected = false;

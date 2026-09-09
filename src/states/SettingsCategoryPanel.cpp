@@ -50,7 +50,8 @@ SettingsCategoryPanel::SettingsCategoryPanel(Context& context, sf::Color accent,
 		{ context.fonts.Get(Assets::FontID::Main), ButtonSize } } }
 	, dialog(context.fonts.Get(Assets::FontID::Main), context.fonts.Get(Assets::FontID::Menu),
 		context.textures.Get(Assets::TextureID::UiFrameWarning),
-		context.shaders.Get(Assets::ShaderID::NeonDilate), context.shaders.Get(Assets::ShaderID::NeonBlur))
+		context.shaders.Get(Assets::ShaderID::NeonDilate), context.shaders.Get(Assets::ShaderID::NeonBlur),
+		context.audioPlayer)
 {
 	const LocalizationManager& text = context.localization;
 	buttons[ButtonId::Apply].SetText(text.GetText(TextKey::Options::Apply));

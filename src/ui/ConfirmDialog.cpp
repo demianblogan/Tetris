@@ -6,8 +6,12 @@
 
 #include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
+#include <SFML/Graphics/RenderStates.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
+#include <SFML/Graphics/Transform.hpp>
 
+#include "../audio/AudioPlayer.h"
+#include "../resources/Assets.h"
 #include "Easing.h"
 #include "TextLayout.h"
 
@@ -26,7 +30,10 @@ namespace
 	constexpr float ButtonY = Centre.y + 100.f;
 	constexpr float ButtonSpacing = 196.f;
 
+	// The box slides in from above: fully off the top at appear 0, home at 1.
+	constexpr float EntryDrop = 780.f;
 	constexpr float AppearSpeed = 1.f / 0.16f;
+
 	constexpr float ResolveDuration = 0.20f;
 	constexpr float PressPunch = 0.13f;
 	constexpr float PressFlash = 0.6f;
@@ -39,6 +46,8 @@ namespace
 	const sf::Color YesHue{ 70, 200, 110 };   // matches the Options "Apply" green
 	const sf::Color NoHue{ 240, 70, 78 };     // the menu red
 
+	using UI::Easing::EaseOutCubic;
+	using UI::Easing::Lerp;
 	using UI::Easing::SmoothStep;
 
 	[[nodiscard]] std::uint8_t ToAlpha(float value)
@@ -50,12 +59,13 @@ namespace
 namespace UI
 {
 	ConfirmDialog::ConfirmDialog(const sf::Font& messageFont, const sf::Font& buttonFont,
-		const sf::Texture& frameTexture, sf::Shader& neonDilate, sf::Shader& neonBlur)
+		const sf::Texture& frameTexture, sf::Shader& neonDilate, sf::Shader& neonBlur, AudioPlayer& audio)
 		: messageText(messageFont, "", MessageSize)
 		, frame(frameTexture, BoxBounds, UI::MenuFrameSourceBorder, FrameTargetBorder)
 		, yesLabel(buttonFont, ButtonSize)
 		, noLabel(buttonFont, ButtonSize)
 		, glow(neonDilate, neonBlur)
+		, audio(audio)
 	{
 		messageText.setFillColor(MessageColour);
 	}
@@ -64,7 +74,6 @@ namespace UI
 	{
 		messageText.setString(message);
 		UI::TextLayout::CentreOrigin(messageText);
-		messageText.setPosition({ Centre.x, MessageY });
 
 		yesLabel.SetText(yesText);
 		noLabel.SetText(noText);
@@ -103,6 +112,7 @@ namespace UI
 		case MenuInput::Action::Left:
 		case MenuInput::Action::Right:
 			yesSelected = !yesSelected;
+			audio.Restart(Assets::SoundID::MenuItemSelected);
 			break;
 		case MenuInput::Action::Confirm:
 			Choose(yesSelected);
@@ -167,34 +177,29 @@ namespace UI
 			return;
 		}
 
-		const float in = SmoothStep(appear);
-
 		sf::RectangleShape dim({ 1920.f, 1080.f });
-		dim.setFillColor(sf::Color(0, 0, 0, static_cast<std::uint8_t>(in * DimAlpha)));
+		dim.setFillColor(sf::Color(0, 0, 0, static_cast<std::uint8_t>(SmoothStep(appear) * DimAlpha)));
 		target.draw(dim);
+
+		const float slideY = Lerp(-EntryDrop, 0.f, EaseOutCubic(appear));
 
 		// A dark fill behind the frame so the message stays legible whatever the
 		// frame texture's centre does.
 		sf::RectangleShape fill(BoxSize);
 		fill.setOrigin(BoxSize * 0.5f);
-		fill.setPosition(Centre);
-		fill.setFillColor(sf::Color(12, 11, 16, static_cast<std::uint8_t>(in * 225.f)));
+		fill.setPosition({ Centre.x, Centre.y + slideY });
+		fill.setFillColor(sf::Color(12, 11, 16, 225));
 		target.draw(fill);
 
-		frame.SetColor(sf::Color(255, 255, 255, ToAlpha(in)));
-		frame.Draw(target);
+		sf::Transform slide;
+		slide.translate({ 0.f, slideY });
+		frame.SetColor(sf::Color::White);
+		frame.Draw(target, sf::RenderStates(slide));
 
-		// Let the box arrive before its contents.
-		const float contentAlpha = std::clamp((appear - 0.35f) / 0.65f, 0.f, 1.f);
-		if (contentAlpha <= 0.f)
-		{
-			return;
-		}
-
-		messageText.setFillColor(sf::Color(MessageColour.r, MessageColour.g, MessageColour.b, ToAlpha(contentAlpha)));
+		messageText.setPosition({ Centre.x, MessageY + slideY });
 		target.draw(messageText);
 
-		DrawButton(target, noLabel, { Centre.x - ButtonSpacing, ButtonY }, NoHue, !yesSelected, contentAlpha);
-		DrawButton(target, yesLabel, { Centre.x + ButtonSpacing, ButtonY }, YesHue, yesSelected, contentAlpha);
+		DrawButton(target, noLabel, { Centre.x - ButtonSpacing, ButtonY + slideY }, NoHue, !yesSelected, 1.f);
+		DrawButton(target, yesLabel, { Centre.x + ButtonSpacing, ButtonY + slideY }, YesHue, yesSelected, 1.f);
 	}
 }
