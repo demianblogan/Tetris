@@ -48,19 +48,41 @@ MenuShell::MenuShell(Context& context)
 	SetInitialScreen(std::make_unique<MainMenuScreen>(*this));
 }
 
+namespace
+{
+	// How long the "Play" press pulse plays on the live menu before it freezes.
+	constexpr float PlayPressLead = 0.14f;
+}
+
+void MenuShell::HandleEvent(const sf::Event& event)
+{
+	if (playPending)
+	{
+		return;   // the menu is on its way out
+	}
+
+	ScreenHost::HandleEvent(event);
+}
+
 void MenuShell::Update(float deltaTime)
 {
 	ScreenHost::Update(deltaTime);
 
-	if (!playPending || !CurrentScreen() || !CurrentScreen()->ExitFinished())
+	if (!playPending)
+	{
+		return;
+	}
+
+	playLead += deltaTime;
+	if (playLead < PlayPressLead)
 	{
 		return;
 	}
 
 	playPending = false;
 
-	// Freeze the shell's current frame -- the emptied ring over the live ambient
-	// -- so the transition can fade it out over the arriving gameplay.
+	// Freeze the whole current frame -- ring, title, ambient and all -- so the
+	// transition can solidify and lift it away over the arriving gameplay.
 	std::unique_ptr<sf::RenderTexture> snapshot;
 	auto capture = std::make_unique<sf::RenderTexture>();
 	if (capture->resize(sf::Vector2u(Display::DisplayManager::VirtualSize)))
@@ -72,8 +94,7 @@ void MenuShell::Update(float deltaTime)
 		snapshot = std::move(capture);
 	}
 
-	RequestChange(std::make_unique<PlayTransition>(
-		context, std::move(snapshot), playFromCentre, playFromSize, playAccent));
+	RequestChange(std::make_unique<PlayTransition>(context, std::move(snapshot)));
 }
 
 void MenuShell::OnNavigate(float direction)
@@ -81,7 +102,7 @@ void MenuShell::OnNavigate(float direction)
 	backdrop.Push(direction);
 }
 
-void MenuShell::BeginPlay(sf::Vector2f fromCentre, sf::Vector2f fromSize, sf::Color accent)
+void MenuShell::BeginPlay()
 {
 	if (playPending || !CurrentScreen())
 	{
@@ -89,12 +110,8 @@ void MenuShell::BeginPlay(sf::Vector2f fromCentre, sf::Vector2f fromSize, sf::Co
 	}
 
 	playPending = true;
-	playFromCentre = fromCentre;
-	playFromSize = fromSize;
-	playAccent = accent;
-
+	playLead = 0.f;
 	CurrentScreen()->PlayActivatePulse();
-	CurrentScreen()->StartExit();
 }
 
 void MenuShell::UpdateBackground(float deltaTime)

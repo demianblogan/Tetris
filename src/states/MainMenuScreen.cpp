@@ -100,11 +100,7 @@ MainMenuScreen::MainMenuScreen(ScreenHost& host, bool animate, std::size_t front
 	// Ring order: Play / Options / Records / Credits / Quit.
 	carousel.SetCenter(TitleCenter);
 	carousel.AddItem(context.localization.GetText(TextKey::MainMenu::Play),
-		[this]
-		{
-			this->host.BeginPlay(carousel.FrontEntryCentre(),
-				{ carousel.FrontEntryWidth(), carousel.FrontEntryHeight() }, PlayColour);
-		},
+		[this] { this->host.BeginPlay(); },
 		true, PlayColour);
 	carousel.AddItem(context.localization.GetText(TextKey::MainMenu::Options),
 		[this]

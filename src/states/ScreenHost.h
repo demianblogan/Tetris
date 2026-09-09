@@ -57,9 +57,8 @@ public:
 	virtual void OnNavigate(float /*direction*/) {}
 
 	// A home screen asks the host to leave for gameplay through the play
-	// transition, handing over the activated entry's on-screen box and hue.
-	// Only MenuShell acts on it.
-	virtual void BeginPlay(sf::Vector2f /*fromCentre*/, sf::Vector2f /*fromSize*/, sf::Color /*accent*/) {}
+	// transition. Only MenuShell acts on it.
+	virtual void BeginPlay() {}
 
 	// A Back transition normally sinks the header away toward the returned-to
 	// entry. A host whose home screen carries its own persistent header (the
