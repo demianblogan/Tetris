@@ -23,7 +23,7 @@
 namespace
 {
 	constexpr sf::FloatRect PanelBounds{ { 260.f, 210.f }, { 1400.f, 710.f } };
-	constexpr unsigned int PanelSourceBorder = 28u;   // of the 96px frame texture
+	constexpr unsigned int PanelSourceBorder = UI::MenuFrameSourceBorder;
 	constexpr sf::Vector2f PanelTargetBorder{ 44.f, 44.f };
 
 	constexpr float LineMaxWidth = PanelBounds.size.x - 140.f;

@@ -1,6 +1,7 @@
 #include "ConfirmDialog.h"
 
 #include <algorithm>
+#include <cmath>
 #include <cstdint>
 
 #include <SFML/Graphics/Font.hpp>
@@ -13,44 +14,66 @@
 namespace
 {
 	constexpr sf::Vector2f Centre{ 960.f, 540.f };
-	constexpr sf::Vector2f BoxSize{ 820.f, 340.f };
-	constexpr unsigned int MessageSize = 42;
-	constexpr unsigned int ButtonSize = 36;
+	constexpr sf::Vector2f BoxSize{ 880.f, 380.f };
+	constexpr sf::FloatRect BoxBounds{
+		{ Centre.x - BoxSize.x * 0.5f, Centre.y - BoxSize.y * 0.5f }, BoxSize };
+	constexpr sf::Vector2f FrameTargetBorder{ 40.f, 40.f };
 
-	constexpr float ButtonSpacing = 170.f;
-	constexpr float ButtonY = Centre.y + 88.f;
-	constexpr sf::Vector2f ButtonPadding{ 78.f, 30.f };
+	constexpr unsigned int MessageSize = 40;
+	constexpr unsigned int ButtonSize = 40;
 
-	const sf::Color BoxFill{ 14, 16, 22 };
-	const sf::Color BoxOutline{ 120, 210, 255 };
-	const sf::Color ChosenText{ 255, 255, 255 };
-	const sf::Color IdleText{ 150, 156, 166 };
+	constexpr float MessageY = Centre.y - 62.f;
+	constexpr float ButtonY = Centre.y + 100.f;
+	constexpr float ButtonSpacing = 196.f;
 
-	using UI::Easing::EaseOutBack;
+	constexpr float AppearSpeed = 1.f / 0.16f;
+	constexpr float ResolveDuration = 0.20f;
+	constexpr float PressPunch = 0.13f;
+	constexpr float PressFlash = 0.6f;
+	constexpr float SelectedScale = 1.06f;
+	constexpr float UnselectedAlpha = 0.5f;
+	constexpr float DimAlpha = 175.f;
+	constexpr float Pi = 3.14159265f;
+
+	const sf::Color MessageColour{ 244, 234, 210 };
+	const sf::Color YesHue{ 70, 200, 110 };   // matches the Options "Apply" green
+	const sf::Color NoHue{ 240, 70, 78 };     // the menu red
+
+	using UI::Easing::SmoothStep;
+
+	[[nodiscard]] std::uint8_t ToAlpha(float value)
+	{
+		return static_cast<std::uint8_t>(std::clamp(value, 0.f, 1.f) * 255.f);
+	}
 }
 
 namespace UI
 {
-	ConfirmDialog::ConfirmDialog(const sf::Font& font)
-		: messageText(font, "", MessageSize)
-		, yesText(font, "", ButtonSize)
-		, noText(font, "", ButtonSize)
+	ConfirmDialog::ConfirmDialog(const sf::Font& messageFont, const sf::Font& buttonFont,
+		const sf::Texture& frameTexture, sf::Shader& neonDilate, sf::Shader& neonBlur)
+		: messageText(messageFont, "", MessageSize)
+		, frame(frameTexture, BoxBounds, UI::MenuFrameSourceBorder, FrameTargetBorder)
+		, yesLabel(buttonFont, ButtonSize)
+		, noLabel(buttonFont, ButtonSize)
+		, glow(neonDilate, neonBlur)
 	{
+		messageText.setFillColor(MessageColour);
 	}
 
-	void ConfirmDialog::Show(const sf::String& message, const sf::String& yesLabel, const sf::String& noLabel)
+	void ConfirmDialog::Show(const sf::String& message, const sf::String& yesText, const sf::String& noText)
 	{
 		messageText.setString(message);
 		UI::TextLayout::CentreOrigin(messageText);
-		messageText.setPosition({ Centre.x, Centre.y - 50.f });
+		messageText.setPosition({ Centre.x, MessageY });
 
-		yesText.setString(yesLabel);
-		noText.setString(noLabel);
+		yesLabel.SetText(yesText);
+		noLabel.SetText(noText);
 
-		open = true;
-		yesSelected = false;   // default to "no" -- the safe answer
+		phase = Phase::Open;
+		yesSelected = false;   // default to "No" -- the safe answer
 		result.reset();
 		appear = 0.f;
+		resolveTime = 0.f;
 	}
 
 	std::optional<bool> ConfirmDialog::TakeResult()
@@ -60,15 +83,17 @@ namespace UI
 		return value;
 	}
 
-	void ConfirmDialog::Resolve(bool answer)
+	void ConfirmDialog::Choose(bool answer)
 	{
-		result = answer;
-		open = false;
+		chosenAnswer = answer;
+		yesSelected = answer;   // show the chosen button as selected while it flashes
+		phase = Phase::Resolving;
+		resolveTime = 0.f;
 	}
 
 	void ConfirmDialog::Navigate(MenuInput::Action action)
 	{
-		if (!open)
+		if (phase != Phase::Open)
 		{
 			return;
 		}
@@ -80,10 +105,10 @@ namespace UI
 			yesSelected = !yesSelected;
 			break;
 		case MenuInput::Action::Confirm:
-			Resolve(yesSelected);
+			Choose(yesSelected);
 			break;
 		case MenuInput::Action::Back:
-			Resolve(false);
+			Choose(false);
 			break;
 		default:
 			break;
@@ -92,59 +117,84 @@ namespace UI
 
 	void ConfirmDialog::Update(float deltaTime)
 	{
-		if (open)
-		{
-			appear = std::min(1.f, appear + deltaTime / 0.18f);
-		}
-	}
-
-	void ConfirmDialog::DrawButton(sf::RenderTarget& target, sf::Text& text, sf::Vector2f centre, bool chosen) const
-	{
-		const sf::FloatRect bounds = text.getLocalBounds();
-		text.setOrigin({ bounds.position.x + bounds.size.x * 0.5f, bounds.position.y + bounds.size.y * 0.5f });
-		text.setPosition(centre);
-
-		sf::RectangleShape frame({ bounds.size.x + ButtonPadding.x, static_cast<float>(ButtonSize) + ButtonPadding.y });
-		frame.setOrigin(frame.getSize() * 0.5f);
-		frame.setPosition(centre);
-		frame.setFillColor(chosen ? sf::Color(BoxOutline.r, BoxOutline.g, BoxOutline.b, 45) : sf::Color(255, 255, 255, 12));
-		frame.setOutlineThickness(2.f);
-		frame.setOutlineColor(chosen ? BoxOutline : sf::Color(255, 255, 255, 60));
-		target.draw(frame);
-
-		text.setFillColor(chosen ? ChosenText : IdleText);
-		target.draw(text);
-	}
-
-	void ConfirmDialog::Render(sf::RenderTarget& target) const
-	{
-		if (!open)
+		if (phase == Phase::Closed)
 		{
 			return;
 		}
 
-		const float pop = EaseOutBack(appear);
+		appear = std::min(1.f, appear + deltaTime * AppearSpeed);
+
+		yesLabel.SetWaveEnabled(yesSelected);
+		noLabel.SetWaveEnabled(!yesSelected);
+		yesLabel.Update(deltaTime);
+		noLabel.Update(deltaTime);
+		glow.Update(deltaTime);
+
+		if (phase == Phase::Resolving)
+		{
+			resolveTime += deltaTime;
+			if (resolveTime >= ResolveDuration)
+			{
+				result = chosenAnswer;
+				phase = Phase::Closed;
+			}
+		}
+	}
+
+	void ConfirmDialog::DrawButton(sf::RenderTarget& target, MenuLabel& label, sf::Vector2f centre,
+		sf::Color hue, bool selected, float contentAlpha)
+	{
+		const float press = (phase == Phase::Resolving && selected)
+			? std::sin(std::clamp(1.f - resolveTime / ResolveDuration, 0.f, 1.f) * Pi)
+			: 0.f;
+
+		const float scale = (selected ? SelectedScale : 1.f) + PressPunch * press;
+		const float alpha = contentAlpha * (selected ? 1.f : UnselectedAlpha);
+
+		if (selected)
+		{
+			const sf::Color glowTint(hue.r, hue.g, hue.b, ToAlpha(contentAlpha));
+			label.DrawGlow(target, glow, centre, scale, glowTint);
+		}
+
+		label.Draw(target, centre, scale, hue, alpha, PressFlash * press);
+	}
+
+	void ConfirmDialog::Render(sf::RenderTarget& target)
+	{
+		if (phase == Phase::Closed)
+		{
+			return;
+		}
+
+		const float in = SmoothStep(appear);
 
 		sf::RectangleShape dim({ 1920.f, 1080.f });
-		dim.setFillColor(sf::Color(0, 0, 0, static_cast<std::uint8_t>(std::clamp(appear, 0.f, 1.f) * 170.f)));
+		dim.setFillColor(sf::Color(0, 0, 0, static_cast<std::uint8_t>(in * DimAlpha)));
 		target.draw(dim);
 
-		sf::RectangleShape box(BoxSize * pop);
-		box.setOrigin(box.getSize() * 0.5f);
-		box.setPosition(Centre);
-		box.setFillColor(BoxFill);
-		box.setOutlineThickness(2.5f);
-		box.setOutlineColor(BoxOutline);
-		target.draw(box);
+		// A dark fill behind the frame so the message stays legible whatever the
+		// frame texture's centre does.
+		sf::RectangleShape fill(BoxSize);
+		fill.setOrigin(BoxSize * 0.5f);
+		fill.setPosition(Centre);
+		fill.setFillColor(sf::Color(12, 11, 16, static_cast<std::uint8_t>(in * 225.f)));
+		target.draw(fill);
 
-		if (appear < 0.6f)
+		frame.SetColor(sf::Color(255, 255, 255, ToAlpha(in)));
+		frame.Draw(target);
+
+		// Let the box arrive before its contents.
+		const float contentAlpha = std::clamp((appear - 0.35f) / 0.65f, 0.f, 1.f);
+		if (contentAlpha <= 0.f)
 		{
 			return;
 		}
 
+		messageText.setFillColor(sf::Color(MessageColour.r, MessageColour.g, MessageColour.b, ToAlpha(contentAlpha)));
 		target.draw(messageText);
 
-		DrawButton(target, noText, { Centre.x - ButtonSpacing, ButtonY }, !yesSelected);
-		DrawButton(target, yesText, { Centre.x + ButtonSpacing, ButtonY }, yesSelected);
+		DrawButton(target, noLabel, { Centre.x - ButtonSpacing, ButtonY }, NoHue, !yesSelected, contentAlpha);
+		DrawButton(target, yesLabel, { Centre.x + ButtonSpacing, ButtonY }, YesHue, yesSelected, contentAlpha);
 	}
 }

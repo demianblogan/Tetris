@@ -15,6 +15,11 @@ namespace sf
 
 namespace UI
 {
+	// The decorative border width, in source pixels, of the menu frame textures
+	// (menu_background_*_frame.png, 62x62). Shared so every panel that
+	// nine-slices one stays in sync when it is tuned.
+	inline constexpr unsigned int MenuFrameSourceBorder = 18u;
+
 	// A resizable frame drawn from a 3x3 grid of slices cut from one texture:
 	// four corners that never scale, four edges that stretch along one axis, and
 	// a centre that stretches both ways. Keeps ornate corners crisp at any size.

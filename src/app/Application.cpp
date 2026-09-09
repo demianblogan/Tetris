@@ -251,6 +251,7 @@ Application::Application()
 	textures.Load(Assets::TextureID::Cursor, TexturePaths::Cursor);
 	textures.Load(Assets::TextureID::UiArrow, TexturePaths::UiArrow);
 	textures.Load(Assets::TextureID::UiFrame, TexturePaths::UiFrame);
+	textures.Load(Assets::TextureID::UiFrameWarning, TexturePaths::UiFrameWarning);
 	textures.Load(Assets::TextureID::CarouselArrow, TexturePaths::CarouselArrow);
 	textures.Load(Assets::TextureID::Checkbox, TexturePaths::Checkbox);
 	// Left unsmoothed: the button-prompt icons are tiny and get scaled up a lot

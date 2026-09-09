@@ -26,7 +26,7 @@
 namespace
 {
 	constexpr sf::FloatRect PanelBounds = ControlsPanel::Bounds;
-	constexpr unsigned int PanelSourceBorder = 28u;
+	constexpr unsigned int PanelSourceBorder = UI::MenuFrameSourceBorder;
 	constexpr sf::Vector2f PanelTargetBorder{ 44.f, 44.f };
 
 	constexpr float LabelX = ControlsPanel::LabelX;

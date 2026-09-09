@@ -44,7 +44,9 @@ namespace
 PauseState::PauseState(Context& context, std::unique_ptr<sf::RenderTexture> frozenFrame)
 	: ScreenHost(context)
 	, frozenFrame(std::move(frozenFrame))
-	, confirmDialog(context.fonts.Get(Assets::FontID::Main))
+	, confirmDialog(context.fonts.Get(Assets::FontID::Main), context.fonts.Get(Assets::FontID::Menu),
+		context.textures.Get(Assets::TextureID::UiFrameWarning),
+		context.shaders.Get(Assets::ShaderID::NeonDilate), context.shaders.Get(Assets::ShaderID::NeonBlur))
 {
 	SetInitialScreen(std::make_unique<PauseMenuScreen>(*this, 0));
 }

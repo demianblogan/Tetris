@@ -43,6 +43,7 @@ namespace Assets
 		Cursor,
 		UiArrow,
 		UiFrame,
+		UiFrameWarning,
 		CarouselArrow,
 		Checkbox,
 		XboxGamepadLayout,
@@ -110,8 +111,11 @@ namespace Assets
 			inline constexpr const char* Cursor = "assets/textures/cursor.png";
 			inline constexpr const char* UiArrow = "assets/textures/ui/arrow.png";
 
-			// Ornate 9-slice panel border (corners stay crisp, edges tile).
-			inline constexpr const char* UiFrame = "assets/textures/ui/frame.png";
+			// 9-slice frame behind menu panels (62x62 source, decorative border
+			// ~UI::MenuFrameSourceBorder px). The gold variant is the modal
+			// warning dialog's box.
+			inline constexpr const char* UiFrame = "assets/textures/ui/menu_background_blue_frame.png";
+			inline constexpr const char* UiFrameWarning = "assets/textures/ui/menu_background_gold_frame.png";
 
 			// Settings widgets.
 			inline constexpr const char* CarouselArrow = "assets/textures/ui/carusel_arrow.png";
