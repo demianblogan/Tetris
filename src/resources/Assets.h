@@ -42,7 +42,11 @@ namespace Assets
 		CompanyLogo,
 		Cursor,
 		UiArrow,
-		UiFrame,
+		UiFrameCyan,
+		UiFrameBlue,
+		UiFrameGreen,
+		UiFramePurple,
+		UiFrameBrown,
 		UiFrameWarning,
 		CarouselArrow,
 		Checkbox,
@@ -111,10 +115,14 @@ namespace Assets
 			inline constexpr const char* Cursor = "assets/textures/cursor.png";
 			inline constexpr const char* UiArrow = "assets/textures/ui/arrow.png";
 
-			// 9-slice frame behind menu panels (62x62 source, decorative border
-			// ~UI::MenuFrameSourceBorder px). The gold variant is the modal
-			// warning dialog's box.
-			inline constexpr const char* UiFrame = "assets/textures/ui/menu_background_blue_frame.png";
+			// Per-menu 9-slice frames (62x62 source, decorative border
+			// ~UI::MenuFrameSourceBorder px) -- one hue per Options category /
+			// screen, matching that screen's accent. Gold is the warning dialog.
+			inline constexpr const char* UiFrameCyan   = "assets/textures/ui/menu_background_cyan_frame.png";
+			inline constexpr const char* UiFrameBlue   = "assets/textures/ui/menu_background_blue_frame.png";
+			inline constexpr const char* UiFrameGreen  = "assets/textures/ui/menu_background_green_frame.png";
+			inline constexpr const char* UiFramePurple = "assets/textures/ui/menu_background_purple_frame.png";
+			inline constexpr const char* UiFrameBrown  = "assets/textures/ui/menu_background_brown_frame.png";
 			inline constexpr const char* UiFrameWarning = "assets/textures/ui/menu_background_gold_frame.png";
 
 			// Settings widgets.

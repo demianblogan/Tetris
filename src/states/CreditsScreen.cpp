@@ -79,7 +79,7 @@ namespace
 CreditsScreen::CreditsScreen(ScreenHost& host, sf::Color accent)
 	: MenuScreen(host)
 	, accent(accent)
-	, panel(context.textures.Get(Assets::TextureID::UiFrame), PanelBounds, PanelSourceBorder, PanelTargetBorder)
+	, panel(context.textures.Get(Assets::TextureID::UiFrameBrown), PanelBounds, PanelSourceBorder, PanelTargetBorder)
 	, backLabel(context.fonts.Get(Assets::FontID::Menu), ButtonTextSize)
 	, backGlow(context.shaders.Get(Assets::ShaderID::NeonDilate), context.shaders.Get(Assets::ShaderID::NeonBlur))
 {

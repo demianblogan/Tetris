@@ -38,11 +38,12 @@ namespace
 	const sf::Color ButtonDisabled[3] = { { 34, 82, 50 }, { 110, 72, 36 }, { 120, 124, 132 } };
 }
 
-SettingsCategoryPanel::SettingsCategoryPanel(Context& context, sf::Color accent, sf::FloatRect panelBounds)
+SettingsCategoryPanel::SettingsCategoryPanel(Context& context, sf::Color accent, sf::FloatRect panelBounds,
+	const sf::Texture& frameTexture)
 	: context(context)
 	, accent(accent)
 	, panelBounds(panelBounds)
-	, frame(context.textures.Get(Assets::TextureID::UiFrame), panelBounds, PanelSourceBorder, PanelTargetBorder)
+	, frame(frameTexture, panelBounds, PanelSourceBorder, PanelTargetBorder)
 	, buttons{ {
 		{ context.fonts.Get(Assets::FontID::Main), ButtonSize },
 		{ context.fonts.Get(Assets::FontID::Main), ButtonSize },

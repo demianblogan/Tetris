@@ -27,7 +27,7 @@ namespace
 }
 
 KeyboardCategoryPanel::KeyboardCategoryPanel(Context& context, sf::Color accent)
-	: SettingsCategoryPanel(context, accent, ControlsPanel::Bounds)
+	: SettingsCategoryPanel(context, accent, ControlsPanel::Bounds, context.textures.Get(Assets::TextureID::UiFramePurple))
 {
 	fields = {
 		&ControlSettings::moveLeft,

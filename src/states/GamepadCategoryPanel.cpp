@@ -97,7 +97,7 @@ GamepadCategoryPanel::GamepadCategoryPanel(Context& context, sf::Color accent)
 	: context(context)
 	, accent(accent)
 	, panelBounds(PanelBounds)
-	, frame(context.textures.Get(Assets::TextureID::UiFrame), PanelBounds, PanelSourceBorder, PanelTargetBorder)
+	, frame(context.textures.Get(Assets::TextureID::UiFramePurple), PanelBounds, PanelSourceBorder, PanelTargetBorder)
 	, xboxHeader(context.fonts.Get(Assets::FontID::Main),
 		context.localization.GetText(TextKey::Options::GamepadXbox), HeaderSize)
 	, playStationHeader(context.fonts.Get(Assets::FontID::Main),

@@ -18,7 +18,7 @@ namespace
 }
 
 AudioCategoryPanel::AudioCategoryPanel(Context& context, sf::Color accent)
-	: SettingsCategoryPanel(context, accent, PanelBounds)
+	: SettingsCategoryPanel(context, accent, PanelBounds, context.textures.Get(Assets::TextureID::UiFrameGreen))
 {
 	BuildRows();
 }
