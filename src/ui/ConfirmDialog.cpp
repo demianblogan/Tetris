@@ -34,7 +34,10 @@ namespace
 	constexpr float EntryDrop = 780.f;
 	constexpr float AppearSpeed = 1.f / 0.16f;
 
-	constexpr float ResolveDuration = 0.20f;
+	// A choice: the chosen button flashes, then the box slides back up and off
+	// the top, and only then is the answer handed to the caller.
+	constexpr float PressHold = 0.16f;
+	constexpr float HideDuration = 0.16f;
 	constexpr float PressPunch = 0.13f;
 	constexpr float PressFlash = 0.6f;
 	constexpr float SelectedScale = 1.06f;
@@ -46,6 +49,7 @@ namespace
 	const sf::Color YesHue{ 70, 200, 110 };   // matches the Options "Apply" green
 	const sf::Color NoHue{ 240, 70, 78 };     // the menu red
 
+	using UI::Easing::EaseInCubic;
 	using UI::Easing::EaseOutCubic;
 	using UI::Easing::Lerp;
 	using UI::Easing::SmoothStep;
@@ -143,7 +147,7 @@ namespace UI
 		if (phase == Phase::Resolving)
 		{
 			resolveTime += deltaTime;
-			if (resolveTime >= ResolveDuration)
+			if (resolveTime >= PressHold + HideDuration)
 			{
 				result = chosenAnswer;
 				phase = Phase::Closed;
@@ -155,7 +159,7 @@ namespace UI
 		sf::Color hue, bool selected, float contentAlpha)
 	{
 		const float press = (phase == Phase::Resolving && selected)
-			? std::sin(std::clamp(1.f - resolveTime / ResolveDuration, 0.f, 1.f) * Pi)
+			? std::sin(std::clamp(resolveTime / PressHold, 0.f, 1.f) * Pi)
 			: 0.f;
 
 		const float scale = (selected ? SelectedScale : 1.f) + PressPunch * press;
@@ -177,11 +181,19 @@ namespace UI
 			return;
 		}
 
-		sf::RectangleShape dim({ 1920.f, 1080.f });
-		dim.setFillColor(sf::Color(0, 0, 0, static_cast<std::uint8_t>(SmoothStep(appear) * DimAlpha)));
-		target.draw(dim);
+		const float hide = (phase == Phase::Resolving)
+			? std::clamp((resolveTime - PressHold) / HideDuration, 0.f, 1.f)
+			: 0.f;
+		const float leaving = EaseInCubic(hide);
 
-		const float slideY = Lerp(-EntryDrop, 0.f, EaseOutCubic(appear));
+		const float slideY = hide > 0.f
+			? Lerp(0.f, -EntryDrop, leaving)
+			: Lerp(-EntryDrop, 0.f, EaseOutCubic(appear));
+
+		sf::RectangleShape dim({ 1920.f, 1080.f });
+		dim.setFillColor(sf::Color(0, 0, 0,
+			static_cast<std::uint8_t>(SmoothStep(appear) * (1.f - leaving) * DimAlpha)));
+		target.draw(dim);
 
 		// A dark fill behind the frame so the message stays legible whatever the
 		// frame texture's centre does.
