@@ -9,13 +9,12 @@ namespace TextKey
 {
 	namespace MainMenu
 	{
-		inline constexpr std::string_view Title     = "main_menu.title";
-		inline constexpr std::string_view StartGame = "main_menu.start_game";
-		inline constexpr std::string_view Options      = "main_menu.options";
-		inline constexpr std::string_view Records      = "main_menu.records";
-		inline constexpr std::string_view Achievements = "main_menu.achievements";
-		inline constexpr std::string_view Credits      = "main_menu.credits";
-		inline constexpr std::string_view Quit         = "main_menu.quit";
+		inline constexpr std::string_view Title   = "main_menu.title";
+		inline constexpr std::string_view Play    = "main_menu.play";
+		inline constexpr std::string_view Options = "main_menu.options";
+		inline constexpr std::string_view Records = "main_menu.records";
+		inline constexpr std::string_view Credits = "main_menu.credits";
+		inline constexpr std::string_view Quit    = "main_menu.quit";
 	}
 
 	namespace Pause
@@ -98,28 +97,6 @@ namespace TextKey
 	{
 		inline constexpr std::string_view Yes = "common.yes";
 		inline constexpr std::string_view No  = "common.no";
-	}
-
-	namespace ModeSelect
-	{
-		inline constexpr std::string_view Title      = "mode_select.title";
-		inline constexpr std::string_view Campaign   = "mode_select.campaign";
-		inline constexpr std::string_view OtherModes = "mode_select.other_modes";
-		inline constexpr std::string_view Back       = "mode_select.back";   // main column, short "Back"
-
-		// Campaign sub-list.
-		inline constexpr std::string_view StartCampaign    = "mode_select.start_campaign";
-		inline constexpr std::string_view ContinueCampaign = "mode_select.continue_campaign";
-		inline constexpr std::string_view SelectLevel      = "mode_select.select_level";
-
-		// Other Modes sub-list.
-		inline constexpr std::string_view Marathon = "mode_select.marathon";
-		inline constexpr std::string_view Sprint   = "mode_select.sprint";
-		inline constexpr std::string_view Ultra    = "mode_select.ultra";
-		inline constexpr std::string_view Zen      = "mode_select.zen";
-		inline constexpr std::string_view Versus   = "mode_select.versus";
-
-		inline constexpr std::string_view SubBack = "mode_select.sub_back";   // sub-list "Back"
 	}
 
 	namespace Credits

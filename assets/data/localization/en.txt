@@ -2,26 +2,11 @@
 # Format: section.key = value   (# starts a comment, \n is a line break)
 
 main_menu.title        = Tessera
-main_menu.start_game   = Start Game
+main_menu.play         = Play
 main_menu.options      = Options
 main_menu.records      = Records
-main_menu.achievements = Achievements
 main_menu.credits      = Credits
 main_menu.quit         = Quit
-
-mode_select.title             = GAME MODES
-mode_select.campaign          = Campaign
-mode_select.other_modes       = Other Modes
-mode_select.back              = Back
-mode_select.start_campaign    = Start New Campaign
-mode_select.continue_campaign = Continue Campaign
-mode_select.select_level      = Select Level
-mode_select.marathon          = Marathon
-mode_select.sprint            = Sprint
-mode_select.ultra             = Ultra
-mode_select.zen               = Zen
-mode_select.versus            = Player vs Player
-mode_select.sub_back          = Back
 
 pause.title     = PAUSE
 pause.resume    = Resume

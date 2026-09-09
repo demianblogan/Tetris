@@ -60,9 +60,6 @@
     <ClCompile Include="src\states\OptionsScreen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\states\ModeSelectScreen.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\states\AudioCategoryPanel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -294,9 +291,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\states\CreditsScreen.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\states\ModeSelectScreen.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\states\OptionsScreen.h">
