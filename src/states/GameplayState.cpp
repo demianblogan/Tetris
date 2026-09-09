@@ -429,7 +429,8 @@ void GameplayState::ReactToEvents(const GameplaySession::Events& events)
 	{
 		Haptics::Pulse(context.gamepadHaptics, context.hapticSettings.gameOver);
 		Haptics::FlashLightbar(context.gamepadHaptics, context.hapticSettings.gameOverLightbar, 0.9f, 3);
-		RequestChange(std::make_unique<GameOverState>(context, session.GetScore()));
+		RequestChange(std::make_unique<GameOverState>(
+			context, session.GetScore(), session.GetLinesCleared(), session.GetLevel()));
 	}
 }
 

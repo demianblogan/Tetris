@@ -26,9 +26,11 @@ namespace
 	constexpr unsigned int ScoreSize = 70;
 }
 
-GameOverState::GameOverState(Context& context, int finalScore)
+GameOverState::GameOverState(Context& context, int finalScore, int finalLines, int finalLevel)
 	: MenuScreenState(context)
 	, finalScore(finalScore)
+	, finalLines(finalLines)
+	, finalLevel(finalLevel)
 	, isHighScore(context.highScores.IsHighScore(finalScore))
 {
 	rootLayout.SetGap(60.f);
@@ -155,7 +157,7 @@ void GameOverState::SaveRecordAndLeave()
 		return;
 	}
 
-	context.highScores.AddRecord({ TrimPlayerName(playerName), finalScore });
+	context.highScores.AddRecord({ TrimPlayerName(playerName), finalScore, finalLines, finalLevel });
 	context.highScores.Save();
 
 	RequestClear();
