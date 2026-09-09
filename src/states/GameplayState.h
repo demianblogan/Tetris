@@ -51,6 +51,13 @@ private:
 	bool softDropHeld = false;
 	float softDropTimer = 0.f;
 
+	// A short hold at the start: the scene is up but the session and input are
+	// frozen, so the menu -> gameplay transition can settle before the first
+	// piece begins to fall.
+	static constexpr float IntroDuration = 0.50f;
+	bool introActive = true;
+	float introTimer = 0.f;
+
 	sf::Sprite backgroundSprite;
 
 	std::unique_ptr<UI::Layout> rightHudLayout;
@@ -78,7 +85,8 @@ private:
 	void OpenPause();
 
 public:
-	explicit GameplayState(Context& context);
+	// `playIntro` false starts the session immediately (no frozen hold).
+	explicit GameplayState(Context& context, bool playIntro = true);
 
 	void HandleEvent(const sf::Event& event) override;
 	void Update(float deltaTime) override;

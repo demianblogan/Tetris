@@ -386,6 +386,17 @@ namespace UI
 		return items[front].text.getLocalBounds().size.y * PlacementOf(front).scale;
 	}
 
+	float CarouselMenu::FrontEntryWidth() const
+	{
+		if (items.empty())
+		{
+			return 0.f;
+		}
+
+		const std::size_t front = FrontItem();
+		return items[front].text.getLocalBounds().size.x * PlacementOf(front).scale;
+	}
+
 	void CarouselMenu::Update(float deltaTime)
 	{
 		if (!started)

@@ -125,6 +125,7 @@ xcopy /D /Y /Q "$(ProjectDir)libs\SFML\bin\sfml-audio-3.dll" "$(OutDir)"</Comman
     <ClCompile Include="src\states\GameOverState.cpp" />
     <ClCompile Include="src\states\PauseMenuScreen.cpp" />
     <ClCompile Include="src\states\PauseState.cpp" />
+    <ClCompile Include="src\states\PlayTransition.cpp" />
     <ClCompile Include="src\ui\Panel.cpp" />
     <ClCompile Include="src\utils\AppDataPath.cpp" />
     <ClCompile Include="src\utils\Random.cpp" />
@@ -226,6 +227,7 @@ xcopy /D /Y /Q "$(ProjectDir)libs\SFML\bin\sfml-audio-3.dll" "$(OutDir)"</Comman
     <ClInclude Include="src\states\GameOverState.h" />
     <ClInclude Include="src\states\PauseMenuScreen.h" />
     <ClInclude Include="src\states\PauseState.h" />
+    <ClInclude Include="src\states\PlayTransition.h" />
     <ClInclude Include="src\ui\Panel.h" />
     <ClInclude Include="src\utils\AppDataPath.h" />
     <ClInclude Include="src\utils\Random.h" />

@@ -78,10 +78,11 @@ namespace UI
 		// into pixels.
 		void StartExit();
 
-		// The front entry's on-screen centre and ink height, for handing off to
-		// the header at the start of a transition.
+		// The front entry's on-screen centre and ink height / width, for handing
+		// off to the header (or the play transition) at the start of a transition.
 		[[nodiscard]] sf::Vector2f FrontEntryCentre() const;
 		[[nodiscard]] float FrontEntryHeight() const;
+		[[nodiscard]] float FrontEntryWidth() const;
 
 		// Mouse. The caller maps the pixel to view coordinates first.
 		enum class PointerHit { None, RotatedLeft, RotatedRight, Activated };

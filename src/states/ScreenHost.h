@@ -56,6 +56,11 @@ public:
 	// -- MenuShell shoves its drifting-tetromino backdrop. Default: nothing.
 	virtual void OnNavigate(float /*direction*/) {}
 
+	// A home screen asks the host to leave for gameplay through the play
+	// transition, handing over the activated entry's on-screen box and hue.
+	// Only MenuShell acts on it.
+	virtual void BeginPlay(sf::Vector2f /*fromCentre*/, sf::Vector2f /*fromSize*/, sf::Color /*accent*/) {}
+
 	// A Back transition normally sinks the header away toward the returned-to
 	// entry. A host whose home screen carries its own persistent header (the
 	// pause "PAUSE") returns true here and re-raises it in OnHomeRebuilt().

@@ -3,8 +3,10 @@
 #include <cstddef>
 #include <memory>
 
+#include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Text.hpp>
+#include <SFML/System/Vector2.hpp>
 
 #include "../ui/MenuAurora.h"
 #include "../ui/MenuBackdrop.h"
@@ -22,7 +24,9 @@ class MenuShell final : public ScreenHost
 public:
 	explicit MenuShell(Context& context);
 
+	void Update(float deltaTime) override;
 	void OnNavigate(float direction) override;
+	void BeginPlay(sf::Vector2f fromCentre, sf::Vector2f fromSize, sf::Color accent) override;
 
 protected:
 	void UpdateBackground(float deltaTime) override;
@@ -36,4 +40,11 @@ private:
 	UI::MenuBackdrop backdrop;
 	UI::MenuSparks sparks;
 	sf::Text versionText;
+
+	// A pending "Play": the ring is playing its exit; once it finishes the shell
+	// snapshots itself and hands over to the PlayTransition.
+	bool playPending = false;
+	sf::Vector2f playFromCentre;
+	sf::Vector2f playFromSize;
+	sf::Color playAccent{ sf::Color::White };
 };

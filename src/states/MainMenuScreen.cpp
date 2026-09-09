@@ -20,7 +20,6 @@
 #include "../resources/Assets.h"
 #include "../ui/TetrominoPalette.h"
 #include "CreditsScreen.h"
-#include "GameplayState.h"
 #include "OptionsScreen.h"
 #include "ScreenHost.h"
 #include "StatisticsState.h"
@@ -101,7 +100,11 @@ MainMenuScreen::MainMenuScreen(ScreenHost& host, bool animate, std::size_t front
 	// Ring order: Play / Options / Records / Credits / Quit.
 	carousel.SetCenter(TitleCenter);
 	carousel.AddItem(context.localization.GetText(TextKey::MainMenu::Play),
-		[this] { this->host.ExitTo(std::make_unique<GameplayState>(context)); },
+		[this]
+		{
+			this->host.BeginPlay(carousel.FrontEntryCentre(),
+				{ carousel.FrontEntryWidth(), carousel.FrontEntryHeight() }, PlayColour);
+		},
 		true, PlayColour);
 	carousel.AddItem(context.localization.GetText(TextKey::MainMenu::Options),
 		[this]
