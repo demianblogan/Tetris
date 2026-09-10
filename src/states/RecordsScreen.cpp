@@ -104,22 +104,6 @@ RecordsScreen::RecordsScreen(ScreenHost& host, sf::Color accent)
 	rule.setSize({ 1240.f, 2.f });
 	rule.setPosition({ 360.f, RuleY });
 
-	// TEMP: a sample leaderboard so the filled table can be reviewed. Only seeds
-	// when the real board is empty, and is never saved. REMOVE before shipping.
-	if (context.highScores.GetRecords().empty())
-	{
-		context.highScores.AddRecord({ sf::String("ALICE"), 128400, 612, 43 });
-		context.highScores.AddRecord({ sf::String("BOBBY"), 95220, 478, 32 });
-		context.highScores.AddRecord({ sf::String("CARMEN"), 74800, 401, 26 });
-		context.highScores.AddRecord({ sf::String("DELTA FORCE"), 61050, 355, 21 });
-		context.highScores.AddRecord({ sf::String("EVE"), 52300, 298, 18 });
-		context.highScores.AddRecord({ sf::String("FRANK"), 40120, 244, 14 });
-		context.highScores.AddRecord({ sf::String("GHOST"), 28900, 190, 10 });
-		context.highScores.AddRecord({ sf::String("HANNAH"), 19600, 142, 7 });
-		context.highScores.AddRecord({ sf::String("IVANWITHALONGNAME"), 11200, 95, 4 });
-		context.highScores.AddRecord({ sf::String("K"), 3400, 38, 2 });
-	}
-
 	BuildHeader();
 	RefreshRows();
 }
