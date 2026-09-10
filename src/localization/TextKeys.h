@@ -137,9 +137,11 @@ namespace TextKey
 
 	namespace Hud
 	{
-		inline constexpr std::string_view NextPiece = "hud.next_piece";
-		inline constexpr std::string_view Score     = "hud.score";   // {score}
-		inline constexpr std::string_view Level     = "hud.level";   // {level}
-		inline constexpr std::string_view Controls  = "hud.controls";
+		inline constexpr std::string_view Hold  = "hud.hold";
+		inline constexpr std::string_view Next  = "hud.next";
+		inline constexpr std::string_view Score = "hud.score";
+		inline constexpr std::string_view Lines = "hud.lines";
+		inline constexpr std::string_view Level = "hud.level";
+		inline constexpr std::string_view Time  = "hud.time";
 	}
 }

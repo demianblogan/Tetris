@@ -177,6 +177,9 @@
     <ClCompile Include="src\rendering\NeonGlow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\rendering\GameplayHud.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="src\input\InputBinding.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -452,6 +455,9 @@
     <ClInclude Include="src\rendering\NeonGlow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\rendering\GameplayHud.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="src\input\InputBinding.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -525,6 +531,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\utils\SafeFileWrite.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\TimeFormat.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\gameplay\TetrominoBag.h">

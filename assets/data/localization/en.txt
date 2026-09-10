@@ -104,7 +104,9 @@ loading.audio     = Loading Audio...
 loading.music     = Loading Music...
 loading.interface = Loading Interface...
 
-hud.next_piece = Next Tetromino
-hud.score      = Score: {score}
-hud.level      = Level: {level}
-hud.controls   = [←] [→] - Move    [↓] - Soft drop\n[Q] - Rotate left    [E] - Rotate right\n[Space] - Hard drop\n[ESC] - Pause
+hud.hold  = HOLD
+hud.next  = NEXT
+hud.score = SCORE
+hud.lines = LINES
+hud.level = LEVEL
+hud.time  = TIME
