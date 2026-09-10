@@ -46,7 +46,7 @@ private:
 		sf::Color base;
 	};
 
-	static constexpr std::size_t MaxNameLength = 16;
+	static constexpr std::size_t MaxNameLength = 14;
 
 	void BuildContent();
 	void Activate();
@@ -54,6 +54,7 @@ private:
 	void HandleTextInput(char32_t character);
 	[[nodiscard]] bool NameEntered() const;
 	[[nodiscard]] sf::String TrimmedName() const;
+	[[nodiscard]] bool CanSave() const;
 	void SaveRecord();
 	void DrawButton(sf::RenderTarget& target, UI::MenuLabel& label, sf::Vector2f centre,
 		sf::Color hue, bool selected, float alpha);
@@ -79,17 +80,19 @@ private:
 
 	UI::MenuLabel playAgainLabel;
 	UI::MenuLabel mainMenuLabel;
+	UI::MenuLabel saveLabel;
 	NeonGlow buttonGlow;
 	NeonGlow headingGlow;
 	UI::Celebration celebration;
 	Focus focus = Focus::PlayAgain;
 
 	sf::String playerName;
+	bool recordSaved = false;
 
 	float appear = 0.f;
 	float headingDrop = 0.f;
 	float pressTime = 1000.f;
-	float nameShake = 0.f;
+	float savePulse = 0.f;
 	float cursorTime = 0.f;
 
 	// "GAME OVER" idle: a dying-neon flicker with a rare chromatic glitch.

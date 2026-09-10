@@ -47,8 +47,15 @@ namespace
 	constexpr float StatLabelOffset = 462.f;
 	constexpr float StatValueOffset = 528.f;
 	constexpr float BadgeOffset = 636.f;
-	constexpr float NameOffset = 726.f;
-	constexpr float NamePromptOffset = 788.f;
+
+	// The name row: a recessed field with the Save Record button to its right,
+	// centred vertically on this offset from the panel top.
+	constexpr float NameRowOffset = 742.f;
+	constexpr float FieldWidth = 520.f;
+	constexpr float FieldHeight = 96.f;
+	constexpr float FieldCentreX = 960.f - 170.f;
+	constexpr float SaveCentreX = 960.f + 340.f;
+	constexpr float FieldTextInset = 30.f;
 
 	constexpr float StatSpread = 400.f;
 
@@ -61,9 +68,10 @@ namespace
 	constexpr unsigned int StatLabelSize = 40;
 	constexpr unsigned int StatValueSize = 68;
 	constexpr unsigned int BadgeSize = 56;
-	constexpr unsigned int NameSize = 72;
-	constexpr unsigned int PromptSize = 30;
+	constexpr unsigned int NameSize = 56;
+	constexpr unsigned int PromptSize = 34;
 	constexpr unsigned int ButtonSize = 44;
+	constexpr unsigned int SaveButtonSize = 38;
 
 	constexpr float ButtonSpacing = 290.f;
 
@@ -101,6 +109,20 @@ namespace
 	const sf::Color PromptColour{ 150, 148, 160 };
 	const sf::Color PlayHue{ 90, 205, 130 };
 	const sf::Color MenuHue{ 228, 232, 240 };
+	const sf::Color SaveHue{ 255, 208, 120 };
+	const sf::Color SavedHue{ 120, 210, 140 };
+
+	// The recessed name field: a near-black well with a dark top/left lip and a
+	// faint warm highlight along the bottom/right, so it reads as pushed in.
+	const sf::Color FieldFill{ 6, 7, 11 };
+	const sf::Color FieldShadow{ 0, 0, 0 };
+	const sf::Color FieldHighlight{ 128, 112, 74 };
+
+	[[nodiscard]] sf::FloatRect NameFieldBounds(float panelTop)
+	{
+		return { { FieldCentreX - FieldWidth * 0.5f, panelTop + NameRowOffset - FieldHeight * 0.5f },
+			{ FieldWidth, FieldHeight } };
+	}
 
 	[[nodiscard]] sf::FloatRect PanelBoundsFor(bool record)
 	{
@@ -129,6 +151,33 @@ namespace
 		const sf::FloatRect bounds = text.getLocalBounds();
 		text.setOrigin({ bounds.position.x + bounds.size.x * 0.5f, bounds.position.y + bounds.size.y * 0.5f });
 		text.setPosition(centre);
+	}
+
+	void PlaceLeft(sf::Text& text, sf::Vector2f leftMiddle)
+	{
+		const sf::FloatRect bounds = text.getLocalBounds();
+		text.setOrigin({ bounds.position.x, bounds.position.y + bounds.size.y * 0.5f });
+		text.setPosition(leftMiddle);
+	}
+
+	void DrawRecessedField(sf::RenderTarget& target, const sf::FloatRect& bounds, float alpha)
+	{
+		sf::RectangleShape well(bounds.size);
+		well.setPosition(bounds.position);
+		well.setFillColor(Faded(FieldFill, alpha));
+		well.setOutlineThickness(-2.f);
+		well.setOutlineColor(Faded(FieldShadow, alpha));
+		target.draw(well);
+
+		sf::RectangleShape topLip({ bounds.size.x, 4.f });
+		topLip.setPosition(bounds.position);
+		topLip.setFillColor(Faded(FieldShadow, alpha * 0.7f));
+		target.draw(topLip);
+
+		sf::RectangleShape bottomEdge({ bounds.size.x, 2.f });
+		bottomEdge.setPosition({ bounds.position.x, bounds.position.y + bounds.size.y - 2.f });
+		bottomEdge.setFillColor(Faded(FieldHighlight, alpha * 0.5f));
+		target.draw(bottomEdge);
 	}
 
 	[[nodiscard]] std::string FormatTime(float seconds)
@@ -162,6 +211,7 @@ GameOverState::GameOverState(Context& context, int finalScore, int finalLines, i
 	, namePrompt(context.fonts.Get(Assets::FontID::Main), "", PromptSize)
 	, playAgainLabel(context.fonts.Get(Assets::FontID::Menu), ButtonSize)
 	, mainMenuLabel(context.fonts.Get(Assets::FontID::Menu), ButtonSize)
+	, saveLabel(context.fonts.Get(Assets::FontID::Menu), SaveButtonSize)
 	, buttonGlow(context.shaders.Get(Assets::ShaderID::NeonDilate), context.shaders.Get(Assets::ShaderID::NeonBlur))
 	, headingGlow(context.shaders.Get(Assets::ShaderID::NeonDilate), context.shaders.Get(Assets::ShaderID::NeonBlur))
 {
@@ -191,6 +241,7 @@ GameOverState::GameOverState(Context& context, int finalScore, int finalLines, i
 
 	playAgainLabel.SetText(context.localization.GetText(TextKey::GameOver::PlayAgain));
 	mainMenuLabel.SetText(context.localization.GetText(TextKey::GameOver::MainMenu));
+	saveLabel.SetText(context.localization.GetText(TextKey::GameOver::SaveRecord));
 
 	BuildContent();
 
@@ -245,7 +296,6 @@ void GameOverState::BuildContent()
 		PlaceCentred(recordBadge, { CentreX, panelTop + BadgeOffset });
 
 		namePrompt.setString(text.GetText(TextKey::GameOver::EnterName));
-		PlaceCentred(namePrompt, { CentreX, panelTop + NamePromptOffset });
 	}
 }
 
@@ -295,15 +345,25 @@ sf::String GameOverState::TrimmedName() const
 	return playerName.substring(start, end - start);
 }
 
+bool GameOverState::CanSave() const
+{
+	return isRecord && !recordSaved && NameEntered();
+}
+
 void GameOverState::SaveRecord()
 {
-	if (!isRecord || !NameEntered())
+	if (!CanSave())
 	{
 		return;
 	}
 
 	context.highScores.AddRecord({ TrimmedName(), finalScore, finalLines, finalLevel });
 	context.highScores.Save();
+
+	recordSaved = true;
+	savePulse = 1.f;
+	saveLabel.SetText(context.localization.GetText(TextKey::GameOver::Saved));
+	context.audioPlayer.Play(Assets::SoundID::NextLevel);
 }
 
 void GameOverState::HandleTextInput(char32_t character)
@@ -331,8 +391,6 @@ void GameOverState::Activate()
 	{
 		return;
 	}
-
-	SaveRecord();
 
 	pressTime = 0.f;
 	context.audioPlayer.Play(Assets::SoundID::MenuItemPressed);
@@ -364,6 +422,11 @@ void GameOverState::HandleEvent(const sf::Event& event)
 		context.audioPlayer.Restart(Assets::SoundID::MenuItemSelected);
 		return;
 	case MenuInput::Action::Confirm:
+		if (CanSave())
+		{
+			SaveRecord();
+			return;
+		}
 		Activate();
 		return;
 	case MenuInput::Action::Back:
@@ -398,6 +461,11 @@ void GameOverState::HandleEvent(const sf::Event& event)
 			return;
 		}
 		const sf::Vector2f point = context.window.mapPixelToCoords(pressed->position);
+		if (CanSave() && hit(point, saveLabel, { SaveCentreX, panelTop + NameRowOffset }))
+		{
+			SaveRecord();
+			return;
+		}
 		if (hit(point, playAgainLabel, { CentreX - ButtonSpacing, buttonY }))
 		{
 			focus = Focus::PlayAgain;
@@ -417,13 +485,15 @@ void GameOverState::Update(float deltaTime)
 	headingDrop = std::min(1.f, headingDrop + deltaTime * HeadingDropSpeed);
 	pressTime += deltaTime;
 	cursorTime += deltaTime;
-	nameShake = std::max(0.f, nameShake - deltaTime * 4.f);
+	savePulse = std::max(0.f, savePulse - deltaTime * 2.4f);
 
 	const bool interactive = leaving == Leaving::No;
 	playAgainLabel.SetWaveEnabled(interactive && focus == Focus::PlayAgain);
 	mainMenuLabel.SetWaveEnabled(interactive && focus == Focus::MainMenu);
+	saveLabel.SetWaveEnabled(interactive && CanSave());
 	playAgainLabel.Update(deltaTime);
 	mainMenuLabel.Update(deltaTime);
+	saveLabel.Update(deltaTime);
 	buttonGlow.Update(deltaTime);
 	headingGlow.Update(deltaTime);
 
@@ -581,18 +651,31 @@ void GameOverState::Render(sf::RenderTarget& target)
 			recordBadge.setFillColor(Faded(BadgeColour, contentAlpha));
 			target.draw(recordBadge);
 
-			const float shake = std::sin(nameShake * 40.f) * nameShake * 10.f;
-			const bool showCursor = std::fmod(cursorTime, 1.f) < 0.55f;
-			nameField.setString(playerName + (showCursor ? sf::String("_") : sf::String(" ")));
-			PlaceCentred(nameField, { CentreX + shake, panelTop + NameOffset });
-			nameField.setFillColor(Faded(nameShake > 0.f ? sf::Color(240, 120, 120) : NameColour, contentAlpha));
-			target.draw(nameField);
+			const sf::FloatRect field = NameFieldBounds(panelTop);
+			const float rowY = field.position.y + field.size.y * 0.5f;
+			const float textLeft = field.position.x + FieldTextInset;
 
-			if (!NameEntered())
+			DrawRecessedField(target, field, contentAlpha);
+
+			if (NameEntered())
+			{
+				const bool showCursor = std::fmod(cursorTime, 1.f) < 0.55f;
+				nameField.setString(playerName + (showCursor ? sf::String("|") : sf::String(" ")));
+				PlaceLeft(nameField, { textLeft, rowY });
+				nameField.setFillColor(Faded(NameColour, contentAlpha));
+				target.draw(nameField);
+			}
+			else
 			{
 				namePrompt.setFillColor(Faded(PromptColour, contentAlpha * 0.9f));
+				PlaceLeft(namePrompt, { textLeft, rowY });
 				target.draw(namePrompt);
 			}
+
+			const sf::Color saveHue = recordSaved ? SavedHue : SaveHue;
+			const float saveAlpha = contentAlpha * (recordSaved ? 0.55f : (CanSave() ? 1.f : 0.32f));
+			const float pulse = savePulse > 0.f ? std::sin(std::clamp(savePulse, 0.f, 1.f) * Pi) : 0.f;
+			saveLabel.Draw(target, { SaveCentreX, rowY }, 1.f + 0.12f * pulse, saveHue, saveAlpha, PressFlash * pulse);
 		}
 	}
 
