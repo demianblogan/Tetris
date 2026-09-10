@@ -114,7 +114,7 @@ namespace
 		const bool left = cell == Level;
 		const int row = left ? 1 : static_cast<int>(cell) - static_cast<int>(Next);
 		const sf::FloatRect bounds = SquareAt(left ? LeftX : RightX, row);
-		return { Centre(bounds).x, bounds.position.y + Square * 0.62f };
+		return Centre(bounds);
 	}
 }
 
