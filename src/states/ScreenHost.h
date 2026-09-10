@@ -41,9 +41,6 @@ public:
 
 	[[nodiscard]] Context& GetContext() { return context; }
 
-	// Leave the host entirely (Start Game, quit-to-desktop, back to gameplay...).
-	void ExitTo(std::unique_ptr<State> state);
-
 	// Animate from the home screen into a sub-screen: the current screen plays
 	// its exit, the header (`label` in `colour`) rises from the activated entry
 	// (`fromCentre` / `fromHeight`) into the header slot, then `next` takes over.
