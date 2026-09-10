@@ -25,9 +25,9 @@ namespace
 	constexpr sf::FloatRect PanelBounds{ { 260.f, 210.f }, { 1400.f, 710.f } };
 	constexpr sf::Vector2f PanelTargetBorder{ 44.f, 44.f };
 
-	constexpr float HeaderY = 272.f;
-	constexpr float RuleY = 302.f;
-	constexpr float RowTopY = 338.f;
+	constexpr float HeaderY = 270.f;
+	constexpr float RuleY = 304.f;
+	constexpr float RowTopY = 344.f;
 	constexpr float RowStep = 57.f;
 
 	// Column anchors: rank / score / lines / level are right-aligned to their
@@ -42,7 +42,7 @@ namespace
 	constexpr unsigned int NameSize = 42;
 	constexpr unsigned int ScoreSize = 46;
 	constexpr unsigned int SubSize = 34;
-	constexpr unsigned int HeaderSize = 27;
+	constexpr unsigned int HeaderSize = 38;
 
 	constexpr unsigned int ButtonTextSize = 42;
 	constexpr sf::Vector2f ResetCentre{ 838.f, 968.f };
