@@ -12,10 +12,9 @@
 #include "../input/InputHandler.h"
 #include "../rendering/BoardRenderer.h"
 #include "../rendering/EffectsController.h"
+#include "../rendering/GameplayHud.h"
 #include "../rendering/NeonGlow.h"
-#include "../ui/Label.h"
-#include "../ui/Layout.h"
-#include "../ui/Panel.h"
+#include "../rendering/SceneMotion.h"
 
 // The gameplay screen: owns the rules (GameplaySession), the input layer that
 // feeds it, the HUD, and the two renderers. It translates the session's
@@ -40,6 +39,8 @@ private:
 	BoardRenderer boardRenderer;
 	NeonGlow neonGlow;
 	EffectsController effects;
+	GameplayHud hud;
+	SceneMotion sceneMotion;
 
 	ActionMap<GameplayAction> gameplayActions;
 	InputHandler<GameplayAction> gameplayInput;
@@ -58,18 +59,15 @@ private:
 	bool introActive = true;
 	float introTimer = 0.f;
 
+	// The death beat between top-out and the game-over screen: the stack
+	// crumbles, a red flash and shake fire, and the frame darkens.
+	static constexpr float DeathDuration = 0.80f;
+	bool dying = false;
+	float deathTimer = 0.f;
+
 	sf::Sprite backgroundSprite;
 
-	std::unique_ptr<UI::Layout> rightHudLayout;
-	std::unique_ptr<UI::Panel> controlsPanel;
-
-	UI::Label* scoreLabel = nullptr;
-	UI::Label* levelLabel = nullptr;
-
-	sf::Vector2f nextTetrominoPreviewPosition;
-
 	void SetUpInputBindings();
-	void BuildHud();
 
 	void PollHeldInput();
 	void ApplyGamepadActions();

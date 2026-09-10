@@ -35,9 +35,8 @@ namespace Assets
 	enum class TextureID
 	{
 		BlockSpritesheetWithOutline,
-		ButtonBackground,
-		PanelBackground,
-		GameBackground,
+		MenuBackground,
+		GameplayBackground,
 		CompanyLogo,
 		Cursor,
 		UiArrow,
@@ -46,6 +45,8 @@ namespace Assets
 		UiFrameGreen,
 		UiFramePurple,
 		UiFrameBrown,
+		UiFrameRed,
+		UiFrameWhiteRed,
 		UiFrameWarning,
 		CarouselArrow,
 		Checkbox,
@@ -106,9 +107,8 @@ namespace Assets
 		namespace Textures
 		{
 			inline constexpr const char* BlockSpritesheetWithOutline = "assets/textures/block_spritesheet_with_outline.png";
-			inline constexpr const char* ButtonBackground = "assets/textures/button_background.png";
-			inline constexpr const char* PanelBackground = "assets/textures/panel_background.png";
-			inline constexpr const char* GameBackground = "assets/textures/game_background.png";
+			inline constexpr const char* MenuBackground = "assets/textures/menu_background.png";          // main-menu backdrop
+			inline constexpr const char* GameplayBackground = "assets/textures/gameplay_background.jpg";  // in-game backdrop
 			inline constexpr const char* CompanyLogo = "assets/other/alone_bull_splash_logo.jpg";
 			inline constexpr const char* Cursor = "assets/textures/cursor.png";
 			inline constexpr const char* UiArrow = "assets/textures/ui/arrow.png";
@@ -121,6 +121,8 @@ namespace Assets
 			inline constexpr const char* UiFrameGreen  = "assets/textures/ui/menu_background_green_frame.png";
 			inline constexpr const char* UiFramePurple = "assets/textures/ui/menu_background_purple_frame.png";
 			inline constexpr const char* UiFrameBrown  = "assets/textures/ui/menu_background_brown_frame.png";
+			inline constexpr const char* UiFrameRed    = "assets/textures/ui/menu_background_red_frame.png";   // game over
+			inline constexpr const char* UiFrameWhiteRed = "assets/textures/ui/menu_background_white_red_frame.png";   // options: HUD
 			inline constexpr const char* UiFrameWarning = "assets/textures/ui/menu_background_gold_frame.png";
 
 			// Settings widgets.

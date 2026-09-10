@@ -1,6 +1,7 @@
 #include "BoardRenderer.h"
 
 #include <algorithm>
+#include <cmath>
 #include <cstdint>
 #include <utility>
 
@@ -17,6 +18,17 @@
 #include "EffectsController.h"
 #include "NeonGlow.h"
 
+namespace
+{
+	// A per-cell head start into the crumble, [0, 0.4), so the stack falls apart
+	// unevenly rather than as one slab.
+	[[nodiscard]] float CellCrumbleDelay(int x, int y)
+	{
+		const float noise = std::sin(x * 12.9898f + y * 4.1414f) * 43758.5453f;
+		return (noise - std::floor(noise)) * 0.4f;
+	}
+}
+
 BoardRenderer::BoardRenderer(Context& context)
 	: context(context)
 {
@@ -24,7 +36,7 @@ BoardRenderer::BoardRenderer(Context& context)
 }
 
 void BoardRenderer::Render(sf::RenderTarget& target, const GameplaySession& session, const EffectsController& effects,
-	NeonGlow& glow) const
+	NeonGlow& glow, float deathProgress) const
 {
 	sf::Sprite blockSprite(context.textures.Get(Assets::TextureID::BlockSpritesheetWithOutline));
 
@@ -132,16 +144,36 @@ void BoardRenderer::Render(sf::RenderTarget& target, const GameplaySession& sess
 				}
 			);
 
-			blockSprite.setPosition(
-				{
-					BoardPosition.x + x * BlockSize,
-					BoardPosition.y + y * BlockSize
-				}
-			);
+			if (deathProgress > 0.f)
+			{
+				const float jitter = CellCrumbleDelay(x, y);
+				const float local = std::clamp((deathProgress - jitter) / std::max(0.05f, 1.f - jitter), 0.f, 1.f);
+
+				blockSprite.setPosition(
+					{
+						BoardPosition.x + x * BlockSize,
+						BoardPosition.y + y * BlockSize + local * local * 1200.f
+					}
+				);
+
+				const auto grey = static_cast<std::uint8_t>(255.f - 100.f * deathProgress);
+				blockSprite.setColor(sf::Color(grey, grey, grey, static_cast<std::uint8_t>((1.f - local) * 255.f)));
+			}
+			else
+			{
+				blockSprite.setPosition(
+					{
+						BoardPosition.x + x * BlockSize,
+						BoardPosition.y + y * BlockSize
+					}
+				);
+			}
 
 			target.draw(blockSprite);
 		}
 	}
+
+	blockSprite.setColor(sf::Color::White);
 
 	// =====================================================
 	// Row-clear flash / sweep

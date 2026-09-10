@@ -41,11 +41,6 @@ void ScreenHost::SetInitialScreen(std::unique_ptr<MenuScreen> initial)
 	screen = std::move(initial);
 }
 
-void ScreenHost::ExitTo(std::unique_ptr<State> state)
-{
-	RequestChange(std::move(state));
-}
-
 void ScreenHost::BeginForward(std::unique_ptr<MenuScreen> next, const sf::String& label, sf::Color colour,
 	sf::Vector2f fromCentre, float fromHeight, std::size_t entryIndex)
 {

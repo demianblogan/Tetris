@@ -32,18 +32,24 @@ namespace TextKey
 	namespace GameOver
 	{
 		inline constexpr std::string_view Title     = "game_over.title";
-		inline constexpr std::string_view Score     = "game_over.score";      // {score}
-		inline constexpr std::string_view NewRecord = "game_over.new_record";
-		inline constexpr std::string_view EnterName = "game_over.enter_name";
-		inline constexpr std::string_view Save      = "game_over.save";
-		inline constexpr std::string_view Restart   = "game_over.restart";
-		inline constexpr std::string_view MainMenu  = "game_over.main_menu";
+		inline constexpr std::string_view Score     = "game_over.score";
+		inline constexpr std::string_view Lines     = "game_over.lines";
+		inline constexpr std::string_view Level     = "game_over.level";
+		inline constexpr std::string_view Time      = "game_over.time";
+		inline constexpr std::string_view NewRecord  = "game_over.new_record";   // + " #N" in code
+		inline constexpr std::string_view EnterName  = "game_over.enter_name";
+		inline constexpr std::string_view SaveRecord = "game_over.save_record";
+		inline constexpr std::string_view Saved      = "game_over.saved";
+		inline constexpr std::string_view UnsavedRecord = "game_over.unsaved_record";
+		inline constexpr std::string_view PlayAgain  = "game_over.play_again";
+		inline constexpr std::string_view MainMenu   = "game_over.main_menu";
 	}
 
 	namespace Options
 	{
 		inline constexpr std::string_view Title    = "options.title";
 		inline constexpr std::string_view Gameplay = "options.gameplay";
+		inline constexpr std::string_view Hud      = "options.hud";
 		inline constexpr std::string_view Graphics = "options.graphics";
 		inline constexpr std::string_view Audio    = "options.audio";
 		inline constexpr std::string_view Controls = "options.controls";
@@ -58,6 +64,14 @@ namespace TextKey
 		inline constexpr std::string_view GameplayVibration = "options.gameplay_vibration";
 		inline constexpr std::string_view GameplayLightbar  = "options.gameplay_lightbar";
 		inline constexpr std::string_view GameplayShake     = "options.gameplay_shake";
+
+		inline constexpr std::string_view HudHold           = "options.hud_hold";
+		inline constexpr std::string_view HudNext           = "options.hud_next";
+		inline constexpr std::string_view HudScore          = "options.hud_score";
+		inline constexpr std::string_view HudLines          = "options.hud_lines";
+		inline constexpr std::string_view HudLevel          = "options.hud_level";
+		inline constexpr std::string_view HudTime           = "options.hud_time";
+		inline constexpr std::string_view HudControlsLegend = "options.hud_controls_legend";
 
 		inline constexpr std::string_view LanguageEnglish   = "options.language_english";
 		inline constexpr std::string_view LanguageSpanish   = "options.language_spanish";
@@ -135,9 +149,18 @@ namespace TextKey
 
 	namespace Hud
 	{
-		inline constexpr std::string_view NextPiece = "hud.next_piece";
-		inline constexpr std::string_view Score     = "hud.score";   // {score}
-		inline constexpr std::string_view Level     = "hud.level";   // {level}
-		inline constexpr std::string_view Controls  = "hud.controls";
+		inline constexpr std::string_view Hold  = "hud.hold";
+		inline constexpr std::string_view Next  = "hud.next";
+		inline constexpr std::string_view Score = "hud.score";
+		inline constexpr std::string_view Lines = "hud.lines";
+		inline constexpr std::string_view Level = "hud.level";
+		inline constexpr std::string_view Time  = "hud.time";
+
+		inline constexpr std::string_view Controls = "hud.controls";
+		inline constexpr std::string_view Move     = "hud.move";
+		inline constexpr std::string_view Rotate   = "hud.rotate";
+		inline constexpr std::string_view SoftDrop = "hud.soft_drop";
+		inline constexpr std::string_view HardDrop = "hud.hard_drop";
+		inline constexpr std::string_view Pause    = "hud.pause";
 	}
 }

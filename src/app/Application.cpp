@@ -243,9 +243,8 @@ Application::Application()
 	// the loading screen then streams the audio and fonts in the background.
 	namespace TexturePaths = Assets::Paths::Textures;
 	textures.Load(Assets::TextureID::BlockSpritesheetWithOutline, TexturePaths::BlockSpritesheetWithOutline);
-	textures.Load(Assets::TextureID::ButtonBackground, TexturePaths::ButtonBackground);
-	textures.Load(Assets::TextureID::PanelBackground, TexturePaths::PanelBackground);
-	textures.Load(Assets::TextureID::GameBackground, TexturePaths::GameBackground);
+	textures.Load(Assets::TextureID::MenuBackground, TexturePaths::MenuBackground);
+	textures.Load(Assets::TextureID::GameplayBackground, TexturePaths::GameplayBackground);
 	textures.Load(Assets::TextureID::CompanyLogo, TexturePaths::CompanyLogo);
 	textures.Load(Assets::TextureID::Cursor, TexturePaths::Cursor);
 	textures.Load(Assets::TextureID::UiArrow, TexturePaths::UiArrow);
@@ -254,6 +253,8 @@ Application::Application()
 	textures.Load(Assets::TextureID::UiFrameGreen, TexturePaths::UiFrameGreen);
 	textures.Load(Assets::TextureID::UiFramePurple, TexturePaths::UiFramePurple);
 	textures.Load(Assets::TextureID::UiFrameBrown, TexturePaths::UiFrameBrown);
+	textures.Load(Assets::TextureID::UiFrameRed, TexturePaths::UiFrameRed);
+	textures.Load(Assets::TextureID::UiFrameWhiteRed, TexturePaths::UiFrameWhiteRed);
 	textures.Load(Assets::TextureID::UiFrameWarning, TexturePaths::UiFrameWarning);
 	textures.Load(Assets::TextureID::CarouselArrow, TexturePaths::CarouselArrow);
 	textures.Load(Assets::TextureID::Checkbox, TexturePaths::Checkbox);

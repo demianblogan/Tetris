@@ -390,15 +390,20 @@ bool SettingsCategoryPanel::HandleEvent(const sf::Event& event)
 
 	if (dialog.IsOpen())
 	{
-		dialog.Navigate(action);
-		if (!dialog.IsOpen())
+		dialog.Navigate(action);   // plays its own nav / press sounds
+
+		if (const auto* moved = event.getIf<sf::Event::MouseMoved>())
 		{
-			Sfx::DialogPick(context.audioPlayer);
+			dialog.PointerMoved(context.window.mapPixelToCoords(moved->position));
 		}
-		else if (action == MenuInput::Action::Left || action == MenuInput::Action::Right)
+		else if (const auto* pressed = event.getIf<sf::Event::MouseButtonPressed>())
 		{
-			Sfx::Nav(context.audioPlayer, 1);
+			if (pressed->button == sf::Mouse::Button::Left)
+			{
+				dialog.PointerPressed(context.window.mapPixelToCoords(pressed->position));
+			}
 		}
+
 		return true;
 	}
 

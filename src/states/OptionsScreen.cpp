@@ -18,14 +18,15 @@
 #include "GameplayCategoryPanel.h"
 #include "GamepadCategoryPanel.h"
 #include "GraphicsCategoryPanel.h"
+#include "HudCategoryPanel.h"
 #include "KeyboardCategoryPanel.h"
 #include "ScreenHost.h"
 
 namespace
 {
 	constexpr unsigned int ButtonTextSize = 38;
-	constexpr sf::Vector2f ColumnTopLeft{ 130.f, 300.f };
-	constexpr float RowGap = 120.f;
+	constexpr sf::Vector2f ColumnTopLeft{ 130.f, 288.f };
+	constexpr float RowGap = 104.f;
 
 	constexpr float SubRowGap = 96.f;      // tighter spacing for a sub-list column
 	constexpr float FlyoutX = 470.f;       // the sub-list's x while it is a hover flyout
@@ -37,12 +38,13 @@ namespace
 	constexpr float ColumnExitShiftX = -1500.f;
 
 	// Row order in the category column.
-	enum Row : std::size_t { Gameplay = 0, Graphics = 1, Audio = 2, Controls = 3, Language = 4, Back = 5 };
+	enum Row : std::size_t { Gameplay = 0, Hud = 1, Graphics = 2, Audio = 3, Controls = 4, Language = 5, Back = 6 };
 
 	// Item order in the Controls sub-column.
 	enum ControlsItem : std::size_t { CtrlKeyboard = 0, CtrlGamepad = 1, CtrlBack = 2 };
 
 	constexpr sf::Color GameplayColour{ 80, 210, 195 };    // teal
+	constexpr sf::Color HudColour{ 241, 89, 123 };         // watermelon
 	constexpr sf::Color GraphicsColour{ 90, 200, 255 };    // sky blue
 	constexpr sf::Color AudioColour{ 120, 220, 130 };      // green
 	constexpr sf::Color ControlsColour{ 190, 130, 240 };   // violet
@@ -60,7 +62,7 @@ namespace
 		const float rowY = ColumnTopLeft.y + static_cast<float>(categoryRow) * RowGap;
 		const float centredTop = rowY - listHeight * 0.5f + SubRowGap * 0.5f;
 
-		const float lastCategoryRowY = ColumnTopLeft.y + 5.f * RowGap;   // "Back to Main Menu"
+		const float lastCategoryRowY = ColumnTopLeft.y + static_cast<float>(Row::Back) * RowGap;   // "Back to Main Menu"
 		const float maxTop = std::max(FlyoutMinTop, lastCategoryRowY - listHeight - 20.f);
 		const float top = std::clamp(centredTop, FlyoutMinTop, maxTop);
 
@@ -81,6 +83,7 @@ OptionsScreen::OptionsScreen(ScreenHost& host, sf::Color accent)
 	const LocalizationManager& text = context.localization;
 
 	column.AddButton(text.GetText(TextKey::Options::Gameplay), [this] { OpenCategory(Row::Gameplay); }, true, GameplayColour);
+	column.AddButton(text.GetText(TextKey::Options::Hud), [this] { OpenCategory(Row::Hud); }, true, HudColour);
 	column.AddButton(text.GetText(TextKey::Options::Graphics), [this] { OpenCategory(Row::Graphics); }, true, GraphicsColour);
 	column.AddButton(text.GetText(TextKey::Options::Audio), [this] { OpenCategory(Row::Audio); }, true, AudioColour);
 	column.AddButton(text.GetText(TextKey::Options::Controls), [this] { OpenSub(Row::Controls); }, true, ControlsColour);
@@ -123,6 +126,7 @@ OptionsScreen::OptionsScreen(ScreenHost& host, sf::Color accent)
 	languageColumn.AppearInstantly();
 
 	panels[Row::Gameplay] = std::make_unique<GameplayCategoryPanel>(context, GameplayColour);
+	panels[Row::Hud] = std::make_unique<HudCategoryPanel>(context, HudColour);
 	panels[Row::Graphics] = std::make_unique<GraphicsCategoryPanel>(context, GraphicsColour);
 	panels[Row::Audio] = std::make_unique<AudioCategoryPanel>(context, AudioColour);
 	controlsPanels[CtrlKeyboard] = std::make_unique<KeyboardCategoryPanel>(context, ControlsColour);
@@ -156,6 +160,7 @@ bool OptionsScreen::ExitFinished() const
 std::pair<std::string_view, sf::Color> OptionsScreen::CurrentLightbar() const
 {
 	if (openIndex == static_cast<std::size_t>(Row::Gameplay)) { return { "options_gameplay", GameplayColour }; }
+	if (openIndex == static_cast<std::size_t>(Row::Hud)) { return { "options_hud", HudColour }; }
 	if (openIndex == static_cast<std::size_t>(Row::Graphics)) { return { "options_graphics", GraphicsColour }; }
 	if (openIndex == static_cast<std::size_t>(Row::Audio)) { return { "options_audio", AudioColour }; }
 
@@ -169,6 +174,7 @@ std::pair<std::string_view, sf::Color> OptionsScreen::CurrentLightbar() const
 	switch (column.SelectedIndex())
 	{
 	case Row::Gameplay: return { "options_gameplay", GameplayColour };
+	case Row::Hud:      return { "options_hud", HudColour };
 	case Row::Graphics: return { "options_graphics", GraphicsColour };
 	case Row::Audio:    return { "options_audio", AudioColour };
 	case Row::Controls: return { "options_controls", ControlsColour };

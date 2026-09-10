@@ -16,16 +16,22 @@ pause.main_menu = Back to Main Menu
 pause.confirm_restart = Restart the level?
 pause.confirm_quit    = Leave the level?
 
-game_over.title      = Game Over
-game_over.score      = Your score: {score}
-game_over.new_record = You broke the record!
-game_over.enter_name = Enter your name:
-game_over.save       = Save
-game_over.restart    = Restart
-game_over.main_menu  = Main Menu
+game_over.title      = GAME OVER
+game_over.score      = SCORE
+game_over.lines      = LINES
+game_over.level      = LEVEL
+game_over.time       = TIME
+game_over.new_record  = NEW BEST
+game_over.enter_name  = Enter your name
+game_over.save_record = Save Record
+game_over.saved       = Saved
+game_over.unsaved_record = Leave without saving your record?
+game_over.play_again  = Play Again
+game_over.main_menu   = Main Menu
 
 options.title    = OPTIONS
 options.gameplay = Gameplay
+options.hud      = HUD
 options.graphics = Graphics
 options.audio    = Audio
 options.controls = Controls
@@ -40,6 +46,14 @@ options.controls_back     = Back
 options.gameplay_vibration = Gamepad Vibration:
 options.gameplay_lightbar  = Gamepad Lightbar:
 options.gameplay_shake     = Screen Shake:
+
+options.hud_hold            = Show Hold:
+options.hud_next            = Show Next:
+options.hud_score           = Show Score:
+options.hud_lines           = Show Lines:
+options.hud_level           = Show Level:
+options.hud_time            = Show Time:
+options.hud_controls_legend = Show Controls Legend:
 
 options.language_english   = English
 options.language_spanish   = Spanish
@@ -102,7 +116,16 @@ loading.audio     = Loading Audio...
 loading.music     = Loading Music...
 loading.interface = Loading Interface...
 
-hud.next_piece = Next Tetromino
-hud.score      = Score: {score}
-hud.level      = Level: {level}
-hud.controls   = [←] [→] - Move    [↓] - Soft drop\n[Q] - Rotate left    [E] - Rotate right\n[Space] - Hard drop\n[ESC] - Pause
+hud.hold  = HOLD
+hud.next  = NEXT
+hud.score = SCORE
+hud.lines = LINES
+hud.level = LEVEL
+hud.time  = TIME
+
+hud.controls  = CONTROLS
+hud.move      = Move
+hud.rotate    = Rotate
+hud.soft_drop = Soft Drop
+hud.hard_drop = Hard Drop
+hud.pause     = Pause

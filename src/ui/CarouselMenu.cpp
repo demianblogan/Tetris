@@ -193,6 +193,9 @@ namespace UI
 		char32_t previous = 0;
 		float inkTop = 0.f;
 		float inkBottom = 0.f;
+		float inkLeft = 0.f;
+		float inkRight = 0.f;
+		bool anyInk = false;
 		for (std::size_t i = 0; i < text.getSize(); ++i)
 		{
 			const char32_t codepoint = text[i];
@@ -208,6 +211,11 @@ namespace UI
 				const sf::FloatRect gb = font.getGlyph(codepoint, characterSize, false).bounds;
 				inkTop = std::min(inkTop, gb.position.y);
 				inkBottom = std::max(inkBottom, gb.position.y + gb.size.y);
+
+				const float left = penX + gb.position.x;
+				inkLeft = anyInk ? std::min(inkLeft, left) : left;
+				inkRight = anyInk ? std::max(inkRight, left + gb.size.x) : left + gb.size.x;
+				anyInk = true;
 			}
 			penX += font.getGlyph(codepoint, characterSize, false).advance;
 			previous = codepoint;
@@ -215,11 +223,15 @@ namespace UI
 
 		item.inkCentreY = (inkTop + inkBottom) * 0.5f;
 
-		const float halfWidth = penX * 0.5f;
+		// Centre each entry on its visible ink, not on the advance box (whose
+		// trailing side bearing would shift the word -- and so the arrows, which
+		// anchor to maxItemHalfWidth -- slightly left of the slot).
+		const float inkCentreX = anyInk ? (inkLeft + inkRight) * 0.5f : penX * 0.5f;
+		const float halfWidth = anyInk ? (inkRight - inkLeft) * 0.5f : penX * 0.5f;
 		maxItemHalfWidth = std::max(maxItemHalfWidth, halfWidth);
 		for (const auto& [codepoint, x] : raw)
 		{
-			item.glyphs.push_back({ codepoint, x - halfWidth });
+			item.glyphs.push_back({ codepoint, x - inkCentreX });
 		}
 
 		items.push_back(std::move(item));

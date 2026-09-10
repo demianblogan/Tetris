@@ -30,6 +30,9 @@ namespace
 	constexpr float ButtonY = Centre.y + 100.f;
 	constexpr float ButtonSpacing = 196.f;
 
+	constexpr sf::Vector2f NoCentre{ Centre.x - ButtonSpacing, ButtonY };
+	constexpr sf::Vector2f YesCentre{ Centre.x + ButtonSpacing, ButtonY };
+
 	// The box slides in from above: fully off the top at appear 0, home at 1.
 	constexpr float EntryDrop = 780.f;
 	constexpr float AppearSpeed = 1.f / 0.16f;
@@ -102,6 +105,7 @@ namespace UI
 		yesSelected = answer;   // show the chosen button as selected while it flashes
 		phase = Phase::Resolving;
 		resolveTime = 0.f;
+		audio.Play(Assets::SoundID::MenuItemPressed);
 	}
 
 	void ConfirmDialog::Navigate(MenuInput::Action action)
@@ -126,6 +130,45 @@ namespace UI
 			break;
 		default:
 			break;
+		}
+	}
+
+	void ConfirmDialog::PointerMoved(sf::Vector2f point)
+	{
+		if (phase != Phase::Open)
+		{
+			return;
+		}
+
+		const bool overYes = yesLabel.Bounds(YesCentre, 1.f).contains(point);
+		const bool overNo = noLabel.Bounds(NoCentre, 1.f).contains(point);
+
+		if (overYes && !yesSelected)
+		{
+			yesSelected = true;
+			audio.Restart(Assets::SoundID::MenuItemSelected);
+		}
+		else if (overNo && yesSelected)
+		{
+			yesSelected = false;
+			audio.Restart(Assets::SoundID::MenuItemSelected);
+		}
+	}
+
+	void ConfirmDialog::PointerPressed(sf::Vector2f point)
+	{
+		if (phase != Phase::Open)
+		{
+			return;
+		}
+
+		if (yesLabel.Bounds(YesCentre, 1.f).contains(point))
+		{
+			Choose(true);
+		}
+		else if (noLabel.Bounds(NoCentre, 1.f).contains(point))
+		{
+			Choose(false);
 		}
 	}
 
@@ -211,7 +254,7 @@ namespace UI
 		messageText.setPosition({ Centre.x, MessageY + slideY });
 		target.draw(messageText);
 
-		DrawButton(target, noLabel, { Centre.x - ButtonSpacing, ButtonY + slideY }, NoHue, !yesSelected, 1.f);
-		DrawButton(target, yesLabel, { Centre.x + ButtonSpacing, ButtonY + slideY }, YesHue, yesSelected, 1.f);
+		DrawButton(target, noLabel, { NoCentre.x, NoCentre.y + slideY }, NoHue, !yesSelected, 1.f);
+		DrawButton(target, yesLabel, { YesCentre.x, YesCentre.y + slideY }, YesHue, yesSelected, 1.f);
 	}
 }

@@ -45,7 +45,7 @@ public:
 	[[nodiscard]] std::optional<sf::Color> LightbarColour() const override;
 
 private:
-	static constexpr std::size_t RowCount = 6;
+	static constexpr std::size_t RowCount = 7;
 
 	// The category column, or one of the sub-lists, and the slide between them.
 	enum class Page { Categories, ToSub, Sub, ToCategories };

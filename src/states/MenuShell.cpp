@@ -26,7 +26,7 @@ namespace
 
 MenuShell::MenuShell(Context& context)
 	: ScreenHost(context)
-	, backgroundSprite(context.textures.Get(Assets::TextureID::GameBackground))
+	, backgroundSprite(context.textures.Get(Assets::TextureID::MenuBackground))
 	, aurora(context.shaders.Get(Assets::ShaderID::MenuAurora))
 	, backdrop(context.textures.Get(Assets::TextureID::BlockSpritesheetWithOutline))
 	, versionText(context.fonts.Get(Assets::FontID::Main), std::string(GameVersion::Text), VersionTextSize)

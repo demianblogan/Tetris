@@ -4,6 +4,7 @@
 
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/System/String.hpp>
+#include <SFML/System/Vector2.hpp>
 
 #include "../input/MenuInput.h"
 #include "../rendering/NeonGlow.h"
@@ -40,6 +41,10 @@ namespace UI
 		[[nodiscard]] std::optional<bool> TakeResult();
 
 		void Navigate(MenuInput::Action action);
+
+		// Mouse, in view coordinates. Ignored unless the dialog is settled open.
+		void PointerMoved(sf::Vector2f point);
+		void PointerPressed(sf::Vector2f point);
 
 		void Update(float deltaTime);
 		void Render(sf::RenderTarget& target);

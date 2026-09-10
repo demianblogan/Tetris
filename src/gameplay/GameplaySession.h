@@ -72,6 +72,7 @@ public:
 	[[nodiscard]] int GetScore() const { return score; }
 	[[nodiscard]] int GetLevel() const { return level; }
 	[[nodiscard]] int GetLinesCleared() const { return totalLinesCleared; }
+	[[nodiscard]] float GetElapsedSeconds() const { return elapsedSeconds; }
 
 private:
 	static constexpr int ScorePerLevel = 50;
@@ -103,6 +104,7 @@ private:
 	int score = 0;
 	int level = 1;
 	int totalLinesCleared = 0;
+	float elapsedSeconds = 0.f;
 
 	Events pendingEvents;
 };

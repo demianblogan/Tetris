@@ -27,9 +27,6 @@
     <ClCompile Include="src\core\State.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\ui\MenuList.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\ui\NineSliceFrame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -78,6 +75,9 @@
     <ClCompile Include="src\states\GameplayCategoryPanel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\states\HudCategoryPanel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="src\input\KeyName.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -85,9 +85,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\ui\ConfirmDialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\states\MenuScreenState.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\audio\AudioBalance.cpp">
@@ -115,15 +112,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\display\DisplayManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ui\Layout.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ui\Label.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ui\Button.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\ui\Slider.cpp">
@@ -165,7 +153,7 @@
     <ClCompile Include="src\ui\MenuSparks.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\ui\Spacer.cpp">
+    <ClCompile Include="src\ui\Celebration.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\gameplay\Tetromino.cpp">
@@ -181,6 +169,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\rendering\NeonGlow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\GameplayHud.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\SceneMotion.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\input\InputBinding.cpp">
@@ -246,18 +240,12 @@
     <ClCompile Include="src\states\GameOverState.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\ui\Panel.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\resources\ShaderManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\app\Application.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ui\MenuList.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\ui\NineSliceFrame.h">
@@ -320,6 +308,9 @@
     <ClInclude Include="src\states\GameplayCategoryPanel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\states\HudCategoryPanel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="src\states\ControlsPanelMetrics.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -333,9 +324,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\ui\ConfirmDialog.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\states\MenuScreenState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\resources\ResourceManager.h">
@@ -431,19 +419,10 @@
     <ClInclude Include="src\ui\MenuSparks.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\ui\Layout.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ui\Label.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ui\Button.h">
+    <ClInclude Include="src\ui\Celebration.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\ui\Slider.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ui\Spacer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\gameplay\Tetromino.h">
@@ -462,6 +441,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\rendering\NeonGlow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\GameplayHud.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\SceneMotion.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\input\InputBinding.h">
@@ -539,6 +524,9 @@
     <ClInclude Include="src\utils\SafeFileWrite.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\utils\TimeFormat.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="src\gameplay\TetrominoBag.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -552,9 +540,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\states\GameOverState.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ui\Panel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\resources\ShaderManager.h">
