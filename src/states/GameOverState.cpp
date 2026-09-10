@@ -332,13 +332,6 @@ void GameOverState::Activate()
 		return;
 	}
 
-	if (isRecord && !NameEntered())
-	{
-		nameShake = 1.f;
-		context.audioPlayer.Play(Assets::SoundID::PieceHitWall, 0.9f);
-		return;
-	}
-
 	SaveRecord();
 
 	pressTime = 0.f;
@@ -603,8 +596,7 @@ void GameOverState::Render(sf::RenderTarget& target)
 		}
 	}
 
-	const bool buttonsLive = !isRecord || NameEntered();
-	const float buttonAlpha = contentAlpha * (buttonsLive ? 1.f : 0.4f);
+	const float buttonAlpha = contentAlpha;
 	DrawButton(target, playAgainLabel, { CentreX - ButtonSpacing, buttonY }, PlayHue,
 		leaving == Leaving::No && focus == Focus::PlayAgain, buttonAlpha);
 	DrawButton(target, mainMenuLabel, { CentreX + ButtonSpacing, buttonY }, MenuHue,

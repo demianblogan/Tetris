@@ -83,11 +83,13 @@ namespace UI
 			// Spawn just inside the frame.
 			cornerPoints[i] = corners[i] + inward * CornerInset;
 
-			// Every jet arcs up and outward -- a fountain from the frame -- so the
-			// sparks never rain down onto the buttons below the panel.
-			const sf::Vector2f aim{ away.x, -std::abs(away.y) };
-			const float aimLength = std::sqrt(aim.x * aim.x + aim.y * aim.y);
-			cornerDirections[i] = aimLength > 0.f ? aim / aimLength : sf::Vector2f{ 0.f, -1.f };
+			// Each jet fires diagonally outward from its own corner: the top-left
+			// corner up-and-left, the bottom-right down-and-right, and so on. Use
+			// the sign of the offset (not its magnitude) so it is a true 45
+			// degrees regardless of how wide the panel is.
+			const float sx = away.x >= 0.f ? 1.f : -1.f;
+			const float sy = away.y >= 0.f ? 1.f : -1.f;
+			cornerDirections[i] = { sx * 0.70710678f, sy * 0.70710678f };
 		}
 
 		cornersSet = true;
