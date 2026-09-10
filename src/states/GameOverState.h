@@ -15,7 +15,7 @@ namespace UI
 class GameOverState final : public MenuScreenState
 {
 public:
-	GameOverState(Context& context, int finalScore, int finalLines, int finalLevel);
+	GameOverState(Context& context, int finalScore, int finalLines, int finalLevel, float finalSeconds);
 
 	void Render(sf::RenderTarget& target) override;
 
@@ -28,6 +28,7 @@ private:
 	int finalScore = 0;
 	int finalLines = 0;
 	int finalLevel = 1;
+	float finalSeconds = 0.f;
 	bool isHighScore = false;
 	sf::String playerName;
 

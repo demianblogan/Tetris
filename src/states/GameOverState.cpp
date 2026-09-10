@@ -26,11 +26,12 @@ namespace
 	constexpr unsigned int ScoreSize = 70;
 }
 
-GameOverState::GameOverState(Context& context, int finalScore, int finalLines, int finalLevel)
+GameOverState::GameOverState(Context& context, int finalScore, int finalLines, int finalLevel, float finalSeconds)
 	: MenuScreenState(context)
 	, finalScore(finalScore)
 	, finalLines(finalLines)
 	, finalLevel(finalLevel)
+	, finalSeconds(finalSeconds)
 	, isHighScore(context.highScores.IsHighScore(finalScore))
 {
 	rootLayout.SetGap(60.f);

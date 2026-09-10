@@ -5,6 +5,7 @@
 #include <string>
 
 #include <SFML/Window/Event.hpp>
+#include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/RenderTexture.hpp>
 #include <SFML/Graphics/Sprite.hpp>
@@ -31,6 +32,7 @@
 namespace
 {
 	constexpr float SoftDropInterval = 0.03f;
+	constexpr float Pi = 3.14159265f;
 }
 
 GameplayState::GameplayState(Context& context, bool playIntro)
@@ -233,6 +235,17 @@ void GameplayState::Update(float deltaTime)
 		return;
 	}
 
+	if (dying)
+	{
+		deathTimer += deltaTime;
+		if (deathTimer >= DeathDuration)
+		{
+			RequestChange(std::make_unique<GameOverState>(context, session.GetScore(),
+				session.GetLinesCleared(), session.GetLevel(), session.GetElapsedSeconds()));
+		}
+		return;
+	}
+
 	PollHeldInput();
 	ApplyGamepadActions();
 	ApplyHorizontalRepeat(deltaTime);
@@ -429,8 +442,10 @@ void GameplayState::ReactToEvents(const GameplaySession::Events& events)
 	{
 		Haptics::Pulse(context.gamepadHaptics, context.hapticSettings.gameOver);
 		Haptics::FlashLightbar(context.gamepadHaptics, context.hapticSettings.gameOverLightbar, 0.9f, 3);
-		RequestChange(std::make_unique<GameOverState>(
-			context, session.GetScore(), session.GetLinesCleared(), session.GetLevel()));
+		effects.TriggerShake(0.5f, 26.f);
+
+		dying = true;
+		deathTimer = 0.f;
 	}
 }
 
@@ -463,12 +478,31 @@ void GameplayState::Render(sf::RenderTarget& target)
 
 	target.draw(backgroundSprite);
 
-	boardRenderer.Render(target, session, effects, neonGlow);
+	const float deathProgress = dying
+		? std::clamp(deathTimer / (DeathDuration * 0.75f), 0.f, 1.f)
+		: 0.f;
 
-	rightHudLayout->Render(target);
-	controlsPanel->Render(target);
+	boardRenderer.Render(target, session, effects, neonGlow, deathProgress);
 
-	boardRenderer.RenderNextPreview(target, session, nextTetrominoPreviewPosition);
+	if (!dying)
+	{
+		rightHudLayout->Render(target);
+		controlsPanel->Render(target);
+		boardRenderer.RenderNextPreview(target, session, nextTetrominoPreviewPosition);
+	}
+	else
+	{
+		const float d = deathTimer / DeathDuration;
+
+		// A red slam, front-loaded, then a fade to near-black under the crumble.
+		const float flash = d < 0.28f ? std::sin(d / 0.28f * Pi) : 0.f;
+		sf::RectangleShape overlay(Display::DisplayManager::VirtualSize);
+		overlay.setFillColor(sf::Color(200, 32, 32, static_cast<std::uint8_t>(flash * 95.f)));
+		target.draw(overlay);
+
+		overlay.setFillColor(sf::Color(0, 0, 0, static_cast<std::uint8_t>(std::clamp(d * 1.15f, 0.f, 1.f) * 235.f)));
+		target.draw(overlay);
+	}
 
 	// Leave the view as we found it -- a state stacked on top of gameplay (the
 	// pause screen) must not inherit the shake offset.

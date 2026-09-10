@@ -103,6 +103,11 @@ void GameplaySession::HardDrop()
 
 void GameplaySession::Update(float deltaTime)
 {
+	if (phase != Phase::GameOver)
+	{
+		elapsedSeconds += deltaTime;
+	}
+
 	if (phase == Phase::ClearingRows)
 	{
 		clearTimer += deltaTime;

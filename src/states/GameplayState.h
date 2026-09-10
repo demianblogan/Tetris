@@ -58,6 +58,12 @@ private:
 	bool introActive = true;
 	float introTimer = 0.f;
 
+	// The death beat between top-out and the game-over screen: the stack
+	// crumbles, a red flash and shake fire, and the frame darkens.
+	static constexpr float DeathDuration = 0.80f;
+	bool dying = false;
+	float deathTimer = 0.f;
+
 	sf::Sprite backgroundSprite;
 
 	std::unique_ptr<UI::Layout> rightHudLayout;

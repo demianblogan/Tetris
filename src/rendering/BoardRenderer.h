@@ -26,8 +26,10 @@ public:
 
 	explicit BoardRenderer(Context& context);
 
+	// `deathProgress` (0..1) crumbles the locked cells downward and greys them
+	// out for the game-over sequence.
 	void Render(sf::RenderTarget& target, const GameplaySession& session, const EffectsController& effects,
-		NeonGlow& glow) const;
+		NeonGlow& glow, float deathProgress = 0.f) const;
 	void RenderNextPreview(sf::RenderTarget& target, const GameplaySession& session, sf::Vector2f centre) const;
 
 private:
