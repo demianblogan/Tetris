@@ -129,6 +129,7 @@ void GameplayState::Update(float deltaTime)
 	neonGlow.Update(deltaTime);
 	hud.Update(deltaTime);
 	sceneMotion.Update(deltaTime);
+	ambience.Update(deltaTime, sceneMotion.Offset());
 
 	if (introActive)
 	{
@@ -392,6 +393,8 @@ void GameplayState::Render(sf::RenderTarget& target)
 
 	backgroundSprite.setPosition(Display::DisplayManager::VirtualSize * 0.5f + sceneMotion.Offset());
 	target.draw(backgroundSprite);
+
+	ambience.Render(target);
 
 	const float deathProgress = dying
 		? std::clamp(deathTimer / (DeathDuration * 0.75f), 0.f, 1.f)
