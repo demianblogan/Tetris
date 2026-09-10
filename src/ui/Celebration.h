@@ -56,6 +56,8 @@ namespace UI
 
 		std::array<sf::Vector2f, 4> cornerPoints{};
 		std::array<sf::Vector2f, 4> cornerDirections{};
+		std::array<float, 4> cornerFlash{};
+		std::array<float, 4> cornerFlashTimer{};
 		bool cornersSet = false;
 
 		std::vector<Rocket> rockets;
