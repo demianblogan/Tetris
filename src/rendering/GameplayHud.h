@@ -26,15 +26,19 @@ class GameplayHud
 public:
 	explicit GameplayHud(Context& context);
 
+	// The individually toggleable pieces of the HUD.
+	enum class Element { Hold, Next, Score, Lines, Level, Time, ControlsLegend };
+
 	void Set(int score, int level, int lines, float seconds);
 	void Update(float deltaTime);
 
 	void OnRowsCleared();   // flashes SCORE and LINES
 	void OnLevelUp();       // flashes LEVEL
 
-	void SetControlsLegendVisible(bool visible) { showControls = visible; }
+	void SetVisible(Element element, bool visible);
 	void Render(sf::RenderTarget& target) const;
 
+	[[nodiscard]] bool NextVisible() const;
 	[[nodiscard]] sf::Vector2f NextPreviewCentre() const { return nextPreviewCentre; }
 
 private:
@@ -46,6 +50,7 @@ private:
 		UI::NineSliceFrame frame;
 		sf::Text caption;
 		float flash = 0.f;
+		bool visible = true;
 	};
 
 	// A controls-legend entry: the action name over the key(s) bound to it.

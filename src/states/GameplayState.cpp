@@ -47,8 +47,16 @@ GameplayState::GameplayState(Context& context, bool playIntro)
 
 	SetUpInputBindings();
 
-	hud.SetControlsLegendVisible(context.settings.GetSettings().showControlsLegend);
-	effects.SetShakeEnabled(context.settings.GetSettings().screenShakeEnabled);
+	const GameSettings& settings = context.settings.GetSettings();
+	hud.SetVisible(GameplayHud::Element::Hold, settings.hudHold);
+	hud.SetVisible(GameplayHud::Element::Next, settings.hudNext);
+	hud.SetVisible(GameplayHud::Element::Score, settings.hudScore);
+	hud.SetVisible(GameplayHud::Element::Lines, settings.hudLines);
+	hud.SetVisible(GameplayHud::Element::Level, settings.hudLevel);
+	hud.SetVisible(GameplayHud::Element::Time, settings.hudTime);
+	hud.SetVisible(GameplayHud::Element::ControlsLegend, settings.hudControlsLegend);
+
+	effects.SetShakeEnabled(settings.screenShakeEnabled);
 
 	// Gameplay has no music for now -- the old track did not fit and a proper
 	// dynamic-intensity score is a v1.8.0 task (Audio & HUD). Silence the shell
@@ -368,7 +376,10 @@ void GameplayState::Render(sf::RenderTarget& target)
 	if (!dying)
 	{
 		hud.Render(target);
-		boardRenderer.RenderNextPreview(target, session, hud.NextPreviewCentre());
+		if (hud.NextVisible())
+		{
+			boardRenderer.RenderNextPreview(target, session, hud.NextPreviewCentre());
+		}
 	}
 	else
 	{

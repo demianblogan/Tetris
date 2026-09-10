@@ -65,6 +65,12 @@ namespace TextKey
 		inline constexpr std::string_view GameplayLightbar  = "options.gameplay_lightbar";
 		inline constexpr std::string_view GameplayShake     = "options.gameplay_shake";
 
+		inline constexpr std::string_view HudHold           = "options.hud_hold";
+		inline constexpr std::string_view HudNext           = "options.hud_next";
+		inline constexpr std::string_view HudScore          = "options.hud_score";
+		inline constexpr std::string_view HudLines          = "options.hud_lines";
+		inline constexpr std::string_view HudLevel          = "options.hud_level";
+		inline constexpr std::string_view HudTime           = "options.hud_time";
 		inline constexpr std::string_view HudControlsLegend = "options.hud_controls_legend";
 
 		inline constexpr std::string_view LanguageEnglish   = "options.language_english";

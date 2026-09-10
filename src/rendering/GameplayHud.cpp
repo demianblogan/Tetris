@@ -231,6 +231,25 @@ void GameplayHud::Update(float deltaTime)
 	}
 }
 
+void GameplayHud::SetVisible(Element element, bool visible)
+{
+	switch (element)
+	{
+	case Element::Hold:  cells[Hold].visible = visible; break;
+	case Element::Next:  cells[Next].visible = visible; break;
+	case Element::Score: cells[Score].visible = visible; break;
+	case Element::Lines: cells[Lines].visible = visible; break;
+	case Element::Level: cells[Level].visible = visible; break;
+	case Element::Time:  cells[Time].visible = visible; break;
+	case Element::ControlsLegend: showControls = visible; break;
+	}
+}
+
+bool GameplayHud::NextVisible() const
+{
+	return cells[Next].visible;
+}
+
 void GameplayHud::OnRowsCleared()
 {
 	cells[Score].flash = 1.f;
@@ -283,13 +302,16 @@ void GameplayHud::Render(sf::RenderTarget& target) const
 {
 	for (const Cell& cell : cells)
 	{
-		DrawCell(target, cell);
+		if (cell.visible)
+		{
+			DrawCell(target, cell);
+		}
 	}
 
-	DrawValue(target, scoreValue, cells[Score].flash);
-	DrawValue(target, levelValue, cells[Level].flash);
-	DrawValue(target, linesValue, cells[Lines].flash);
-	DrawValue(target, timeValue, cells[Time].flash);
+	if (cells[Score].visible) { DrawValue(target, scoreValue, cells[Score].flash); }
+	if (cells[Level].visible) { DrawValue(target, levelValue, cells[Level].flash); }
+	if (cells[Lines].visible) { DrawValue(target, linesValue, cells[Lines].flash); }
+	if (cells[Time].visible)  { DrawValue(target, timeValue, cells[Time].flash); }
 
 	if (showControls)
 	{

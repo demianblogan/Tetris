@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <cstddef>
 
 #include <SFML/Graphics/Color.hpp>
@@ -8,11 +9,15 @@
 
 struct Context;
 
-// HUD settings: a single toggle for the always-on in-game controls legend.
+// HUD settings: one on/off toggle per in-game panel (Hold, Next, Score, Lines,
+// Level, Time) plus the controls legend, so the player can strip the screen
+// down to just the well.
 class HudCategoryPanel final : public SettingsCategoryPanel
 {
 public:
 	HudCategoryPanel(Context& context, sf::Color accent);
+
+	static constexpr std::size_t ToggleCount = 7;
 
 protected:
 	void BuildRows() override;
@@ -28,5 +33,5 @@ protected:
 private:
 	void SyncRows();
 
-	UI::ToggleRow* legendRowPtr = nullptr;
+	std::array<UI::ToggleRow*, ToggleCount> toggleRows{};
 };

@@ -47,6 +47,12 @@ options.gameplay_vibration = Gamepad Vibration:
 options.gameplay_lightbar  = Gamepad Lightbar:
 options.gameplay_shake     = Screen Shake:
 
+options.hud_hold            = Show Hold:
+options.hud_next            = Show Next:
+options.hud_score           = Show Score:
+options.hud_lines           = Show Lines:
+options.hud_level           = Show Level:
+options.hud_time            = Show Time:
 options.hud_controls_legend = Show Controls Legend:
 
 options.language_english   = English

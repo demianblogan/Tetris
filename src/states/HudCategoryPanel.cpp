@@ -1,5 +1,8 @@
 #include "HudCategoryPanel.h"
 
+#include <array>
+#include <string_view>
+
 #include "../audio/AudioPlayer.h"
 #include "../core/Context.h"
 #include "../localization/LocalizationManager.h"
@@ -12,11 +15,29 @@ namespace
 {
 	namespace Sfx = OptionsSfx;
 
-	constexpr sf::FloatRect PanelBounds{ { 680.f, 286.f }, { 1120.f, 508.f } };
-	constexpr float RowsTop = PanelBounds.position.y + 60.f;
+	constexpr sf::FloatRect PanelBounds{ { 680.f, 200.f }, { 1120.f, 720.f } };
+	constexpr float RowsTop = PanelBounds.position.y + 88.f;
 	constexpr float RowMargin = 88.f;
-	constexpr float RowHeight = 92.f;
-	constexpr float RowGap = 14.f;
+	constexpr float RowHeight = 58.f;
+	constexpr float RowGap = 10.f;
+
+	// Each toggle: its label key and the GameSettings flag it drives, in the
+	// order they appear in the panel.
+	struct Toggle
+	{
+		std::string_view key;
+		bool GameSettings::* field;
+	};
+
+	constexpr std::array<Toggle, HudCategoryPanel::ToggleCount> Toggles = { {
+		{ TextKey::Options::HudHold,           &GameSettings::hudHold },
+		{ TextKey::Options::HudNext,           &GameSettings::hudNext },
+		{ TextKey::Options::HudScore,          &GameSettings::hudScore },
+		{ TextKey::Options::HudLines,          &GameSettings::hudLines },
+		{ TextKey::Options::HudLevel,          &GameSettings::hudLevel },
+		{ TextKey::Options::HudTime,           &GameSettings::hudTime },
+		{ TextKey::Options::HudControlsLegend, &GameSettings::hudControlsLegend },
+	} };
 }
 
 HudCategoryPanel::HudCategoryPanel(Context& context, sf::Color accent)
@@ -27,7 +48,14 @@ HudCategoryPanel::HudCategoryPanel(Context& context, sf::Color accent)
 
 bool HudCategoryPanel::SettingsEqual(const GameSettings& a, const GameSettings& b) const
 {
-	return a.showControlsLegend == b.showControlsLegend;
+	for (const Toggle& toggle : Toggles)
+	{
+		if (a.*toggle.field != b.*toggle.field)
+		{
+			return false;
+		}
+	}
+	return true;
 }
 
 GameSettings HudCategoryPanel::DefaultSettings() const
@@ -43,10 +71,14 @@ void HudCategoryPanel::BuildRows()
 
 	rows.clear();
 
-	auto legendRow = std::make_unique<UI::ToggleRow>(font, text.GetText(TextKey::Options::HudControlsLegend),
-		checkbox, working.showControlsLegend, [this](bool on) { working.showControlsLegend = on; });
-	legendRowPtr = legendRow.get();
-	rows.push_back(std::move(legendRow));
+	for (std::size_t i = 0; i < Toggles.size(); ++i)
+	{
+		bool GameSettings::* field = Toggles[i].field;
+		auto row = std::make_unique<UI::ToggleRow>(font, text.GetText(Toggles[i].key),
+			checkbox, working.*field, [this, field](bool on) { working.*field = on; });
+		toggleRows[i] = row.get();
+		rows.push_back(std::move(row));
+	}
 
 	LayOutRows(RowsTop, RowMargin, RowHeight, RowGap);
 	selectedRow = 0;
@@ -54,13 +86,19 @@ void HudCategoryPanel::BuildRows()
 
 void HudCategoryPanel::SyncRows()
 {
-	legendRowPtr->SetOn(working.showControlsLegend);
+	for (std::size_t i = 0; i < Toggles.size(); ++i)
+	{
+		toggleRows[i]->SetOn(working.*Toggles[i].field);
+	}
 }
 
 void HudCategoryPanel::ApplyWorking()
 {
 	GameSettings& saved = context.settings.GetSettings();
-	saved.showControlsLegend = working.showControlsLegend;
+	for (const Toggle& toggle : Toggles)
+	{
+		saved.*toggle.field = working.*toggle.field;
+	}
 
 	// Picked up the next time a game starts (GameplayState reads it in its ctor).
 	context.settings.Save();
@@ -69,7 +107,10 @@ void HudCategoryPanel::ApplyWorking()
 void HudCategoryPanel::ResetWorking()
 {
 	const GameSettings defaults;
-	working.showControlsLegend = defaults.showControlsLegend;
+	for (const Toggle& toggle : Toggles)
+	{
+		working.*toggle.field = defaults.*toggle.field;
+	}
 	SyncRows();
 }
 

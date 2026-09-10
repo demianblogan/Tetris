@@ -53,7 +53,13 @@ void SettingsManager::Load()
 		>> parsed.gamepadVibrationEnabled
 		>> parsed.gamepadLightbarEnabled
 		>> parsed.screenShakeEnabled
-		>> parsed.showControlsLegend;
+		>> parsed.hudHold
+		>> parsed.hudNext
+		>> parsed.hudScore
+		>> parsed.hudLines
+		>> parsed.hudLevel
+		>> parsed.hudTime
+		>> parsed.hudControlsLegend;
 
 	const auto scancodeInRange = [](int value)
 	{
@@ -120,7 +126,13 @@ void SettingsManager::Save() const
 		file << settings.gamepadVibrationEnabled << '\n';
 		file << settings.gamepadLightbarEnabled << '\n';
 		file << settings.screenShakeEnabled << '\n';
-		file << settings.showControlsLegend << '\n';
+		file << settings.hudHold << '\n';
+		file << settings.hudNext << '\n';
+		file << settings.hudScore << '\n';
+		file << settings.hudLines << '\n';
+		file << settings.hudLevel << '\n';
+		file << settings.hudTime << '\n';
+		file << settings.hudControlsLegend << '\n';
 	}
 
 	static_cast<void>(SafeFileWrite::ReplaceFileAtomically(temporaryPath, filepath));
