@@ -52,7 +52,8 @@ void SettingsManager::Load()
 		>> keys[0] >> keys[1] >> keys[2] >> keys[3] >> keys[4] >> keys[5]
 		>> parsed.gamepadVibrationEnabled
 		>> parsed.gamepadLightbarEnabled
-		>> parsed.screenShakeEnabled;
+		>> parsed.screenShakeEnabled
+		>> parsed.showControlsLegend;
 
 	const auto scancodeInRange = [](int value)
 	{
@@ -119,6 +120,7 @@ void SettingsManager::Save() const
 		file << settings.gamepadVibrationEnabled << '\n';
 		file << settings.gamepadLightbarEnabled << '\n';
 		file << settings.screenShakeEnabled << '\n';
+		file << settings.showControlsLegend << '\n';
 	}
 
 	static_cast<void>(SafeFileWrite::ReplaceFileAtomically(temporaryPath, filepath));

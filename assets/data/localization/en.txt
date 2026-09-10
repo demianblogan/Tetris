@@ -31,6 +31,7 @@ game_over.main_menu   = Main Menu
 
 options.title    = OPTIONS
 options.gameplay = Gameplay
+options.hud      = HUD
 options.graphics = Graphics
 options.audio    = Audio
 options.controls = Controls
@@ -45,6 +46,8 @@ options.controls_back     = Back
 options.gameplay_vibration = Gamepad Vibration:
 options.gameplay_lightbar  = Gamepad Lightbar:
 options.gameplay_shake     = Screen Shake:
+
+options.hud_controls_legend = Show Controls Legend:
 
 options.language_english   = English
 options.language_spanish   = Spanish

@@ -49,6 +49,7 @@ namespace TextKey
 	{
 		inline constexpr std::string_view Title    = "options.title";
 		inline constexpr std::string_view Gameplay = "options.gameplay";
+		inline constexpr std::string_view Hud      = "options.hud";
 		inline constexpr std::string_view Graphics = "options.graphics";
 		inline constexpr std::string_view Audio    = "options.audio";
 		inline constexpr std::string_view Controls = "options.controls";
@@ -63,6 +64,8 @@ namespace TextKey
 		inline constexpr std::string_view GameplayVibration = "options.gameplay_vibration";
 		inline constexpr std::string_view GameplayLightbar  = "options.gameplay_lightbar";
 		inline constexpr std::string_view GameplayShake     = "options.gameplay_shake";
+
+		inline constexpr std::string_view HudControlsLegend = "options.hud_controls_legend";
 
 		inline constexpr std::string_view LanguageEnglish   = "options.language_english";
 		inline constexpr std::string_view LanguageSpanish   = "options.language_spanish";

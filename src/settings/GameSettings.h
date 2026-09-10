@@ -26,7 +26,7 @@ struct GameSettings
 {
     // Bumped whenever the on-disk settings layout changes. A file written by a
     // different version is preserved as .corrupt and replaced with defaults.
-    static constexpr int FormatVersion = 5;
+    static constexpr int FormatVersion = 6;
 
     // --- Graphics:
 
@@ -49,4 +49,8 @@ struct GameSettings
     bool gamepadVibrationEnabled = true;
     bool gamepadLightbarEnabled = true;
     bool screenShakeEnabled = true;
+
+    // --- HUD:
+
+    bool showControlsLegend = true;
 };

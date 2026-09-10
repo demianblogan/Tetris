@@ -47,6 +47,7 @@ GameplayState::GameplayState(Context& context, bool playIntro)
 
 	SetUpInputBindings();
 
+	hud.SetControlsLegendVisible(context.settings.GetSettings().showControlsLegend);
 	effects.SetShakeEnabled(context.settings.GetSettings().screenShakeEnabled);
 
 	// Gameplay has no music for now -- the old track did not fit and a proper
