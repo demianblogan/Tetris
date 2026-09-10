@@ -110,3 +110,10 @@ hud.score = SCORE
 hud.lines = LINES
 hud.level = LEVEL
 hud.time  = TIME
+
+hud.controls  = CONTROLS
+hud.move      = Move
+hud.rotate    = Rotate
+hud.soft_drop = Soft Drop
+hud.hard_drop = Hard Drop
+hud.pause     = Pause

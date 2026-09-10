@@ -143,5 +143,12 @@ namespace TextKey
 		inline constexpr std::string_view Lines = "hud.lines";
 		inline constexpr std::string_view Level = "hud.level";
 		inline constexpr std::string_view Time  = "hud.time";
+
+		inline constexpr std::string_view Controls = "hud.controls";
+		inline constexpr std::string_view Move     = "hud.move";
+		inline constexpr std::string_view Rotate   = "hud.rotate";
+		inline constexpr std::string_view SoftDrop = "hud.soft_drop";
+		inline constexpr std::string_view HardDrop = "hud.hard_drop";
+		inline constexpr std::string_view Pause    = "hud.pause";
 	}
 }

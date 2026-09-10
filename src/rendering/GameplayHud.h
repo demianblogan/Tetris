@@ -22,6 +22,7 @@ public:
 	explicit GameplayHud(Context& context);
 
 	void Set(int score, int level, int lines, float seconds);
+	void SetControlsLegendVisible(bool visible) { showControls = visible; }
 	void Render(sf::RenderTarget& target) const;
 
 	[[nodiscard]] sf::Vector2f NextPreviewCentre() const { return nextPreviewCentre; }
@@ -35,6 +36,17 @@ private:
 	sf::Text levelValue;
 	sf::Text linesValue;
 	sf::Text timeValue;
+
+	// The always-on controls legend, bottom-left. A row is an action name plus
+	// the key(s) bound to it, read once from the settings.
+	struct ControlRow
+	{
+		sf::Text action;
+		sf::Text keys;
+	};
+	sf::Text controlsTitle;
+	std::vector<ControlRow> controlRows;
+	bool showControls = true;
 
 	sf::Vector2f nextPreviewCentre;
 };

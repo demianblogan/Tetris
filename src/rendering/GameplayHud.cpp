@@ -1,7 +1,10 @@
 #include "GameplayHud.h"
 
+#include <cstddef>
+#include <iterator>
 #include <string>
 #include <string_view>
+#include <utility>
 
 #include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/Rect.hpp>
@@ -9,9 +12,12 @@
 #include <SFML/Graphics/RenderTarget.hpp>
 
 #include "../core/Context.h"
+#include "../input/KeyName.h"
 #include "../localization/LocalizationManager.h"
 #include "../localization/TextKeys.h"
 #include "../resources/Assets.h"
+#include "../settings/GameSettings.h"
+#include "../settings/SettingsManager.h"
 #include "../utils/TimeFormat.h"
 
 namespace
@@ -22,10 +28,13 @@ namespace
 	constexpr sf::FloatRect NextPanel { { 1236.f, 66.f },  { 272.f, 336.f } };
 	constexpr sf::FloatRect ScorePanel{ { 1236.f, 438.f }, { 408.f, 176.f } };
 	constexpr sf::FloatRect StatsPanel{ { 1236.f, 652.f }, { 408.f, 204.f } };
+	constexpr sf::FloatRect ControlsPanel{ { 66.f, 588.f }, { 260.f, 430.f } };
 
 	constexpr unsigned int CaptionSize = 30;
 	constexpr unsigned int BigValueSize = 66;
 	constexpr unsigned int StatValueSize = 46;
+	constexpr unsigned int LegendActionSize = 24;
+	constexpr unsigned int LegendKeySize = 24;
 
 	constexpr float AccentBarHeight = 3.f;
 
@@ -35,6 +44,8 @@ namespace
 	const sf::Color CaptionColour{ 132, 150, 166 };
 	const sf::Color BigValueColour{ 255, 255, 255 };
 	const sf::Color StatValueColour{ 226, 232, 240 };
+	const sf::Color LegendActionColour{ 150, 166, 180 };
+	const sf::Color LegendKeyColour{ 236, 240, 246 };
 
 	[[nodiscard]] sf::Vector2f Centre(const sf::FloatRect& rect)
 	{
@@ -46,6 +57,21 @@ namespace
 		const sf::FloatRect bounds = text.getLocalBounds();
 		text.setOrigin({ bounds.position.x + bounds.size.x * 0.5f, bounds.position.y + bounds.size.y * 0.5f });
 		text.setPosition(centre);
+	}
+
+	// Pin `text` by one of its own edges so rows line up on a common margin.
+	void AlignLeft(sf::Text& text, sf::Vector2f leftMiddle)
+	{
+		const sf::FloatRect bounds = text.getLocalBounds();
+		text.setOrigin({ bounds.position.x, bounds.position.y + bounds.size.y * 0.5f });
+		text.setPosition(leftMiddle);
+	}
+
+	void AlignRight(sf::Text& text, sf::Vector2f rightMiddle)
+	{
+		const sf::FloatRect bounds = text.getLocalBounds();
+		text.setOrigin({ bounds.position.x + bounds.size.x, bounds.position.y + bounds.size.y * 0.5f });
+		text.setPosition(rightMiddle);
 	}
 
 	void DrawPanel(sf::RenderTarget& target, const sf::FloatRect& bounds)
@@ -70,6 +96,7 @@ GameplayHud::GameplayHud(Context& context)
 	, levelValue(context.fonts.Get(Assets::FontID::Main), "1", BigValueSize)
 	, linesValue(context.fonts.Get(Assets::FontID::Main), "0", StatValueSize)
 	, timeValue(context.fonts.Get(Assets::FontID::Main), "0:00", StatValueSize)
+	, controlsTitle(context.fonts.Get(Assets::FontID::Main), context.localization.GetText(TextKey::Hud::Controls), CaptionSize)
 	, nextPreviewCentre{ Centre(NextPanel).x, NextPanel.position.y + 206.f }
 {
 	const sf::Font& font = context.fonts.Get(Assets::FontID::Main);
@@ -96,6 +123,46 @@ GameplayHud::GameplayHud(Context& context)
 	timeValue.setFillColor(StatValueColour);
 
 	Set(0, 1, 0, 0.f);
+
+	// Controls legend: one row per action, key names read from the live bindings.
+	controlsTitle.setFillColor(CaptionColour);
+	controlsTitle.setLetterSpacing(1.35f);
+	CentreText(controlsTitle, { Centre(ControlsPanel).x, ControlsPanel.position.y + 36.f });
+
+	const ControlSettings& controls = context.settings.GetSettings().controls;
+
+	const auto twoKeys = [](sf::Keyboard::Scancode a, sf::Keyboard::Scancode b)
+	{
+		return Input::KeyName(a) + sf::String(" / ") + Input::KeyName(b);
+	};
+
+	const std::pair<std::string_view, sf::String> rows[] =
+	{
+		{ TextKey::Hud::Move,     twoKeys(controls.moveLeft, controls.moveRight) },
+		{ TextKey::Hud::SoftDrop, Input::KeyName(controls.softDrop) },
+		{ TextKey::Hud::HardDrop, Input::KeyName(controls.hardDrop) },
+		{ TextKey::Hud::Rotate,   twoKeys(controls.rotateCounterClockwise, controls.rotateClockwise) },
+		{ TextKey::Hud::Pause,    Input::KeyName(controls.pause) },
+	};
+
+	const float rowTop = ControlsPanel.position.y + 92.f;
+	const float rowStep = (ControlsPanel.size.y - 116.f) / static_cast<float>(std::size(rows));
+
+	for (std::size_t i = 0; i < std::size(rows); i++)
+	{
+		const float y = rowTop + rowStep * (static_cast<float>(i) + 0.5f);
+
+		ControlRow row{
+			sf::Text(font, context.localization.GetText(rows[i].first), LegendActionSize),
+			sf::Text(font, rows[i].second, LegendKeySize)
+		};
+		row.action.setFillColor(LegendActionColour);
+		row.keys.setFillColor(LegendKeyColour);
+		AlignLeft(row.action, { ControlsPanel.position.x + 22.f, y });
+		AlignRight(row.keys, { ControlsPanel.position.x + ControlsPanel.size.x - 22.f, y });
+
+		controlRows.push_back(std::move(row));
+	}
 }
 
 void GameplayHud::Set(int score, int level, int lines, float seconds)
@@ -136,4 +203,16 @@ void GameplayHud::Render(sf::RenderTarget& target) const
 	target.draw(levelValue);
 	target.draw(linesValue);
 	target.draw(timeValue);
+
+	if (showControls)
+	{
+		DrawPanel(target, ControlsPanel);
+		target.draw(controlsTitle);
+
+		for (const ControlRow& row : controlRows)
+		{
+			target.draw(row.action);
+			target.draw(row.keys);
+		}
+	}
 }
