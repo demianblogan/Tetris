@@ -10,11 +10,17 @@
 namespace sf
 {
 	class RenderTarget;
+	struct RenderStates;
 	class Texture;
 }
 
 namespace UI
 {
+	// The decorative border width, in source pixels, of the menu frame textures
+	// (menu_background_*_frame.png, 62x62). Shared so every panel that
+	// nine-slices one stays in sync when it is tuned.
+	inline constexpr unsigned int MenuFrameSourceBorder = 18u;
+
 	// A resizable frame drawn from a 3x3 grid of slices cut from one texture:
 	// four corners that never scale, four edges that stretch along one axis, and
 	// a centre that stretches both ways. Keeps ornate corners crisp at any size.
@@ -35,6 +41,9 @@ namespace UI
 		void SetColor(sf::Color color);
 
 		void Draw(sf::RenderTarget& target) const;
+		// Same, but through extra render states -- e.g. a transform that slides
+		// the whole frame without rebuilding it.
+		void Draw(sf::RenderTarget& target, const sf::RenderStates& states) const;
 
 	private:
 		std::vector<sf::Sprite> slices;

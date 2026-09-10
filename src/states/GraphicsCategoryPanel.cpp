@@ -32,7 +32,7 @@ namespace
 }
 
 GraphicsCategoryPanel::GraphicsCategoryPanel(Context& context, sf::Color accent)
-	: SettingsCategoryPanel(context, accent, PanelBounds)
+	: SettingsCategoryPanel(context, accent, PanelBounds, context.textures.Get(Assets::TextureID::UiFrameBlue))
 	, resolutions(context.display.AvailableResolutions())
 	, borderlessNote(context.fonts.Get(Assets::FontID::Main),
 		context.localization.GetText(TextKey::Options::BorderlessNote), 24)

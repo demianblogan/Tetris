@@ -20,10 +20,9 @@
 #include "../resources/Assets.h"
 #include "../ui/TetrominoPalette.h"
 #include "CreditsScreen.h"
-#include "ModeSelectScreen.h"
 #include "OptionsScreen.h"
+#include "RecordsScreen.h"
 #include "ScreenHost.h"
-#include "StatisticsState.h"
 
 namespace
 {
@@ -47,17 +46,18 @@ namespace
 	// How long the exit animation runs before the shell swaps this screen out.
 	constexpr float ExitDuration = 0.40f;
 
-	// A couple of ring entries pin their own hue rather than taking the
-	// per-slot tetromino colour.
-	constexpr sf::Color ModeSelectColour{ 80, 200, 140 };   // emerald
+	// Every ring entry pins its own hue -- the per-slot tetromino fallback would
+	// otherwise hand Quit the same red as Options now that the ring has 5 items.
+	constexpr sf::Color PlayColour{ 80, 200, 140 };      // emerald
 	constexpr sf::Color OptionsColour{ 240, 60, 70 };    // red
+	constexpr sf::Color RecordsColour{ 180, 60, 240 };   // purple
 	constexpr sf::Color CreditsColour{ 255, 194, 92 };   // warm gold
+	constexpr sf::Color QuitColour{ 70, 110, 240 };      // blue
 
 	// haptics.json keys for the DualSense resting colour, one per ring entry
 	// in AddItem order. A missing key falls back to the on-screen hue.
-	constexpr std::array<std::string_view, 6> RingLightbarKeys{
-		"menu_start_game", "menu_options", "menu_records",
-		"menu_achievements", "menu_credits", "menu_quit" };
+	constexpr std::array<std::string_view, 5> RingLightbarKeys{
+		"menu_play", "menu_options", "menu_records", "menu_credits", "menu_quit" };
 
 	// How long each title letter tints the lightbar as it lands.
 	constexpr float LetterLightbarDuration = 0.22f;
@@ -97,16 +97,11 @@ MainMenuScreen::MainMenuScreen(ScreenHost& host, bool animate, std::size_t front
 			Haptics::Pulse(context.gamepadHaptics, context.hapticSettings.menuEntryFlyIn);
 		});
 
-	// Ring order; Achievements is still a disabled placeholder.
+	// Ring order: Play / Options / Records / Credits / Quit.
 	carousel.SetCenter(TitleCenter);
-	carousel.AddItem(context.localization.GetText(TextKey::MainMenu::StartGame),
-		[this]
-		{
-			this->host.BeginForward(std::make_unique<ModeSelectScreen>(this->host, ModeSelectColour),
-				context.localization.GetText(TextKey::ModeSelect::Title), ModeSelectColour,
-				carousel.FrontEntryCentre(), carousel.FrontEntryHeight(), carousel.CurrentFrontIndex());
-		},
-		true, ModeSelectColour);
+	carousel.AddItem(context.localization.GetText(TextKey::MainMenu::Play),
+		[this] { this->host.BeginPlay(); },
+		true, PlayColour);
 	carousel.AddItem(context.localization.GetText(TextKey::MainMenu::Options),
 		[this]
 		{
@@ -116,8 +111,13 @@ MainMenuScreen::MainMenuScreen(ScreenHost& host, bool animate, std::size_t front
 		},
 		true, OptionsColour);
 	carousel.AddItem(context.localization.GetText(TextKey::MainMenu::Records),
-		[this] { this->host.ExitTo(std::make_unique<StatisticsState>(context)); });
-	carousel.AddItem(context.localization.GetText(TextKey::MainMenu::Achievements), nullptr, false);
+		[this]
+		{
+			this->host.BeginForward(std::make_unique<RecordsScreen>(this->host, RecordsColour),
+				context.localization.GetText(TextKey::Records::Title), RecordsColour,
+				carousel.FrontEntryCentre(), carousel.FrontEntryHeight(), carousel.CurrentFrontIndex());
+		},
+		true, RecordsColour);
 	carousel.AddItem(context.localization.GetText(TextKey::MainMenu::Credits),
 		[this]
 		{
@@ -127,7 +127,8 @@ MainMenuScreen::MainMenuScreen(ScreenHost& host, bool animate, std::size_t front
 		},
 		true, CreditsColour);
 	carousel.AddItem(context.localization.GetText(TextKey::MainMenu::Quit),
-		[this] { context.window.close(); });
+		[this] { context.window.close(); },
+		true, QuitColour);
 
 	if (!animate)
 	{

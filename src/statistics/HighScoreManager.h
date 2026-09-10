@@ -12,11 +12,12 @@ private:
 	std::filesystem::path filepath;
 
 public:
-	static constexpr std::size_t MAX_RECORDS = 5;
+	static constexpr std::size_t MAX_RECORDS = 10;
 
 	// Bumped whenever the on-disk layout changes; a file with a different
 	// version is preserved as .corrupt and the board starts empty.
-	static constexpr int FormatVersion = 1;
+	// v2: each entry gained its lines-cleared and level-reached counts.
+	static constexpr int FormatVersion = 2;
 
 	HighScoreManager(const std::filesystem::path& filepath);
 

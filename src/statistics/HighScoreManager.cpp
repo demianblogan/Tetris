@@ -39,7 +39,7 @@ void HighScoreManager::Load()
 	while (true)
 	{
 		HighScoreEntry entry;
-		file >> entry.score;
+		file >> entry.score >> entry.lines >> entry.level;
 
 		if (!file)
 		{
@@ -76,6 +76,8 @@ void HighScoreManager::Save() const
 		for (const HighScoreEntry& entry : records)
 		{
 			file << entry.score << '\n';
+			file << entry.lines << '\n';
+			file << entry.level << '\n';
 			file << entry.playerName.toUtf8().c_str() << '\n';
 		}
 	}

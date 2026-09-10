@@ -3,15 +3,16 @@
 Source of truth for completed work, the version in progress, and planned
 versions. Update it whenever an item changes scope or release.
 
-Two phases, following the *Until Last Asteroid* (ULA) process:
+Followed the *Until Last Asteroid* (ULA) process in two phases:
 
-1. **Phase 1 — code maturity (`v1.0.x`).** No new gameplay. Turn the
+1. **Phase 1 — code maturity (`v1.0.x`).** No new gameplay. Turned the
    prototype-grade code into a professional, bug-free, de-duplicated, well
-   layered codebase, porting proven systems from ULA.
+   layered codebase, porting proven systems from ULA. **Complete.**
 2. **Phase 2 — features (`v1.1.0`+).** New systems and content on the
-   cleaned-up foundation.
+   cleaned-up foundation. Re-scoped on 2026-09-09 to a short wind-down — see
+   **Planned**.
 
-Each version: its own `v1.0.x-<slug>` branch (no prefix), a PR titled
+Each version: its own `v1.x.0-<slug>` branch (no prefix), a PR titled
 `v<version> — <Name>`, a `v<version>` tag, and a GitHub Release. Commit style
 follows ULA: imperative subject + a "why" body.
 
@@ -24,15 +25,53 @@ Cross-cutting decisions:
   ULA and project 3.
 - **No ECS** — one dynamic piece + a 10×20 grid does not need it.
 - **Data-driven, selectively** — authored content (piece defs, SRS kicks,
-  scoring, gravity curve, mode params, challenge stages, achievements,
-  localization) as JSON under `assets/data/`. Runtime/user data goes to
-  `%LOCALAPPDATA%`, never the repo. Core loop stays code.
-- **Dead-code removal** — one dedicated project-wide pass at the end of Phase 1,
-  not piecemeal. Ports are done whole, not pre-trimmed.
+  scoring table, gravity curve, escalation tiers, localization) as JSON under
+  `assets/data/`. Runtime/user data goes to `%LOCALAPPDATA%`, never the repo.
+  Core loop stays code.
+- **Dead-code removal** — periodic project-wide passes, not piecemeal; the last
+  one is part of v1.7.0. Ports are done whole, not pre-trimmed.
 
 ---
 
 ## Released
+
+### v1.4.0 — Menu cleanup & flow
+
+First version of the wound-down roadmap (see the note under Planned). No
+gameplay-rules changes; the front-end made consistent and finished.
+
+- **Mode select removed.** The "Start Game" ring entry is now **"Play"** and
+  drops straight into gameplay; `states/ModeSelectScreen` and its
+  `TextKey::ModeSelect` keys are gone. The disabled "Achievements" ring entry is
+  removed too. Every remaining ring entry pins its own colour (the 5-entry ring
+  otherwise handed Quit the same red as Options).
+- **`states/PlayTransition`** — activating "Play" freezes the whole menu frame
+  into a snapshot, runs it through `mosaic.frag` so it solidifies top-down, then
+  slides the solid sheet down and off, revealing the gameplay behind it.
+  `GameplayState` gains a short `playIntro` hold (session + input frozen) so the
+  first piece doesn't fall mid-transition. Pause → Back to Main Menu fades to
+  black; `MenuShell` fades up from black on entry, so every route into the menu
+  arrives on a fade.
+- **Per-menu frames.** Credits, the Options category panels and the Gamepad
+  reference nine-slice a frame in their own accent hue — cyan / blue / green /
+  purple / brown — via new `TextureID::UiFrame*`; the shared source-border width
+  is `UI::MenuFrameSourceBorder`. The old `frame.png` is gone.
+- **`ui/ConfirmDialog` rebuilt** to the menu standard: a gold nine-slice box
+  that slides in from the top and back out before the choice takes effect, two
+  `MenuLabel` buttons (Yes green / No red) with the idle wave, selection glow,
+  press flash and nav sound the rest of the menus have.
+- **Credits** — new developer blurb and link list (email, LinkedIn, Instagram,
+  repo, portfolio, two YouTube channels), a wider panel and larger text.
+- **`states/RecordsScreen`** replaces the legacy `StatisticsState`: a
+  `MenuScreen` on the shared `ScreenHost`, reached through the header-morph
+  transition. A purple nine-slice panel holds a ten-row leaderboard in aligned
+  columns (rank / name / score / lines / level; empty rows show a dash), with
+  **Reset** (confirm dialog → clear + save) and **Back** below it. Records now
+  keep **lines cleared** and **level reached** alongside the name and score
+  (`HighScoreManager` format 2, top 10 was top 5); `GameplaySession` exposes
+  `GetLinesCleared()`. The `menu_background.png` texture, used only by the old
+  screen, is removed.
+- "Back to Main Menu" shortened to "Back" on Records, Credits and Options.
 
 ### v1.0
 
@@ -44,8 +83,8 @@ Cross-cutting decisions:
 ### v1.3.0 — In-game menu & mode select
 
 A new Pause screen built to the menu-shell standard, and a mode-select screen
-behind "Start Game". No gameplay-rules changes; Game Over untouched (its look
-follows the modes / campaign work).
+behind "Start Game". No gameplay-rules changes; Game Over untouched (its rework
+is v1.5.0).
 
 - **`states/ScreenHost`** — the screen swap + `ui/MenuHeader` + forward / back
   transition + DualSense-lightbar handoff, extracted from `MenuShell` (now a
@@ -67,10 +106,11 @@ follows the modes / campaign work).
   two-level column like Options → Controls: **Campaign** (Start New Campaign /
   Continue Campaign / Select Level) and **Other Modes** (Marathon / Sprint /
   Ultra / Zen / Player vs Player). Only Marathon is live; the rest are disabled
-  stubs for the versions that build them. `docs/CAMPAIGN_AND_MODES.md` holds the
-  concept.
+  stubs. *(The stubs and the concept doc `docs/CAMPAIGN_AND_MODES.md` were
+  removed in v1.4.0 when the campaign / modes roadmap was dropped — see Planned.)*
 - **Gameplay music removed** — the old track did not fit; `MusicID::Gameplay`
-  and its asset are gone. A dynamic score is a v1.8.0 task.
+  and its asset are gone. Gameplay stays music-free (a dynamic score is not
+  planned under the wound-down roadmap).
 - **Cleanup** — `Lerp` / `SmoothStep` / `EaseOut*` deduplicated into
   `ui/Easing.h` (were copy-pasted in ~10 TUs); three unused fonts
   (`BarNewRomanPix*`, `EpilepsySans`) deleted; dead `ScreenHost::ShowScreen` /
@@ -363,75 +403,83 @@ effects. Behaviour unchanged — relocation only.
 
 ## Planned
 
-### Phase 1b — port systems from ULA
+**Roadmap reset — 2026-09-09.** The campaign / multi-mode / local-PvP / AI
+roadmap is dropped. Tessera is being wound down as a small, cleanly-built game:
+**one endless mode that escalates over time**, with the menu system as its
+showpiece — finished, polished, then done. No campaign, no level select, no
+save-progress system, no achievements, no PvP, no AI. Four short versions, each
+verified before the next, easy work before hard.
 
-**Phase 1 is complete** (v1.0.1 – v1.0.9). **v1.1.0 — Presentation** and
-**v1.2.0 — Menu shell & Options** shipped (see Released). `ScreenFade`
-transitions were dropped (the game is fast, transitions should feel instant).
-The Options screen, `DisplayManager`, and the vibration / lightbar toggles
-landed early in v1.2.0 (were pencilled for the old v1.5.0).
+Why: the core game holds no interest for the author (a shooter and a platformer
+did) and forcing months of Tetris content is the wrong trade. The menu framework
+was always meant as a reusable cross-project UI library — it carries forward
+regardless.
 
-### Phase 2 — features
+**v1.4.0 — Menu cleanup & flow** shipped (see Released). `ScreenHost::ExitTo`
+is now uncalled (both users removed); it stays as `ScreenHost` API, expected
+back with the v1.5.0 Game Over rework.
 
-The version order below is the user's, and overrides any earlier numbering. It
-was re-flowed at the start of v1.3.0 (the old "v1.3.0 — Modern rules" scope
-moved to v1.4.0; the old "v1.7.0 — In-game menu overhaul" was pulled forward
-and split — the Pause half became v1.3.0, Game Over waits for the modes work
-that defines it).
+### v1.5.0 — Gameplay presentation & Game Over
 
-- **v1.4.0 — Gameplay rules & variety.** *(name TBD when it starts)* Buffer rows
-  above the visible field + guideline block-out / lock-out; SRS rotation + wall
-  kicks + T-spin detection; lock delay + move reset; hold piece; 5-deep next
-  queue; 7-bag confirmed as the randomiser; guideline scoring (back-to-back,
-  combo, soft/hard-drop points, perfect clear); on-board callouts. Adds the
-  Gameplay-settings toggles that depend on this: ghost piece, hold piece,
-  next-queue length, 7-bag vs random (see Reminders). The campaign rule
-  modifiers and how they relate to a challenge ladder are decided here too (see
-  `docs/CAMPAIGN_AND_MODES.md`).
-- **v1.5.0 — Solo modes.** Marathon, Sprint (40 lines), Ultra (2 minutes), Zen;
-  per-mode records and extended stats. Wire real `StatisticsState` +
-  `AchievementManager` in behind the disabled Records / Achievements ring
-  entries. Fills in the `ModeSelectScreen` stubs that are solo.
-- **v1.6.0 — Campaign.** A ladder of ~12–16 short levels (~30 min total), each
-  with a score gate and one rule modifier, boss levels every 5th (AI duel),
-  1–3 stars per level, progress saved to `%LOCALAPPDATA%`. Improves the Game
-  Over screen for the campaign context. Absorbs the old "challenge ladder"
-  idea (or coexists — decided in v1.4.0).
-- **v1.7.0 — Local PvP + AI opponent.** Split-screen two-player on one machine
-  (both gamepads, or one keyboard + one gamepad — never both keyboard); a
-  garbage / attack model; a versus HUD and win condition. A heuristic AI
-  "virtual player" driving a `GameplaySession`, reused for a VS-AI mode and the
-  campaign boss levels.
-- **v1.8.0 — Audio & HUD.** Dynamic-intensity music; a full gameplay SFX set;
-  a nine-slice HUD redesign; gameplay music brought back.
-- **Localization implementation** — the UI scaffold shipped in v1.2.0; the
-  actual multi-language load + first-run picker + live switch is **deferred to
-  the last development version**, once the rest of the game is done (retranslating
-  churning strings mid-development is wasteful).
-- **Visual overhaul (spans the versions above).** The whole game look is to be
-  raised substantially. Part of that: replace `panel_background` /
-  `button_background` / `game_background` etc. with art built to be
-  nine-sliceable — the current frames aren't symmetric, so `NineSliceFrame`
-  (added in v1.0.7) can't do much with them yet. New art unlocks the crisp
-  frames and the nine-slice HUD redesign (v1.8.0).
-- **v2.0.0 — Polish & docs.** Final polish, GitHub documentation, preview GIFs,
-  release.
+- **In-game visual pass.** Background to the retro-pixel + CRT look —
+  game-driven parallax drift over a static themed backdrop, plus a depth-layered
+  particle layer. Restyled HUD (next queue, score / level / lines). Remove the
+  left-hand controls text block.
+- **Begin the Game Over rework** — one screen, two states (new record / no new
+  record), rebuilt to the menu-shell standard. It is the last screen still on
+  the legacy `MenuScreenState`.
+
+### v1.6.0 — Gameplay depth & escalation
+
+The version that finishes the gameplay. Likely splits in two as it is built
+(rules first, then escalation content).
+
+- **Modern rules, so it feels right to play:** SRS rotation + wall kicks +
+  T-spin (3-corner rule), lock delay + move reset, hold piece, 5-deep next
+  queue, 7-bag confirmed, buffer rows above the field + block-out / lock-out,
+  guideline-style scoring (Single / Double / Triple / Tetris multipliers, combo,
+  back-to-back, Perfect Clear), on-board callouts.
+- **Gameplay-settings toggles** that now have a mechanic behind them: ghost
+  piece, hold, next-queue length, 7-bag vs random. Extend `GameplayCategoryPanel`
+  (rows + `GameSettings` fields, bump FormatVersion). Hold needs a new
+  rebindable key — `ControlSettings` field, a Keyboard row, a Gamepad
+  assignment. If Gameplay grows past ~6 rows, split it into sub-sections.
+- **Gamepad vibration on gameplay actions** — land / hard-drop / wall contact /
+  row-clear / tetris / level-up / top-out / T-spin, gated by the existing
+  Vibration toggle. `input/gamepad/GamepadHaptics` is already in the tree and
+  wired; only the gameplay firing is missing.
+- **Escalation design** — how the single endless mode gets harder over time:
+  which bonuses, obstacles and rule modifiers appear at which point, and the
+  pacing of pressure vs breather stretches. (This absorbs the old campaign
+  "modifier pool" idea as escalation tiers rather than discrete levels.)
+
+### v1.7.0 — Localization & final refactor
+
+The final version. After it the game is done — there is no v2.0.
+
+- **Localization** — the multi-language load + first-run picker + live switch
+  for the settled five (English, Spanish, German, Russian, Ukrainian). The UI
+  scaffold shipped in v1.2.0; port `LocalizationRevision` + a text-warmup pass
+  from ULA. Deferred to here because retranslating churning strings mid-build is
+  wasteful.
+- **Project-wide refactor and polish** — tighten the feel, clean the code, pull
+  back any improvements from ULA's shared helpers (`NineSliceFrame`,
+  `TextLayout`, `NeonGlow`, `GamepadHaptics`), a final dead-code sweep.
+- **Release** — README as a finished piece, screenshots / GIFs, itch.io page,
+  `Tessera-v1.7.0-win64.zip`, GitHub Release as the last one.
+
+### Visual overhaul (spans v1.5.0–v1.7.0)
+
+The whole game look is still to be raised. `panel_background` /
+`button_background` / `game_background` etc. want art built to be
+nine-sliceable — the current frames aren't symmetric, so `NineSliceFrame` can't
+do much with them yet. The author sources art as each version needs it.
 
 ---
 
-## Reminders
-
-- **Gameplay-settings toggles to add in v1.4.0**, once the mechanic each needs
-  exists: ghost piece, hold piece, next-queue length, 7-bag vs random. Extend
-  `GameplayCategoryPanel` (rows + `GameSettings` fields, bump FormatVersion). If
-  Gameplay grows past ~6 rows, split it into sub-sections.
-- Localization language list is settled: English, Spanish, German, Russian,
-  Ukrainian (UI scaffold in place; implementation deferred — see Planned).
-- `SettingsRowList` / `MenuList` were replaced by `MenuButtonColumn` +
-  `OptionRow` during v1.2.0 — the "fold into one selection model" TODO is done.
-
 ## Deferred ideas
 
-- Garbage / attack model — now scheduled for v1.7.0 (Local PvP + AI).
-- Colorblind palettes and adjustable grid opacity.
-- Replays / seed sharing for Sprint and Ultra.
+- Colorblind palettes and adjustable grid opacity — candidates for the v1.7.0
+  polish pass.
+- Sprint (40 lines) / Ultra (2 minutes) as extra record modes — cheap to add on
+  top of the v1.6.0 escalation work if wanted; not currently planned.

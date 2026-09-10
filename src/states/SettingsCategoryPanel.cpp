@@ -23,7 +23,7 @@ namespace
 {
 	namespace Sfx = OptionsSfx;
 
-	constexpr unsigned int PanelSourceBorder = 28u;
+	constexpr unsigned int PanelSourceBorder = UI::MenuFrameSourceBorder;
 	constexpr sf::Vector2f PanelTargetBorder{ 44.f, 44.f };
 
 	constexpr unsigned int ButtonSize = 46;
@@ -38,16 +38,20 @@ namespace
 	const sf::Color ButtonDisabled[3] = { { 34, 82, 50 }, { 110, 72, 36 }, { 120, 124, 132 } };
 }
 
-SettingsCategoryPanel::SettingsCategoryPanel(Context& context, sf::Color accent, sf::FloatRect panelBounds)
+SettingsCategoryPanel::SettingsCategoryPanel(Context& context, sf::Color accent, sf::FloatRect panelBounds,
+	const sf::Texture& frameTexture)
 	: context(context)
 	, accent(accent)
 	, panelBounds(panelBounds)
-	, frame(context.textures.Get(Assets::TextureID::UiFrame), panelBounds, PanelSourceBorder, PanelTargetBorder)
+	, frame(frameTexture, panelBounds, PanelSourceBorder, PanelTargetBorder)
 	, buttons{ {
 		{ context.fonts.Get(Assets::FontID::Main), ButtonSize },
 		{ context.fonts.Get(Assets::FontID::Main), ButtonSize },
 		{ context.fonts.Get(Assets::FontID::Main), ButtonSize } } }
-	, dialog(context.fonts.Get(Assets::FontID::Main))
+	, dialog(context.fonts.Get(Assets::FontID::Main), context.fonts.Get(Assets::FontID::Menu),
+		context.textures.Get(Assets::TextureID::UiFrameWarning),
+		context.shaders.Get(Assets::ShaderID::NeonDilate), context.shaders.Get(Assets::ShaderID::NeonBlur),
+		context.audioPlayer)
 {
 	const LocalizationManager& text = context.localization;
 	buttons[ButtonId::Apply].SetText(text.GetText(TextKey::Options::Apply));

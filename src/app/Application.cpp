@@ -244,13 +244,17 @@ Application::Application()
 	namespace TexturePaths = Assets::Paths::Textures;
 	textures.Load(Assets::TextureID::BlockSpritesheetWithOutline, TexturePaths::BlockSpritesheetWithOutline);
 	textures.Load(Assets::TextureID::ButtonBackground, TexturePaths::ButtonBackground);
-	textures.Load(Assets::TextureID::MenuBackground, TexturePaths::MenuBackground);
 	textures.Load(Assets::TextureID::PanelBackground, TexturePaths::PanelBackground);
 	textures.Load(Assets::TextureID::GameBackground, TexturePaths::GameBackground);
 	textures.Load(Assets::TextureID::CompanyLogo, TexturePaths::CompanyLogo);
 	textures.Load(Assets::TextureID::Cursor, TexturePaths::Cursor);
 	textures.Load(Assets::TextureID::UiArrow, TexturePaths::UiArrow);
-	textures.Load(Assets::TextureID::UiFrame, TexturePaths::UiFrame);
+	textures.Load(Assets::TextureID::UiFrameCyan, TexturePaths::UiFrameCyan);
+	textures.Load(Assets::TextureID::UiFrameBlue, TexturePaths::UiFrameBlue);
+	textures.Load(Assets::TextureID::UiFrameGreen, TexturePaths::UiFrameGreen);
+	textures.Load(Assets::TextureID::UiFramePurple, TexturePaths::UiFramePurple);
+	textures.Load(Assets::TextureID::UiFrameBrown, TexturePaths::UiFrameBrown);
+	textures.Load(Assets::TextureID::UiFrameWarning, TexturePaths::UiFrameWarning);
 	textures.Load(Assets::TextureID::CarouselArrow, TexturePaths::CarouselArrow);
 	textures.Load(Assets::TextureID::Checkbox, TexturePaths::Checkbox);
 	// Left unsmoothed: the button-prompt icons are tiny and get scaled up a lot

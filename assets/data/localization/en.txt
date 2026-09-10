@@ -2,26 +2,11 @@
 # Format: section.key = value   (# starts a comment, \n is a line break)
 
 main_menu.title        = Tessera
-main_menu.start_game   = Start Game
+main_menu.play         = Play
 main_menu.options      = Options
 main_menu.records      = Records
-main_menu.achievements = Achievements
 main_menu.credits      = Credits
 main_menu.quit         = Quit
-
-mode_select.title             = GAME MODES
-mode_select.campaign          = Campaign
-mode_select.other_modes       = Other Modes
-mode_select.back              = Back
-mode_select.start_campaign    = Start New Campaign
-mode_select.continue_campaign = Continue Campaign
-mode_select.select_level      = Select Level
-mode_select.marathon          = Marathon
-mode_select.sprint            = Sprint
-mode_select.ultra             = Ultra
-mode_select.zen               = Zen
-mode_select.versus            = Player vs Player
-mode_select.sub_back          = Back
 
 pause.title     = PAUSE
 pause.resume    = Resume
@@ -45,7 +30,7 @@ options.graphics = Graphics
 options.audio    = Audio
 options.controls = Controls
 options.language = Language
-options.back     = Back to Main Menu
+options.back     = Back
 options.coming_soon = Coming soon.
 
 options.controls_keyboard = Keyboard
@@ -92,25 +77,26 @@ options.borderless_note = You can't change the screen resolution in Borderless m
 common.yes = Yes
 common.no  = No
 
-credits.title      = CREDITS
-credits.line_1     = This game was developed by me, Demian Blogan.
-credits.line_2     = It was my second portfolio project in the world of IT.
-credits.line_3     = Version 1.0 began as a simple game with a lot of bugs and weird music.
-credits.line_4     = Over time, through many updates, I improved it into Version 2.0,
-credits.line_5     = adding more mechanics, modes, polish, and content.
-credits.line_6     = What you see now is the fully finished game.
-credits.contact    = If you would like to contact me:
-credits.email      = demianblogan@gmail.com
-credits.youtube    = My YouTube Channel: https://www.youtube.com/@BloganProgrammer
-credits.source     = Source code:
-credits.repository = github.com/demianblogan/Tessera
-credits.back       = Back to Main Menu
+credits.title       = CREDITS
+credits.intro       = This game is made by me, Demian Blogan.
+credits.blurb       = This is the second project in my portfolio. It's small and compact, but I'm\nproud of how the visuals and the menu animations turned out - building those\nwas the whole point of this project, and I hope you enjoyed it.
+credits.email       = My email: demianblogan@gmail.com
+credits.linkedin    = LinkedIn: linkedin.com/in/demianblogan
+credits.instagram   = Instagram: instagram.com/demianblogan
+credits.code        = This game's code: github.com/demianblogan/Tessera
+credits.portfolio   = My portfolio: github.com/demianblogan
+credits.programming = My Programming Channel: youtube.com/@BloganProgrammer
+credits.gaming      = My Gaming Channel: youtube.com/@BloganGamer
+credits.back        = Back
 
-stats.title         = TOP-{count} BEST PLAYERS
-stats.footer_return = ESC - RETURN TO MAIN MENU
-stats.footer_delete = DEL - DELETE ALL RECORDS
-stats.row           = {rank}. {name} = {score}
-stats.row_empty     = {rank}. ...
+records.title         = RECORDS
+records.header_name   = NAME
+records.header_score  = SCORE
+records.header_lines  = LINES
+records.header_level  = LEVEL
+records.reset         = Reset
+records.back          = Back
+records.confirm_reset = Delete every record?
 
 loading.audio     = Loading Audio...
 loading.music     = Loading Music...

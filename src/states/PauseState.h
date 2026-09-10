@@ -72,4 +72,8 @@ private:
 	float reveal = 0.f;
 	bool resuming = false;
 	bool introRaised = false;   // has "PAUSE" + the column been brought in yet
+
+	// "Back to Main Menu" confirmed: fade to black, then clear + push MenuShell.
+	bool quitting = false;
+	float quitFade = 0.f;
 };

@@ -20,7 +20,7 @@ namespace
 }
 
 GameplayCategoryPanel::GameplayCategoryPanel(Context& context, sf::Color accent)
-	: SettingsCategoryPanel(context, accent, PanelBounds)
+	: SettingsCategoryPanel(context, accent, PanelBounds, context.textures.Get(Assets::TextureID::UiFrameCyan))
 {
 	BuildRows();
 }

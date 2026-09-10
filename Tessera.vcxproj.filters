@@ -60,9 +60,6 @@
     <ClCompile Include="src\states\OptionsScreen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\states\ModeSelectScreen.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\states\AudioCategoryPanel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -108,7 +105,7 @@
     <ClCompile Include="src\core\StateMachine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\states\StatisticsState.cpp">
+    <ClCompile Include="src\states\RecordsScreen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\settings\SettingsManager.cpp">
@@ -243,6 +240,9 @@
     <ClCompile Include="src\states\PauseMenuScreen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\states\PlayTransition.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="src\states\GameOverState.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -294,9 +294,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\states\CreditsScreen.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\states\ModeSelectScreen.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\states\OptionsScreen.h">
@@ -371,7 +368,7 @@
     <ClInclude Include="src\core\StateMachine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\states\StatisticsState.h">
+    <ClInclude Include="src\states\RecordsScreen.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\settings\GameSettings.h">
@@ -549,6 +546,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\states\PauseMenuScreen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\states\PlayTransition.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\states\GameOverState.h">

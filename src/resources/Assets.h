@@ -36,13 +36,17 @@ namespace Assets
 	{
 		BlockSpritesheetWithOutline,
 		ButtonBackground,
-		MenuBackground,
 		PanelBackground,
 		GameBackground,
 		CompanyLogo,
 		Cursor,
 		UiArrow,
-		UiFrame,
+		UiFrameCyan,
+		UiFrameBlue,
+		UiFrameGreen,
+		UiFramePurple,
+		UiFrameBrown,
+		UiFrameWarning,
 		CarouselArrow,
 		Checkbox,
 		XboxGamepadLayout,
@@ -103,15 +107,21 @@ namespace Assets
 		{
 			inline constexpr const char* BlockSpritesheetWithOutline = "assets/textures/block_spritesheet_with_outline.png";
 			inline constexpr const char* ButtonBackground = "assets/textures/button_background.png";
-			inline constexpr const char* MenuBackground = "assets/textures/menu_background.png";
 			inline constexpr const char* PanelBackground = "assets/textures/panel_background.png";
 			inline constexpr const char* GameBackground = "assets/textures/game_background.png";
 			inline constexpr const char* CompanyLogo = "assets/other/alone_bull_splash_logo.jpg";
 			inline constexpr const char* Cursor = "assets/textures/cursor.png";
 			inline constexpr const char* UiArrow = "assets/textures/ui/arrow.png";
 
-			// Ornate 9-slice panel border (corners stay crisp, edges tile).
-			inline constexpr const char* UiFrame = "assets/textures/ui/frame.png";
+			// Per-menu 9-slice frames (62x62 source, decorative border
+			// ~UI::MenuFrameSourceBorder px) -- one hue per Options category /
+			// screen, matching that screen's accent. Gold is the warning dialog.
+			inline constexpr const char* UiFrameCyan   = "assets/textures/ui/menu_background_cyan_frame.png";
+			inline constexpr const char* UiFrameBlue   = "assets/textures/ui/menu_background_blue_frame.png";
+			inline constexpr const char* UiFrameGreen  = "assets/textures/ui/menu_background_green_frame.png";
+			inline constexpr const char* UiFramePurple = "assets/textures/ui/menu_background_purple_frame.png";
+			inline constexpr const char* UiFrameBrown  = "assets/textures/ui/menu_background_brown_frame.png";
+			inline constexpr const char* UiFrameWarning = "assets/textures/ui/menu_background_gold_frame.png";
 
 			// Settings widgets.
 			inline constexpr const char* CarouselArrow = "assets/textures/ui/carusel_arrow.png";

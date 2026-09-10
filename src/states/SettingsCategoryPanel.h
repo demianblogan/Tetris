@@ -47,7 +47,8 @@ protected:
 	enum class Focus { Rows, Buttons };
 	enum ButtonId : std::size_t { Apply = 0, Reset = 1, Back = 2, ButtonCount = 3 };
 
-	SettingsCategoryPanel(Context& context, sf::Color accent, sf::FloatRect panelBounds);
+	SettingsCategoryPanel(Context& context, sf::Color accent, sf::FloatRect panelBounds,
+		const sf::Texture& frameTexture);
 
 	// --- subclass contract ---
 	virtual void BuildRows() = 0;

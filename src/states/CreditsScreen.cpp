@@ -22,11 +22,11 @@
 
 namespace
 {
-	constexpr sf::FloatRect PanelBounds{ { 330.f, 210.f }, { 1260.f, 710.f } };
-	constexpr unsigned int PanelSourceBorder = 28u;   // of the 96px frame texture
+	constexpr sf::FloatRect PanelBounds{ { 260.f, 210.f }, { 1400.f, 710.f } };
+	constexpr unsigned int PanelSourceBorder = UI::MenuFrameSourceBorder;
 	constexpr sf::Vector2f PanelTargetBorder{ 44.f, 44.f };
 
-	constexpr float LineMaxWidth = PanelBounds.size.x - 160.f;
+	constexpr float LineMaxWidth = PanelBounds.size.x - 140.f;
 	constexpr float CentreX = PanelBounds.position.x + PanelBounds.size.x * 0.5f;
 
 	constexpr unsigned int ButtonTextSize = 40;
@@ -49,18 +49,19 @@ namespace
 		int palette;   // 0 body, 1 dim, 2 accent, 3 accent-bright
 	};
 
-	constexpr std::array<LineSpec, 11> Lines{ {
-		{ TextKey::Credits::Line1,      40u, 300.f, 3 },
-		{ TextKey::Credits::Line2,      34u, 358.f, 0 },
-		{ TextKey::Credits::Line3,      33u, 404.f, 0 },
-		{ TextKey::Credits::Line4,      33u, 448.f, 0 },
-		{ TextKey::Credits::Line5,      33u, 492.f, 0 },
-		{ TextKey::Credits::Line6,      36u, 546.f, 0 },
-		{ TextKey::Credits::Contact,    30u, 622.f, 1 },
-		{ TextKey::Credits::Email,      34u, 664.f, 2 },
-		{ TextKey::Credits::YouTube,    29u, 718.f, 1 },
-		{ TextKey::Credits::Source,     29u, 766.f, 1 },
-		{ TextKey::Credits::Repository, 32u, 804.f, 2 },
+	// The blurb is one multi-line key (\n in en.txt); every other row is a single
+	// line. y is the vertical centre of the row, palette: 0 body, 1 dim, 2 accent,
+	// 3 accent-bright.
+	constexpr std::array<LineSpec, 9> Lines{ {
+		{ TextKey::Credits::Intro,       42u, 282.f, 3 },
+		{ TextKey::Credits::Blurb,       32u, 378.f, 0 },
+		{ TextKey::Credits::Email,       32u, 496.f, 2 },
+		{ TextKey::Credits::LinkedIn,    32u, 542.f, 2 },
+		{ TextKey::Credits::Instagram,   32u, 588.f, 2 },
+		{ TextKey::Credits::Code,        32u, 634.f, 2 },
+		{ TextKey::Credits::Portfolio,   32u, 680.f, 2 },
+		{ TextKey::Credits::Programming, 32u, 726.f, 2 },
+		{ TextKey::Credits::Gaming,      32u, 772.f, 2 },
 	} };
 
 	[[nodiscard]] sf::Color PaletteColour(int palette, sf::Color accent)
@@ -78,7 +79,7 @@ namespace
 CreditsScreen::CreditsScreen(ScreenHost& host, sf::Color accent)
 	: MenuScreen(host)
 	, accent(accent)
-	, panel(context.textures.Get(Assets::TextureID::UiFrame), PanelBounds, PanelSourceBorder, PanelTargetBorder)
+	, panel(context.textures.Get(Assets::TextureID::UiFrameBrown), PanelBounds, PanelSourceBorder, PanelTargetBorder)
 	, backLabel(context.fonts.Get(Assets::FontID::Menu), ButtonTextSize)
 	, backGlow(context.shaders.Get(Assets::ShaderID::NeonDilate), context.shaders.Get(Assets::ShaderID::NeonBlur))
 {

@@ -125,6 +125,7 @@ xcopy /D /Y /Q "$(ProjectDir)libs\SFML\bin\sfml-audio-3.dll" "$(OutDir)"</Comman
     <ClCompile Include="src\states\GameOverState.cpp" />
     <ClCompile Include="src\states\PauseMenuScreen.cpp" />
     <ClCompile Include="src\states\PauseState.cpp" />
+    <ClCompile Include="src\states\PlayTransition.cpp" />
     <ClCompile Include="src\ui\Panel.cpp" />
     <ClCompile Include="src\utils\AppDataPath.cpp" />
     <ClCompile Include="src\utils\Random.cpp" />
@@ -186,7 +187,6 @@ xcopy /D /Y /Q "$(ProjectDir)libs\SFML\bin\sfml-audio-3.dll" "$(OutDir)"</Comman
     <ClCompile Include="src\states\MenuScreen.cpp" />
     <ClCompile Include="src\states\MainMenuScreen.cpp" />
     <ClCompile Include="src\states\CreditsScreen.cpp" />
-    <ClCompile Include="src\states\ModeSelectScreen.cpp" />
     <ClCompile Include="src\states\OptionsScreen.cpp" />
     <ClCompile Include="src\states\SettingsCategoryPanel.cpp" />
     <ClCompile Include="src\states\GraphicsCategoryPanel.cpp" />
@@ -196,7 +196,7 @@ xcopy /D /Y /Q "$(ProjectDir)libs\SFML\bin\sfml-audio-3.dll" "$(OutDir)"</Comman
     <ClCompile Include="src\states\AudioCategoryPanel.cpp" />
     <ClCompile Include="src\states\MenuScreenState.cpp" />
     <ClCompile Include="src\settings\SettingsManager.cpp" />
-    <ClCompile Include="src\states\StatisticsState.cpp" />
+    <ClCompile Include="src\states\RecordsScreen.cpp" />
     <ClCompile Include="src\ui\Button.cpp" />
     <ClCompile Include="src\ui\Element.cpp" />
     <ClCompile Include="src\ui\CarouselMenu.cpp" />
@@ -227,6 +227,7 @@ xcopy /D /Y /Q "$(ProjectDir)libs\SFML\bin\sfml-audio-3.dll" "$(OutDir)"</Comman
     <ClInclude Include="src\states\GameOverState.h" />
     <ClInclude Include="src\states\PauseMenuScreen.h" />
     <ClInclude Include="src\states\PauseState.h" />
+    <ClInclude Include="src\states\PlayTransition.h" />
     <ClInclude Include="src\ui\Panel.h" />
     <ClInclude Include="src\utils\AppDataPath.h" />
     <ClInclude Include="src\utils\Random.h" />
@@ -296,7 +297,6 @@ xcopy /D /Y /Q "$(ProjectDir)libs\SFML\bin\sfml-audio-3.dll" "$(OutDir)"</Comman
     <ClInclude Include="src\states\MenuScreen.h" />
     <ClInclude Include="src\states\MainMenuScreen.h" />
     <ClInclude Include="src\states\CreditsScreen.h" />
-    <ClInclude Include="src\states\ModeSelectScreen.h" />
     <ClInclude Include="src\states\OptionsScreen.h" />
     <ClInclude Include="src\states\OptionsCategoryPanel.h" />
     <ClInclude Include="src\states\SettingsCategoryPanel.h" />
@@ -312,7 +312,7 @@ xcopy /D /Y /Q "$(ProjectDir)libs\SFML\bin\sfml-audio-3.dll" "$(OutDir)"</Comman
     <ClInclude Include="src\settings\SettingsManager.h" />
     <ClInclude Include="src\core\State.h" />
     <ClInclude Include="src\core\StateMachine.h" />
-    <ClInclude Include="src\states\StatisticsState.h" />
+    <ClInclude Include="src\states\RecordsScreen.h" />
     <ClInclude Include="src\ui\Label.h" />
     <ClInclude Include="src\ui\Layout.h" />
     <ClInclude Include="src\ui\MenuList.h" />

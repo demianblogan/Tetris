@@ -9,13 +9,12 @@ namespace TextKey
 {
 	namespace MainMenu
 	{
-		inline constexpr std::string_view Title     = "main_menu.title";
-		inline constexpr std::string_view StartGame = "main_menu.start_game";
-		inline constexpr std::string_view Options      = "main_menu.options";
-		inline constexpr std::string_view Records      = "main_menu.records";
-		inline constexpr std::string_view Achievements = "main_menu.achievements";
-		inline constexpr std::string_view Credits      = "main_menu.credits";
-		inline constexpr std::string_view Quit         = "main_menu.quit";
+		inline constexpr std::string_view Title   = "main_menu.title";
+		inline constexpr std::string_view Play    = "main_menu.play";
+		inline constexpr std::string_view Options = "main_menu.options";
+		inline constexpr std::string_view Records = "main_menu.records";
+		inline constexpr std::string_view Credits = "main_menu.credits";
+		inline constexpr std::string_view Quit    = "main_menu.quit";
 	}
 
 	namespace Pause
@@ -100,52 +99,31 @@ namespace TextKey
 		inline constexpr std::string_view No  = "common.no";
 	}
 
-	namespace ModeSelect
-	{
-		inline constexpr std::string_view Title      = "mode_select.title";
-		inline constexpr std::string_view Campaign   = "mode_select.campaign";
-		inline constexpr std::string_view OtherModes = "mode_select.other_modes";
-		inline constexpr std::string_view Back       = "mode_select.back";   // main column, short "Back"
-
-		// Campaign sub-list.
-		inline constexpr std::string_view StartCampaign    = "mode_select.start_campaign";
-		inline constexpr std::string_view ContinueCampaign = "mode_select.continue_campaign";
-		inline constexpr std::string_view SelectLevel      = "mode_select.select_level";
-
-		// Other Modes sub-list.
-		inline constexpr std::string_view Marathon = "mode_select.marathon";
-		inline constexpr std::string_view Sprint   = "mode_select.sprint";
-		inline constexpr std::string_view Ultra    = "mode_select.ultra";
-		inline constexpr std::string_view Zen      = "mode_select.zen";
-		inline constexpr std::string_view Versus   = "mode_select.versus";
-
-		inline constexpr std::string_view SubBack = "mode_select.sub_back";   // sub-list "Back"
-	}
-
 	namespace Credits
 	{
-		inline constexpr std::string_view Title      = "credits.title";
-		inline constexpr std::string_view Line1      = "credits.line_1";
-		inline constexpr std::string_view Line2      = "credits.line_2";
-		inline constexpr std::string_view Line3      = "credits.line_3";
-		inline constexpr std::string_view Line4      = "credits.line_4";
-		inline constexpr std::string_view Line5      = "credits.line_5";
-		inline constexpr std::string_view Line6      = "credits.line_6";
-		inline constexpr std::string_view Contact    = "credits.contact";
-		inline constexpr std::string_view Email      = "credits.email";
-		inline constexpr std::string_view YouTube    = "credits.youtube";
-		inline constexpr std::string_view Source     = "credits.source";
-		inline constexpr std::string_view Repository = "credits.repository";
-		inline constexpr std::string_view Back       = "credits.back";
+		inline constexpr std::string_view Title       = "credits.title";
+		inline constexpr std::string_view Intro       = "credits.intro";
+		inline constexpr std::string_view Blurb       = "credits.blurb";   // one multi-line block
+		inline constexpr std::string_view Email       = "credits.email";
+		inline constexpr std::string_view LinkedIn    = "credits.linkedin";
+		inline constexpr std::string_view Instagram   = "credits.instagram";
+		inline constexpr std::string_view Code        = "credits.code";
+		inline constexpr std::string_view Portfolio   = "credits.portfolio";
+		inline constexpr std::string_view Programming = "credits.programming";
+		inline constexpr std::string_view Gaming      = "credits.gaming";
+		inline constexpr std::string_view Back        = "credits.back";
 	}
 
-	namespace Stats
+	namespace Records
 	{
-		inline constexpr std::string_view Title        = "stats.title";         // {count}
-		inline constexpr std::string_view FooterReturn = "stats.footer_return";
-		inline constexpr std::string_view FooterDelete = "stats.footer_delete";
-		inline constexpr std::string_view Row          = "stats.row";           // {rank} {name} {score}
-		inline constexpr std::string_view RowEmpty     = "stats.row_empty";     // {rank}
+		inline constexpr std::string_view Title        = "records.title";
+		inline constexpr std::string_view HeaderName   = "records.header_name";
+		inline constexpr std::string_view HeaderScore  = "records.header_score";
+		inline constexpr std::string_view HeaderLines  = "records.header_lines";
+		inline constexpr std::string_view HeaderLevel  = "records.header_level";
+		inline constexpr std::string_view Reset        = "records.reset";
+		inline constexpr std::string_view Back         = "records.back";
+		inline constexpr std::string_view ConfirmReset = "records.confirm_reset";
 	}
 
 	namespace Loading

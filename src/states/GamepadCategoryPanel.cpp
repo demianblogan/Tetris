@@ -26,7 +26,7 @@
 namespace
 {
 	constexpr sf::FloatRect PanelBounds = ControlsPanel::Bounds;
-	constexpr unsigned int PanelSourceBorder = 28u;
+	constexpr unsigned int PanelSourceBorder = UI::MenuFrameSourceBorder;
 	constexpr sf::Vector2f PanelTargetBorder{ 44.f, 44.f };
 
 	constexpr float LabelX = ControlsPanel::LabelX;
@@ -97,7 +97,7 @@ GamepadCategoryPanel::GamepadCategoryPanel(Context& context, sf::Color accent)
 	: context(context)
 	, accent(accent)
 	, panelBounds(PanelBounds)
-	, frame(context.textures.Get(Assets::TextureID::UiFrame), PanelBounds, PanelSourceBorder, PanelTargetBorder)
+	, frame(context.textures.Get(Assets::TextureID::UiFramePurple), PanelBounds, PanelSourceBorder, PanelTargetBorder)
 	, xboxHeader(context.fonts.Get(Assets::FontID::Main),
 		context.localization.GetText(TextKey::Options::GamepadXbox), HeaderSize)
 	, playStationHeader(context.fonts.Get(Assets::FontID::Main),

@@ -116,6 +116,7 @@ void GameplaySession::Update(float deltaTime)
 		board.ClearRows(clearingRows);
 		clearingRows.clear();
 
+		totalLinesCleared += clearedRows;
 		score += clearedRows * ScorePerRow;
 
 		const int previousLevel = level;

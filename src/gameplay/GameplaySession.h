@@ -71,6 +71,7 @@ public:
 
 	[[nodiscard]] int GetScore() const { return score; }
 	[[nodiscard]] int GetLevel() const { return level; }
+	[[nodiscard]] int GetLinesCleared() const { return totalLinesCleared; }
 
 private:
 	static constexpr int ScorePerLevel = 50;
@@ -101,6 +102,7 @@ private:
 
 	int score = 0;
 	int level = 1;
+	int totalLinesCleared = 0;
 
 	Events pendingEvents;
 };

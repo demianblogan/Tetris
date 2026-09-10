@@ -33,7 +33,7 @@ namespace
 	constexpr float SoftDropInterval = 0.03f;
 }
 
-GameplayState::GameplayState(Context& context)
+GameplayState::GameplayState(Context& context, bool playIntro)
 	: State(context.stateMachine)
 	, context(context)
 	, boardRenderer(context)
@@ -42,6 +42,8 @@ GameplayState::GameplayState(Context& context)
 	, horizontalRepeater({ context.hapticSettings.delayedAutoShift, context.hapticSettings.autoRepeatRate })
 	, backgroundSprite(context.textures.Get(Assets::TextureID::GameBackground))
 {
+	introActive = playIntro;
+
 	SetUpInputBindings();
 	BuildHud();
 
@@ -200,6 +202,11 @@ void GameplayState::SetUpInputBindings()
 
 void GameplayState::HandleEvent(const sf::Event& event)
 {
+	if (introActive)
+	{
+		return;
+	}
+
 	// Keyboard OnPress actions (hard drop, rotate, pause).
 	gameplayInput.HandleEvent(event);
 
@@ -213,6 +220,19 @@ void GameplayState::HandleEvent(const sf::Event& event)
 
 void GameplayState::Update(float deltaTime)
 {
+	effects.Update(deltaTime);
+	neonGlow.Update(deltaTime);
+
+	if (introActive)
+	{
+		introTimer += deltaTime;
+		if (introTimer >= IntroDuration)
+		{
+			introActive = false;
+		}
+		return;
+	}
+
 	PollHeldInput();
 	ApplyGamepadActions();
 	ApplyHorizontalRepeat(deltaTime);
@@ -220,8 +240,6 @@ void GameplayState::Update(float deltaTime)
 	previousHeldHorizontal = heldHorizontal;
 
 	session.Update(deltaTime);
-	effects.Update(deltaTime);
-	neonGlow.Update(deltaTime);
 
 	// Hold a green throb on the lightbar for as long as rows are clearing.
 	if (session.GetPhase() == GameplaySession::Phase::ClearingRows)
@@ -411,7 +429,8 @@ void GameplayState::ReactToEvents(const GameplaySession::Events& events)
 	{
 		Haptics::Pulse(context.gamepadHaptics, context.hapticSettings.gameOver);
 		Haptics::FlashLightbar(context.gamepadHaptics, context.hapticSettings.gameOverLightbar, 0.9f, 3);
-		RequestChange(std::make_unique<GameOverState>(context, session.GetScore()));
+		RequestChange(std::make_unique<GameOverState>(
+			context, session.GetScore(), session.GetLinesCleared(), session.GetLevel()));
 	}
 }
 
