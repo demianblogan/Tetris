@@ -1,14 +1,13 @@
 #include "GameplayHud.h"
 
+#include <array>
 #include <cstddef>
-#include <iterator>
 #include <string>
 #include <string_view>
 #include <utility>
 
 #include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/Rect.hpp>
-#include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
 
 #include "../core/Context.h"
@@ -22,34 +21,43 @@
 
 namespace
 {
-	// Board is at x 720..1200; the panels flank it.
-	constexpr sf::FloatRect HoldPanel { { 66.f, 66.f },    { 240.f, 240.f } };
-	constexpr sf::FloatRect LevelPanel{ { 66.f, 344.f },   { 260.f, 204.f } };
-	constexpr sf::FloatRect NextPanel { { 1236.f, 66.f },  { 272.f, 336.f } };
-	constexpr sf::FloatRect ScorePanel{ { 1236.f, 438.f }, { 408.f, 176.f } };
-	constexpr sf::FloatRect StatsPanel{ { 1236.f, 652.f }, { 408.f, 204.f } };
-	constexpr sf::FloatRect ControlsPanel{ { 66.f, 588.f }, { 260.f, 430.f } };
+	// The board sits at x 720..1200, y 60..1020. The HUD hugs the screen edges:
+	// two square frames down the left, four down the right, all the same size.
+	constexpr float ScreenWidth = 1920.f;
+	constexpr float ScreenHeight = 1080.f;
 
-	constexpr unsigned int CaptionSize = 30;
-	constexpr unsigned int BigValueSize = 66;
-	constexpr unsigned int StatValueSize = 46;
-	constexpr unsigned int LegendActionSize = 24;
-	constexpr unsigned int LegendKeySize = 24;
+	constexpr float Margin = 40.f;
+	constexpr float Square = 210.f;
+	constexpr float Gap = 24.f;
 
-	constexpr float AccentBarHeight = 3.f;
+	constexpr float ColumnTop = (ScreenHeight - (4.f * Square + 3.f * Gap)) * 0.5f;
+	constexpr float LeftX = Margin;
+	constexpr float RightX = ScreenWidth - Margin - Square;
 
-	const sf::Color PanelFill{ 9, 12, 18, 212 };
-	const sf::Color PanelOutline{ 46, 66, 88 };
-	const sf::Color Accent{ 0, 200, 220 };
-	const sf::Color CaptionColour{ 132, 150, 166 };
-	const sf::Color BigValueColour{ 255, 255, 255 };
-	const sf::Color StatValueColour{ 226, 232, 240 };
-	const sf::Color LegendActionColour{ 150, 166, 180 };
+	constexpr sf::FloatRect LegendBounds{ { LeftX, ColumnTop + 2.f * (Square + Gap) }, { 320.f, 2.f * Square + Gap } };
+
+	constexpr unsigned int CaptionSize = 38;
+	constexpr unsigned int ValueSize = 54;
+	constexpr unsigned int LegendTitleSize = 32;
+	constexpr unsigned int LegendRowSize = 27;
+
+	constexpr sf::Vector2f FrameTargetBorder{ 32.f, 32.f };
+	constexpr float FillInset = 16.f;
+
+	const sf::Color FillColour{ 8, 11, 17, 214 };
+	const sf::Color CaptionColour{ 150, 172, 196 };
+	const sf::Color ValueColour{ 255, 255, 255 };
+	const sf::Color LegendActionColour{ 150, 166, 182 };
 	const sf::Color LegendKeyColour{ 236, 240, 246 };
 
 	[[nodiscard]] sf::Vector2f Centre(const sf::FloatRect& rect)
 	{
 		return { rect.position.x + rect.size.x * 0.5f, rect.position.y + rect.size.y * 0.5f };
+	}
+
+	[[nodiscard]] sf::FloatRect SquareAt(float x, int row)
+	{
+		return { { x, ColumnTop + static_cast<float>(row) * (Square + Gap) }, { Square, Square } };
 	}
 
 	void CentreText(sf::Text& text, sf::Vector2f centre)
@@ -59,7 +67,6 @@ namespace
 		text.setPosition(centre);
 	}
 
-	// Pin `text` by one of its own edges so rows line up on a common margin.
 	void AlignLeft(sf::Text& text, sf::Vector2f leftMiddle)
 	{
 		const sf::FloatRect bounds = text.getLocalBounds();
@@ -74,61 +81,66 @@ namespace
 		text.setPosition(rightMiddle);
 	}
 
-	void DrawPanel(sf::RenderTarget& target, const sf::FloatRect& bounds)
-	{
-		sf::RectangleShape box(bounds.size);
-		box.setPosition(bounds.position);
-		box.setFillColor(PanelFill);
-		box.setOutlineThickness(2.f);
-		box.setOutlineColor(PanelOutline);
-		target.draw(box);
+	// Cell indices, in build order.
+	enum CellId : std::size_t { Hold = 0, Level = 1, Next = 2, Score = 3, Lines = 4, Time = 5 };
+}
 
-		sf::RectangleShape bar({ bounds.size.x, AccentBarHeight });
-		bar.setPosition(bounds.position);
-		bar.setFillColor(Accent);
-		target.draw(bar);
-	}
+GameplayHud::Cell GameplayHud::MakeCell(std::string_view captionKey, sf::FloatRect bounds)
+{
+	const sf::Font& font = context.fonts.Get(Assets::FontID::Main);
+
+	sf::RectangleShape fill({ bounds.size.x - FillInset * 2.f, bounds.size.y - FillInset * 2.f });
+	fill.setPosition({ bounds.position.x + FillInset, bounds.position.y + FillInset });
+	fill.setFillColor(FillColour);
+
+	UI::NineSliceFrame frame(context.textures.Get(Assets::TextureID::UiFrameBlue), bounds,
+		UI::MenuFrameSourceBorder, FrameTargetBorder);
+
+	sf::Text caption(font, context.localization.GetText(captionKey), CaptionSize);
+	caption.setFillColor(CaptionColour);
+	caption.setLetterSpacing(1.4f);
+	CentreText(caption, { Centre(bounds).x, bounds.position.y + 42.f });
+
+	return { std::move(fill), std::move(frame), std::move(caption) };
 }
 
 GameplayHud::GameplayHud(Context& context)
 	: context(context)
-	, scoreValue(context.fonts.Get(Assets::FontID::Main), "0", BigValueSize)
-	, levelValue(context.fonts.Get(Assets::FontID::Main), "1", BigValueSize)
-	, linesValue(context.fonts.Get(Assets::FontID::Main), "0", StatValueSize)
-	, timeValue(context.fonts.Get(Assets::FontID::Main), "0:00", StatValueSize)
-	, controlsTitle(context.fonts.Get(Assets::FontID::Main), context.localization.GetText(TextKey::Hud::Controls), CaptionSize)
-	, nextPreviewCentre{ Centre(NextPanel).x, NextPanel.position.y + 206.f }
+	, scoreValue(context.fonts.Get(Assets::FontID::Main), "0", ValueSize)
+	, levelValue(context.fonts.Get(Assets::FontID::Main), "1", ValueSize)
+	, linesValue(context.fonts.Get(Assets::FontID::Main), "0", ValueSize)
+	, timeValue(context.fonts.Get(Assets::FontID::Main), "0:00", ValueSize)
+	, legendFrame(context.textures.Get(Assets::TextureID::UiFrameBlue), LegendBounds,
+		UI::MenuFrameSourceBorder, FrameTargetBorder)
+	, legendTitle(context.fonts.Get(Assets::FontID::Main),
+		context.localization.GetText(TextKey::Hud::Controls), LegendTitleSize)
+	, nextPreviewCentre{ Centre(SquareAt(RightX, 0)).x, SquareAt(RightX, 0).position.y + Square * 0.56f }
 {
-	const sf::Font& font = context.fonts.Get(Assets::FontID::Main);
+	cells.push_back(MakeCell(TextKey::Hud::Hold, SquareAt(LeftX, 0)));
+	cells.push_back(MakeCell(TextKey::Hud::Level, SquareAt(LeftX, 1)));
+	cells.push_back(MakeCell(TextKey::Hud::Next, SquareAt(RightX, 0)));
+	cells.push_back(MakeCell(TextKey::Hud::Score, SquareAt(RightX, 1)));
+	cells.push_back(MakeCell(TextKey::Hud::Lines, SquareAt(RightX, 2)));
+	cells.push_back(MakeCell(TextKey::Hud::Time, SquareAt(RightX, 3)));
 
-	const auto caption = [&](std::string_view key, sf::Vector2f centre)
-	{
-		sf::Text text(font, context.localization.GetText(key), CaptionSize);
-		text.setFillColor(CaptionColour);
-		text.setLetterSpacing(1.35f);
-		CentreText(text, centre);
-		labels.push_back(std::move(text));
-	};
-
-	caption(TextKey::Hud::Hold, { Centre(HoldPanel).x, HoldPanel.position.y + 36.f });
-	caption(TextKey::Hud::Next, { Centre(NextPanel).x, NextPanel.position.y + 36.f });
-	caption(TextKey::Hud::Level, { Centre(LevelPanel).x, LevelPanel.position.y + 36.f });
-	caption(TextKey::Hud::Score, { Centre(ScorePanel).x, ScorePanel.position.y + 34.f });
-	caption(TextKey::Hud::Lines, { StatsPanel.position.x + StatsPanel.size.x * 0.27f, StatsPanel.position.y + 42.f });
-	caption(TextKey::Hud::Time, { StatsPanel.position.x + StatsPanel.size.x * 0.73f, StatsPanel.position.y + 42.f });
-
-	scoreValue.setFillColor(BigValueColour);
-	levelValue.setFillColor(BigValueColour);
-	linesValue.setFillColor(StatValueColour);
-	timeValue.setFillColor(StatValueColour);
+	scoreValue.setFillColor(ValueColour);
+	levelValue.setFillColor(ValueColour);
+	linesValue.setFillColor(ValueColour);
+	timeValue.setFillColor(ValueColour);
 
 	Set(0, 1, 0, 0.f);
 
-	// Controls legend: one row per action, key names read from the live bindings.
-	controlsTitle.setFillColor(CaptionColour);
-	controlsTitle.setLetterSpacing(1.35f);
-	CentreText(controlsTitle, { Centre(ControlsPanel).x, ControlsPanel.position.y + 36.f });
+	// Controls legend under the left column: one row per action, key names read
+	// once from the live bindings (layout-independent, via Input::KeyName).
+	legendFill.setSize({ LegendBounds.size.x - FillInset * 2.f, LegendBounds.size.y - FillInset * 2.f });
+	legendFill.setPosition({ LegendBounds.position.x + FillInset, LegendBounds.position.y + FillInset });
+	legendFill.setFillColor(FillColour);
 
+	legendTitle.setFillColor(CaptionColour);
+	legendTitle.setLetterSpacing(1.4f);
+	CentreText(legendTitle, { Centre(LegendBounds).x, LegendBounds.position.y + 44.f });
+
+	const sf::Font& font = context.fonts.Get(Assets::FontID::Main);
 	const ControlSettings& controls = context.settings.GetSettings().controls;
 
 	const auto twoKeys = [](sf::Keyboard::Scancode a, sf::Keyboard::Scancode b)
@@ -136,67 +148,64 @@ GameplayHud::GameplayHud(Context& context)
 		return Input::KeyName(a) + sf::String(" / ") + Input::KeyName(b);
 	};
 
-	const std::pair<std::string_view, sf::String> rows[] =
-	{
+	const std::array<std::pair<std::string_view, sf::String>, 5> rows =
+	{ {
 		{ TextKey::Hud::Move,     twoKeys(controls.moveLeft, controls.moveRight) },
 		{ TextKey::Hud::SoftDrop, Input::KeyName(controls.softDrop) },
 		{ TextKey::Hud::HardDrop, Input::KeyName(controls.hardDrop) },
 		{ TextKey::Hud::Rotate,   twoKeys(controls.rotateCounterClockwise, controls.rotateClockwise) },
 		{ TextKey::Hud::Pause,    Input::KeyName(controls.pause) },
-	};
+	} };
 
-	const float rowTop = ControlsPanel.position.y + 92.f;
-	const float rowStep = (ControlsPanel.size.y - 116.f) / static_cast<float>(std::size(rows));
+	const float rowTop = LegendBounds.position.y + 96.f;
+	const float rowStep = (LegendBounds.size.y - 120.f) / static_cast<float>(rows.size());
 
-	for (std::size_t i = 0; i < std::size(rows); i++)
+	for (std::size_t i = 0; i < rows.size(); i++)
 	{
 		const float y = rowTop + rowStep * (static_cast<float>(i) + 0.5f);
 
 		ControlRow row{
-			sf::Text(font, context.localization.GetText(rows[i].first), LegendActionSize),
-			sf::Text(font, rows[i].second, LegendKeySize)
+			sf::Text(font, context.localization.GetText(rows[i].first), LegendRowSize),
+			sf::Text(font, rows[i].second, LegendRowSize)
 		};
 		row.action.setFillColor(LegendActionColour);
 		row.keys.setFillColor(LegendKeyColour);
-		AlignLeft(row.action, { ControlsPanel.position.x + 22.f, y });
-		AlignRight(row.keys, { ControlsPanel.position.x + ControlsPanel.size.x - 22.f, y });
+		AlignLeft(row.action, { LegendBounds.position.x + 26.f, y });
+		AlignRight(row.keys, { LegendBounds.position.x + LegendBounds.size.x - 26.f, y });
 
-		controlRows.push_back(std::move(row));
+		legendRows.push_back(std::move(row));
 	}
 }
 
 void GameplayHud::Set(int score, int level, int lines, float seconds)
 {
-	const auto place = [](sf::Text& text, const std::string& string, sf::Vector2f centre)
+	// The value sits in the lower part of its square, below the caption.
+	const auto valueCentre = [](std::size_t cell)
 	{
-		text.setString(string);
-		CentreText(text, centre);
+		const bool left = cell == Level;
+		const int row = left ? 1 : static_cast<int>(cell) - static_cast<int>(Next);
+		const sf::FloatRect bounds = SquareAt(left ? LeftX : RightX, row);
+		return sf::Vector2f{ Centre(bounds).x, bounds.position.y + Square * 0.62f };
 	};
 
-	place(scoreValue, std::to_string(score), { Centre(ScorePanel).x, ScorePanel.position.y + 118.f });
-	place(levelValue, std::to_string(level), { Centre(LevelPanel).x, LevelPanel.position.y + 130.f });
-	place(linesValue, std::to_string(lines),
-		{ StatsPanel.position.x + StatsPanel.size.x * 0.27f, StatsPanel.position.y + 126.f });
-	place(timeValue, TimeFormat::MinutesSeconds(seconds),
-		{ StatsPanel.position.x + StatsPanel.size.x * 0.73f, StatsPanel.position.y + 126.f });
+	scoreValue.setString(std::to_string(score));
+	levelValue.setString(std::to_string(level));
+	linesValue.setString(std::to_string(lines));
+	timeValue.setString(TimeFormat::MinutesSeconds(seconds));
+
+	CentreText(scoreValue, valueCentre(Score));
+	CentreText(levelValue, valueCentre(Level));
+	CentreText(linesValue, valueCentre(Lines));
+	CentreText(timeValue, valueCentre(Time));
 }
 
 void GameplayHud::Render(sf::RenderTarget& target) const
 {
-	DrawPanel(target, HoldPanel);
-	DrawPanel(target, LevelPanel);
-	DrawPanel(target, NextPanel);
-	DrawPanel(target, ScorePanel);
-	DrawPanel(target, StatsPanel);
-
-	sf::RectangleShape divider({ 2.f, StatsPanel.size.y - 76.f });
-	divider.setPosition({ Centre(StatsPanel).x, StatsPanel.position.y + 54.f });
-	divider.setFillColor(PanelOutline);
-	target.draw(divider);
-
-	for (const sf::Text& label : labels)
+	for (const Cell& cell : cells)
 	{
-		target.draw(label);
+		target.draw(cell.fill);
+		cell.frame.Draw(target);
+		target.draw(cell.caption);
 	}
 
 	target.draw(scoreValue);
@@ -206,10 +215,11 @@ void GameplayHud::Render(sf::RenderTarget& target) const
 
 	if (showControls)
 	{
-		DrawPanel(target, ControlsPanel);
-		target.draw(controlsTitle);
+		target.draw(legendFill);
+		legendFrame.Draw(target);
+		target.draw(legendTitle);
 
-		for (const ControlRow& row : controlRows)
+		for (const ControlRow& row : legendRows)
 		{
 			target.draw(row.action);
 			target.draw(row.keys);
