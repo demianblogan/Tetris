@@ -35,6 +35,44 @@ Cross-cutting decisions:
 
 ## Released
 
+### v1.4.0 — Menu cleanup & flow
+
+First version of the wound-down roadmap (see the note under Planned). No
+gameplay-rules changes; the front-end made consistent and finished.
+
+- **Mode select removed.** The "Start Game" ring entry is now **"Play"** and
+  drops straight into gameplay; `states/ModeSelectScreen` and its
+  `TextKey::ModeSelect` keys are gone. The disabled "Achievements" ring entry is
+  removed too. Every remaining ring entry pins its own colour (the 5-entry ring
+  otherwise handed Quit the same red as Options).
+- **`states/PlayTransition`** — activating "Play" freezes the whole menu frame
+  into a snapshot, runs it through `mosaic.frag` so it solidifies top-down, then
+  slides the solid sheet down and off, revealing the gameplay behind it.
+  `GameplayState` gains a short `playIntro` hold (session + input frozen) so the
+  first piece doesn't fall mid-transition. Pause → Back to Main Menu fades to
+  black; `MenuShell` fades up from black on entry, so every route into the menu
+  arrives on a fade.
+- **Per-menu frames.** Credits, the Options category panels and the Gamepad
+  reference nine-slice a frame in their own accent hue — cyan / blue / green /
+  purple / brown — via new `TextureID::UiFrame*`; the shared source-border width
+  is `UI::MenuFrameSourceBorder`. The old `frame.png` is gone.
+- **`ui/ConfirmDialog` rebuilt** to the menu standard: a gold nine-slice box
+  that slides in from the top and back out before the choice takes effect, two
+  `MenuLabel` buttons (Yes green / No red) with the idle wave, selection glow,
+  press flash and nav sound the rest of the menus have.
+- **Credits** — new developer blurb and link list (email, LinkedIn, Instagram,
+  repo, portfolio, two YouTube channels), a wider panel and larger text.
+- **`states/RecordsScreen`** replaces the legacy `StatisticsState`: a
+  `MenuScreen` on the shared `ScreenHost`, reached through the header-morph
+  transition. A purple nine-slice panel holds a ten-row leaderboard in aligned
+  columns (rank / name / score / lines / level; empty rows show a dash), with
+  **Reset** (confirm dialog → clear + save) and **Back** below it. Records now
+  keep **lines cleared** and **level reached** alongside the name and score
+  (`HighScoreManager` format 2, top 10 was top 5); `GameplaySession` exposes
+  `GetLinesCleared()`. The `menu_background.png` texture, used only by the old
+  screen, is removed.
+- "Back to Main Menu" shortened to "Back" on Records, Credits and Options.
+
 ### v1.0
 
 - Original portfolio version: playable Tetris with 7-bag pieces, ghost piece,
@@ -377,30 +415,9 @@ did) and forcing months of Tetris content is the wrong trade. The menu framework
 was always meant as a reusable cross-project UI library — it carries forward
 regardless.
 
-### v1.4.0 — Menu cleanup & flow
-
-No gameplay-rules changes. Make the front-end feel finished and consistent.
-
-- **Remove the Achievements ring entry** — no achievements are coming.
-- **Remove mode select entirely.** "Start Game" becomes **"Play"** and drops
-  straight into gameplay. Delete `states/ModeSelectScreen`, its Campaign /
-  Other Modes columns, and their `TextKey::ModeSelect` keys. One endless mode is
-  the whole game; Marathon stays the working baseline.
-- **Rebuild Records.** The legacy `states/StatisticsState` (own old background,
-  reached through `ScreenHost::ExitTo`) becomes a `RecordsScreen : MenuScreen`
-  on the shared `ScreenHost`, folded into the menu shell with the header morph
-  like Options and Credits. Look + structure only — records are still set (the
-  name entry in `GameOverState` stays) and kept; no delete. Its own in-screen
-  animation is a separate design pass (the author will describe it).
-- **Animate the entry into gameplay.** The menu already flies the title up and
-  disintegrates the ring on exit; build the tail and a gameplay entrance so the
-  menu → board cut is animated like every other transition in the game.
-- **Redesign `ui/ConfirmDialog`** (the yes / no warning dialog) — its current
-  look is minimal and off-style.
-- **Rewrite the Credits text** (the author will supply it).
-- **Cleanup pass** — strip the dead campaign / mode / PvP scaffolding from code,
-  docs and memory; `docs/CAMPAIGN_AND_MODES.md` and `docs/ULA_PORT_ANALYSIS.md`
-  are removed (both fully superseded).
+**v1.4.0 — Menu cleanup & flow** shipped (see Released). `ScreenHost::ExitTo`
+is now uncalled (both users removed); it stays as `ScreenHost` API, expected
+back with the v1.5.0 Game Over rework.
 
 ### v1.5.0 — Gameplay presentation & Game Over
 
