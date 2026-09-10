@@ -12,7 +12,6 @@
 #include "../input/InputHandler.h"
 #include "../rendering/BoardRenderer.h"
 #include "../rendering/EffectsController.h"
-#include "../rendering/GameplayAmbience.h"
 #include "../rendering/GameplayHud.h"
 #include "../rendering/NeonGlow.h"
 #include "../rendering/SceneMotion.h"
@@ -42,7 +41,6 @@ private:
 	EffectsController effects;
 	GameplayHud hud;
 	SceneMotion sceneMotion;
-	GameplayAmbience ambience;
 
 	ActionMap<GameplayAction> gameplayActions;
 	InputHandler<GameplayAction> gameplayInput;
