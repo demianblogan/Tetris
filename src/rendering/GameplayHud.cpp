@@ -12,7 +12,9 @@
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
 
+#include "BoardRenderer.h"
 #include "../core/Context.h"
+#include "../gameplay/Board.h"
 #include "../input/KeyName.h"
 #include "../localization/LocalizationManager.h"
 #include "../localization/TextKeys.h"
@@ -24,27 +26,33 @@
 
 namespace
 {
-	// The board sits at x 720..1200, y 60..1020. The HUD hugs the well: a narrow
-	// gap keeps every panel close so the eye barely has to travel off the stack.
-	constexpr float WellLeft = 720.f;
-	constexpr float WellRight = 1200.f;
+	// The HUD hugs the well: a narrow gap off its *outer* wall (the board draws a
+	// one-block wall around the playfield) keeps every panel close so the eye
+	// barely has to travel off the stack.
 	constexpr float ScreenHeight = 1080.f;
+	constexpr float WellOuterLeft = BoardRenderer::BoardPosition.x - BoardRenderer::BlockSize;
+	constexpr float WellOuterRight = BoardRenderer::BoardPosition.x
+		+ static_cast<float>(Board::WIDTH + 1) * BoardRenderer::BlockSize;
 
-	constexpr float WellGap = 26.f;
+	constexpr float WellGap = 34.f;
 	constexpr float Square = 210.f;
 	constexpr float Gap = 24.f;
 
 	constexpr float ColumnTop = (ScreenHeight - (4.f * Square + 3.f * Gap)) * 0.5f;
-	constexpr float LeftX = WellLeft - WellGap - Square;
-	constexpr float RightX = WellRight + WellGap;
+	constexpr float LeftX = WellOuterLeft - WellGap - Square;
+	constexpr float RightX = WellOuterRight + WellGap;
 
-	constexpr sf::FloatRect LegendBounds{ { LeftX, ColumnTop + 2.f * (Square + Gap) }, { Square, 2.f * Square + Gap } };
+	// The legend keeps its right edge flush with the left column but is wider, so
+	// each row fits "Action .......... Key" on one line like the menus do.
+	constexpr float LegendWidth = 400.f;
+	constexpr sf::FloatRect LegendBounds{
+		{ LeftX + Square - LegendWidth, ColumnTop + 2.f * (Square + Gap) },
+		{ LegendWidth, 2.f * Square + Gap } };
 
 	constexpr unsigned int CaptionSize = 38;
 	constexpr unsigned int ValueSize = 54;
-	constexpr unsigned int LegendTitleSize = 30;
-	constexpr unsigned int LegendActionSize = 22;
-	constexpr unsigned int LegendKeySize = 26;
+	constexpr unsigned int LegendTitleSize = 32;
+	constexpr unsigned int LegendRowSize = 27;
 
 	constexpr sf::Vector2f FrameTargetBorder{ 32.f, 32.f };
 	constexpr float FillInset = 16.f;
@@ -82,6 +90,20 @@ namespace
 		const sf::FloatRect bounds = text.getLocalBounds();
 		text.setOrigin({ bounds.position.x + bounds.size.x * 0.5f, bounds.position.y + bounds.size.y * 0.5f });
 		text.setPosition(centre);
+	}
+
+	void AlignLeft(sf::Text& text, sf::Vector2f leftMiddle)
+	{
+		const sf::FloatRect bounds = text.getLocalBounds();
+		text.setOrigin({ bounds.position.x, bounds.position.y + bounds.size.y * 0.5f });
+		text.setPosition(leftMiddle);
+	}
+
+	void AlignRight(sf::Text& text, sf::Vector2f rightMiddle)
+	{
+		const sf::FloatRect bounds = text.getLocalBounds();
+		text.setOrigin({ bounds.position.x + bounds.size.x, bounds.position.y + bounds.size.y * 0.5f });
+		text.setPosition(rightMiddle);
 	}
 
 	// Cell indices, in build order.
@@ -156,7 +178,7 @@ GameplayHud::GameplayHud(Context& context)
 
 	const auto twoKeys = [](sf::Keyboard::Scancode a, sf::Keyboard::Scancode b)
 	{
-		return Input::KeyName(a) + sf::String("  ") + Input::KeyName(b);
+		return Input::KeyName(a) + sf::String(" / ") + Input::KeyName(b);
 	};
 
 	const std::array<std::pair<std::string_view, sf::String>, 5> entries =
@@ -168,23 +190,21 @@ GameplayHud::GameplayHud(Context& context)
 		{ TextKey::Hud::Pause,    Input::KeyName(controls.pause) },
 	} };
 
-	const float entriesTop = LegendBounds.position.y + 86.f;
-	const float entryStep = (LegendBounds.size.y - 104.f) / static_cast<float>(entries.size());
-	const float centreX = Centre(LegendBounds).x;
+	const float entriesTop = LegendBounds.position.y + 92.f;
+	const float entryStep = (LegendBounds.size.y - 112.f) / static_cast<float>(entries.size());
 
 	for (std::size_t i = 0; i < entries.size(); i++)
 	{
 		const float y = entriesTop + entryStep * (static_cast<float>(i) + 0.5f);
 
 		ControlEntry entry{
-			sf::Text(font, context.localization.GetText(entries[i].first), LegendActionSize),
-			sf::Text(font, entries[i].second, LegendKeySize)
+			sf::Text(font, context.localization.GetText(entries[i].first), LegendRowSize),
+			sf::Text(font, entries[i].second, LegendRowSize)
 		};
 		entry.action.setFillColor(LegendActionColour);
-		entry.action.setLetterSpacing(1.2f);
 		entry.keys.setFillColor(LegendKeyColour);
-		CentreText(entry.action, { centreX, y - 15.f });
-		CentreText(entry.keys, { centreX, y + 15.f });
+		AlignLeft(entry.action, { LegendBounds.position.x + 28.f, y });
+		AlignRight(entry.keys, { LegendBounds.position.x + LegendBounds.size.x - 28.f, y });
 
 		legendEntries.push_back(std::move(entry));
 	}
