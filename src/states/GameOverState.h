@@ -49,6 +49,7 @@ private:
 
 	void BuildContent();
 	void Activate();
+	[[nodiscard]] float FlickerBrightness() const;
 	void HandleTextInput(char32_t character);
 	[[nodiscard]] bool NameEntered() const;
 	[[nodiscard]] sf::String TrimmedName() const;
@@ -64,6 +65,7 @@ private:
 	const float finalSeconds;
 	const bool isRecord;
 	int recordRank = 0;
+	const float panelTop;
 	const float buttonY;
 
 	sf::Sprite backdrop;
@@ -77,6 +79,7 @@ private:
 	UI::MenuLabel playAgainLabel;
 	UI::MenuLabel mainMenuLabel;
 	NeonGlow buttonGlow;
+	NeonGlow headingGlow;
 	Focus focus = Focus::PlayAgain;
 
 	sf::String playerName;
@@ -86,6 +89,13 @@ private:
 	float pressTime = 1000.f;
 	float nameShake = 0.f;
 	float cursorTime = 0.f;
+
+	// "GAME OVER" idle: a dying-neon flicker with a rare chromatic glitch.
+	float idleTime = 0.f;
+	float glitchCooldown = 2.5f;
+	float glitchTime = 0.f;
+	float glitchDuration = 0.f;
+	bool glitchActive = false;
 
 	Leaving leaving = Leaving::No;
 	float leaveTimer = 0.f;

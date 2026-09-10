@@ -6,8 +6,10 @@
 #include <string>
 
 #include <SFML/Audio/Music.hpp>
+#include <SFML/Graphics/BlendMode.hpp>
 #include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
+#include <SFML/Graphics/RenderStates.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Mouse.hpp>
@@ -20,6 +22,7 @@
 #include "../resources/Assets.h"
 #include "../statistics/HighScoreManager.h"
 #include "../ui/Easing.h"
+#include "../utils/Random.h"
 #include "GameplayState.h"
 #include "MenuShell.h"
 
@@ -28,21 +31,29 @@ namespace
 	constexpr sf::Vector2f Screen{ 1920.f, 1080.f };
 	constexpr float CentreX = 960.f;
 
-	constexpr sf::Vector2f PanelPos{ 260.f, 130.f };
+	constexpr float ScreenCentreY = 540.f;
+	constexpr float PanelX = 260.f;
 	constexpr float PanelW = 1400.f;
-	constexpr float PanelHRecord = 800.f;
-	constexpr float PanelHPlain = 600.f;
+	constexpr float PanelHRecord = 840.f;
+	constexpr float PanelHPlain = 620.f;
 	constexpr sf::Vector2f PanelTargetBorder{ 46.f, 46.f };
+	constexpr float ButtonGap = 66.f;   // below the panel
 
-	constexpr float HeadingY = 246.f;
-	constexpr float ScoreLabelY = 380.f;
-	constexpr float ScoreValueY = 476.f;
-	constexpr float StatRowY = 610.f;
-	constexpr float StatValueDrop = 66.f;
+	// Content offsets from the panel's top edge; chosen so the block sits with
+	// equal margins top and bottom of the plain panel.
+	constexpr float HeadingOffset = 122.f;
+	constexpr float ScoreLabelOffset = 240.f;
+	constexpr float ScoreValueOffset = 332.f;
+	constexpr float StatLabelOffset = 462.f;
+	constexpr float StatValueOffset = 528.f;
+	constexpr float BadgeOffset = 636.f;
+	constexpr float NameOffset = 726.f;
+	constexpr float NamePromptOffset = 788.f;
+
 	constexpr float StatSpread = 400.f;
-	constexpr float BadgeY = 770.f;
-	constexpr float NameY = 858.f;
-	constexpr float NamePromptY = 908.f;
+
+	[[nodiscard]] float PanelHeightFor(bool record) { return record ? PanelHRecord : PanelHPlain; }
+	[[nodiscard]] float PanelTopFor(bool record) { return ScreenCentreY - PanelHeightFor(record) * 0.5f; }
 
 	constexpr unsigned int HeadingSize = 128;
 	constexpr unsigned int ScoreLabelSize = 44;
@@ -87,7 +98,7 @@ namespace
 
 	[[nodiscard]] sf::FloatRect PanelBoundsFor(bool record)
 	{
-		return { PanelPos, { PanelW, record ? PanelHRecord : PanelHPlain } };
+		return { { PanelX, PanelTopFor(record) }, { PanelW, PanelHeightFor(record) } };
 	}
 
 	[[nodiscard]] std::uint8_t ToAlpha(float value)
@@ -127,7 +138,8 @@ GameOverState::GameOverState(Context& context, int finalScore, int finalLines, i
 	, finalLevel(finalLevel)
 	, finalSeconds(finalSeconds)
 	, isRecord(context.highScores.IsHighScore(finalScore))
-	, buttonY(PanelPos.y + (isRecord ? PanelHRecord : PanelHPlain) + 60.f)
+	, panelTop(PanelTopFor(isRecord))
+	, buttonY(panelTop + PanelHeightFor(isRecord) + ButtonGap)
 	, backdrop(context.textures.Get(Assets::TextureID::GameplayBackground))
 	, panel(context.textures.Get(Assets::TextureID::UiFrameRed), PanelBoundsFor(isRecord),
 		UI::MenuFrameSourceBorder, PanelTargetBorder)
@@ -138,8 +150,10 @@ GameOverState::GameOverState(Context& context, int finalScore, int finalLines, i
 	, playAgainLabel(context.fonts.Get(Assets::FontID::Menu), ButtonSize)
 	, mainMenuLabel(context.fonts.Get(Assets::FontID::Menu), ButtonSize)
 	, buttonGlow(context.shaders.Get(Assets::ShaderID::NeonDilate), context.shaders.Get(Assets::ShaderID::NeonBlur))
+	, headingGlow(context.shaders.Get(Assets::ShaderID::NeonDilate), context.shaders.Get(Assets::ShaderID::NeonBlur))
 {
 	backdrop.setColor(sf::Color(150, 150, 150));
+	glitchCooldown = Random::Float(1.6f, 3.4f);
 
 	if (isRecord)
 	{
@@ -185,16 +199,21 @@ void GameOverState::BuildContent()
 		lines.push_back({ std::move(line), colour });
 	};
 
-	add(text.GetText(TextKey::GameOver::Score), ScoreLabelSize, { CentreX, ScoreLabelY }, LabelColour);
-	add(std::to_string(finalScore), ScoreValueSize, { CentreX, ScoreValueY }, ScoreColour);
+	const float scoreLabelY = panelTop + ScoreLabelOffset;
+	const float scoreValueY = panelTop + ScoreValueOffset;
+	const float statLabelY = panelTop + StatLabelOffset;
+	const float statValueY = panelTop + StatValueOffset;
+
+	add(text.GetText(TextKey::GameOver::Score), ScoreLabelSize, { CentreX, scoreLabelY }, LabelColour);
+	add(std::to_string(finalScore), ScoreValueSize, { CentreX, scoreValueY }, ScoreColour);
 
 	const float leftX = CentreX - StatSpread;
-	add(text.GetText(TextKey::GameOver::Lines), StatLabelSize, { leftX, StatRowY }, LabelColour);
-	add(std::to_string(finalLines), StatValueSize, { leftX, StatRowY + StatValueDrop }, StatValueColour);
-	add(text.GetText(TextKey::GameOver::Level), StatLabelSize, { CentreX, StatRowY }, LabelColour);
-	add(std::to_string(finalLevel), StatValueSize, { CentreX, StatRowY + StatValueDrop }, StatValueColour);
-	add(text.GetText(TextKey::GameOver::Time), StatLabelSize, { CentreX + StatSpread, StatRowY }, LabelColour);
-	add(FormatTime(finalSeconds), StatValueSize, { CentreX + StatSpread, StatRowY + StatValueDrop }, StatValueColour);
+	add(text.GetText(TextKey::GameOver::Lines), StatLabelSize, { leftX, statLabelY }, LabelColour);
+	add(std::to_string(finalLines), StatValueSize, { leftX, statValueY }, StatValueColour);
+	add(text.GetText(TextKey::GameOver::Level), StatLabelSize, { CentreX, statLabelY }, LabelColour);
+	add(std::to_string(finalLevel), StatValueSize, { CentreX, statValueY }, StatValueColour);
+	add(text.GetText(TextKey::GameOver::Time), StatLabelSize, { CentreX + StatSpread, statLabelY }, LabelColour);
+	add(FormatTime(finalSeconds), StatValueSize, { CentreX + StatSpread, statValueY }, StatValueColour);
 
 	if (isRecord)
 	{
@@ -202,11 +221,30 @@ void GameOverState::BuildContent()
 		recordBadge.setLetterSpacing(1.2f);
 		recordBadge.setOutlineThickness(3.f);
 		recordBadge.setOutlineColor(sf::Color(70, 44, 0));
-		PlaceCentred(recordBadge, { CentreX, BadgeY });
+		PlaceCentred(recordBadge, { CentreX, panelTop + BadgeOffset });
 
 		namePrompt.setString(text.GetText(TextKey::GameOver::EnterName));
-		PlaceCentred(namePrompt, { CentreX, NamePromptY });
+		PlaceCentred(namePrompt, { CentreX, panelTop + NamePromptOffset });
 	}
+}
+
+float GameOverState::FlickerBrightness() const
+{
+	if (headingDrop < 1.f)
+	{
+		return 1.f;
+	}
+
+	float brightness = 1.f - 0.05f * std::abs(std::sin(idleTime * 43.f));
+	if (std::fmod(idleTime, 2.7f) < 0.05f)
+	{
+		brightness = 0.22f;   // a full dropout, like a failing tube
+	}
+	if (std::fmod(idleTime + 1.35f, 4.3f) < 0.09f)
+	{
+		brightness *= 0.45f;
+	}
+	return brightness;
 }
 
 bool GameOverState::NameEntered() const
@@ -373,6 +411,32 @@ void GameOverState::Update(float deltaTime)
 	playAgainLabel.Update(deltaTime);
 	mainMenuLabel.Update(deltaTime);
 	buttonGlow.Update(deltaTime);
+	headingGlow.Update(deltaTime);
+
+	if (headingDrop >= 1.f)
+	{
+		idleTime += deltaTime;
+
+		if (glitchActive)
+		{
+			glitchTime += deltaTime;
+			if (glitchTime >= glitchDuration)
+			{
+				glitchActive = false;
+				glitchCooldown = Random::Float(1.9f, 4.6f);
+			}
+		}
+		else
+		{
+			glitchCooldown -= deltaTime;
+			if (glitchCooldown <= 0.f)
+			{
+				glitchActive = true;
+				glitchTime = 0.f;
+				glitchDuration = Random::Float(0.08f, 0.18f);
+			}
+		}
+	}
 
 	if (leaving == Leaving::No)
 	{
@@ -427,9 +491,50 @@ void GameOverState::Render(sf::RenderTarget& target)
 	if (contentAlpha > 0.f)
 	{
 		const float rise = (1.f - EaseOutBack(headingDrop)) * 70.f;
-		heading.setFillColor(Faded(HeadingFill, contentAlpha));
-		heading.setOutlineColor(Faded(HeadingOutline, contentAlpha));
-		PlaceCentred(heading, { CentreX, HeadingY - rise });
+		const float flicker = FlickerBrightness();
+		const float glitch = glitchActive
+			? std::sin(std::clamp(glitchTime / std::max(0.01f, glitchDuration), 0.f, 1.f) * Pi)
+			: 0.f;
+
+		const sf::Vector2f jitter = glitch > 0.f
+			? sf::Vector2f{ std::sin(glitchTime * 190.f) * glitch * 7.f, std::sin(glitchTime * 250.f) * glitch * 4.f }
+			: sf::Vector2f{ 0.f, 0.f };
+		const sf::Vector2f base{ CentreX + jitter.x, panelTop + HeadingOffset - rise + jitter.y };
+
+		sf::RenderStates additive;
+		additive.blendMode = sf::BlendAdd;
+
+		// Chromatic split during a glitch.
+		if (glitch > 0.f)
+		{
+			const float dx = 6.f + glitch * 10.f;
+			heading.setOutlineColor(sf::Color(0, 0, 0, 0));
+			heading.setFillColor(sf::Color(255, 60, 60, ToAlpha(contentAlpha * 0.85f)));
+			PlaceCentred(heading, { base.x + dx, base.y });
+			target.draw(heading, additive);
+			heading.setFillColor(sf::Color(60, 200, 255, ToAlpha(contentAlpha * 0.85f)));
+			PlaceCentred(heading, { base.x - dx, base.y });
+			target.draw(heading, additive);
+		}
+
+		const auto lit = [flicker](sf::Color c)
+		{
+			return sf::Color(
+				static_cast<std::uint8_t>(static_cast<float>(c.r) * flicker),
+				static_cast<std::uint8_t>(static_cast<float>(c.g) * flicker),
+				static_cast<std::uint8_t>(static_cast<float>(c.b) * flicker), c.a);
+		};
+
+		heading.setFillColor(Faded(lit(HeadingFill), contentAlpha));
+		heading.setOutlineColor(Faded(HeadingOutline, contentAlpha * flicker));
+		PlaceCentred(heading, base);
+
+		const sf::FloatRect glowArea{
+			{ CentreX - 640.f, panelTop + HeadingOffset - 150.f }, { 1280.f, 280.f } };
+		headingGlow.Draw(target, glowArea,
+			[this](sf::RenderTarget& buffer, const sf::RenderStates& states) { buffer.draw(heading, states); },
+			sf::Color(224, 34, 34, ToAlpha(contentAlpha * flicker * 0.75f)), false);
+
 		target.draw(heading);
 
 		for (Line& line : lines)
@@ -446,7 +551,7 @@ void GameOverState::Render(sf::RenderTarget& target)
 			const float shake = std::sin(nameShake * 40.f) * nameShake * 10.f;
 			const bool showCursor = std::fmod(cursorTime, 1.f) < 0.55f;
 			nameField.setString(playerName + (showCursor ? sf::String("_") : sf::String(" ")));
-			PlaceCentred(nameField, { CentreX + shake, NameY });
+			PlaceCentred(nameField, { CentreX + shake, panelTop + NameOffset });
 			nameField.setFillColor(Faded(nameShake > 0.f ? sf::Color(240, 120, 120) : NameColour, contentAlpha));
 			target.draw(nameField);
 
