@@ -35,6 +35,59 @@ Cross-cutting decisions:
 
 ## Released
 
+### v1.5.0 — Gameplay presentation & Game Over
+
+Second version of the wound-down roadmap. The in-game screen and the game-over
+screen brought up to the menu-shell standard. No gameplay-rules changes.
+
+- **In-game backdrop** — `game_background.png` (renamed `menu_background.png`,
+  now only the main menu uses it) replaced by `gameplay_background.jpg`. New
+  `rendering/SceneMotion`: a springy positional offset the player drives —
+  moves, rotations, soft / hard drops, landings, line clears (double for a
+  tetris) and level-ups each add an impulse, a damped spring pulls it back, and
+  a slow idle drift plays underneath. `GameplayState` draws the backdrop 7 %
+  oversized and centred, shifted by that offset, so it parallaxes behind the
+  static board and HUD. *(A depth-layered ambient particle field was built and
+  cut — every rendition either fought the pixel look or was too faint to earn
+  its place.)*
+- **HUD rebuilt** (`rendering/GameplayHud`) — the generic
+  `UI::Layout`/`Panel`/`Label` HUD is gone. Square nine-slice frames
+  (`menu_background_blue_frame`) hug the board's outer wall: HOLD and LEVEL
+  down the left, NEXT / SCORE / LINES / TIME down the right. Clearing rows pops
+  SCORE and LINES, a level-up pops LEVEL (cyan outline glow + a scale-and-tint
+  on the value). `GameplaySession` exposes `GetElapsedSeconds()`;
+  `utils/TimeFormat` formats the TIME readout. The left-hand controls text
+  block is replaced by an always-on legend panel under the left column —
+  Move / Rotate / Soft Drop / Hard Drop / Pause with live, layout-independent
+  key names. `ui/Panel` / `ui/Layout` and `TextureID::PanelBackground` are now
+  unused by the game (still built).
+- **Options → HUD category** (`states/HudCategoryPanel`, watermelon accent,
+  `menu_background_white_red_frame`) — one on/off toggle per panel (Hold, Next,
+  Score, Lines, Level, Time) plus the controls legend, all default on, so a
+  player can strip the screen to just the well. `GameSettings` format 7 adds
+  the seven `hud*` flags; `GameplayState` reads them in its ctor.
+- **Game Over rebuilt** (`states/GameOverState`, no longer on
+  `MenuScreenState`) — one screen, two states. A framed panel over the dimmed,
+  crumbled board (new death beat in `GameplayState` / `BoardRenderer`:
+  `deathProgress` greys and drops the locked cells, then the screen darkens
+  into the game-over dim with no cut) shows the run summary — score, lines,
+  level, time — with a dying-neon flicker and a rare chromatic glitch on the
+  "GAME OVER" heading. **New record:** the frame goes gold, the heading's neon
+  goes gold, firework shells rise and burst behind the panel and four jets of
+  sparks stream out of its corners (`ui/Celebration`, CPU particles). A
+  recessed name field (grey "Enter your name" prompt, clears on input, 14-char
+  cap) with a **Save Record** button to its right — dim until the field has
+  content, saves on click or Enter, then settles into a disabled "Saved".
+  Leaving with an unsaved name raises a confirm dialog. Play Again / Main Menu
+  below; Save Record joins the Up/Down focus ring while it is actionable.
+- **`ui/ConfirmDialog`** gains mouse control (`PointerMoved` / `PointerPressed`)
+  and plays one press sound instead of the caller adding a second;
+  `states/OptionsSfx::DialogPick` (now unused) removed.
+- **Cleanup** — `states/MenuScreenState` and `ui/MenuList` deleted
+  (`GameOverState` was the last consumer); dead `ScreenHost::ExitTo` removed;
+  `ui/CarouselMenu` centres each entry on its visible ink so the nav arrows
+  sit symmetrically.
+
 ### v1.4.0 — Menu cleanup & flow
 
 First version of the wound-down roadmap (see the note under Planned). No
@@ -415,19 +468,8 @@ did) and forcing months of Tetris content is the wrong trade. The menu framework
 was always meant as a reusable cross-project UI library — it carries forward
 regardless.
 
-**v1.4.0 — Menu cleanup & flow** shipped (see Released). `ScreenHost::ExitTo`
-is now uncalled (both users removed); it stays as `ScreenHost` API, expected
-back with the v1.5.0 Game Over rework.
-
-### v1.5.0 — Gameplay presentation & Game Over
-
-- **In-game visual pass.** Background to the retro-pixel + CRT look —
-  game-driven parallax drift over a static themed backdrop, plus a depth-layered
-  particle layer. Restyled HUD (next queue, score / level / lines). Remove the
-  left-hand controls text block.
-- **Begin the Game Over rework** — one screen, two states (new record / no new
-  record), rebuilt to the menu-shell standard. It is the last screen still on
-  the legacy `MenuScreenState`.
+**v1.4.0 — Menu cleanup & flow** and **v1.5.0 — Gameplay presentation & Game
+Over** shipped (see Released).
 
 ### v1.6.0 — Gameplay depth & escalation
 
@@ -468,12 +510,13 @@ The final version. After it the game is done — there is no v2.0.
 - **Release** — README as a finished piece, screenshots / GIFs, itch.io page,
   `Tessera-v1.7.0-win64.zip`, GitHub Release as the last one.
 
-### Visual overhaul (spans v1.5.0–v1.7.0)
+### Visual overhaul (spans v1.6.0–v1.7.0)
 
 The whole game look is still to be raised. `panel_background` /
-`button_background` / `game_background` etc. want art built to be
-nine-sliceable — the current frames aren't symmetric, so `NineSliceFrame` can't
-do much with them yet. The author sources art as each version needs it.
+`button_background` are now unused by the game (the HUD and menus nine-slice
+the `menu_background_*_frame` set instead); they and any other legacy art
+want either replacing or removing in the v1.7.0 sweep. The author sources art
+as each version needs it.
 
 ---
 
