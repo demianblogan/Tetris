@@ -16,40 +16,48 @@ namespace sf
 	class RenderTarget;
 }
 
-// The in-game HUD: square nine-slice frames down each side of the board --
+// The in-game HUD: square nine-slice frames hugging each side of the board --
 // HOLD and LEVEL on the left, NEXT / SCORE / LINES / TIME on the right -- plus
 // an always-on controls legend under the left column. GameplayState pushes the
-// numbers each frame with Set(); BoardRenderer draws the next piece at
-// NextPreviewCentre().
+// numbers each frame with Set() and calls the OnX hooks so the matching cell
+// flashes; BoardRenderer draws the next piece at NextPreviewCentre().
 class GameplayHud
 {
 public:
 	explicit GameplayHud(Context& context);
 
 	void Set(int score, int level, int lines, float seconds);
+	void Update(float deltaTime);
+
+	void OnRowsCleared();   // flashes SCORE and LINES
+	void OnLevelUp();       // flashes LEVEL
+
 	void SetControlsLegendVisible(bool visible) { showControls = visible; }
 	void Render(sf::RenderTarget& target) const;
 
 	[[nodiscard]] sf::Vector2f NextPreviewCentre() const { return nextPreviewCentre; }
 
 private:
-	// One framed square: the decorative border, a dark inner fill, and the
-	// caption pinned near its top.
+	// One framed square: the decorative border, a dark inner fill, the caption
+	// pinned near its top, and a decaying flash (0..1) for the "just changed" pop.
 	struct Cell
 	{
 		sf::RectangleShape fill;
 		UI::NineSliceFrame frame;
 		sf::Text caption;
+		float flash = 0.f;
 	};
 
-	// A controls-legend line: an action name on the left, its key(s) on the right.
-	struct ControlRow
+	// A controls-legend entry: the action name over the key(s) bound to it.
+	struct ControlEntry
 	{
 		sf::Text action;
 		sf::Text keys;
 	};
 
 	Cell MakeCell(std::string_view captionKey, sf::FloatRect bounds);
+	void DrawCell(sf::RenderTarget& target, const Cell& cell) const;
+	void DrawValue(sf::RenderTarget& target, const sf::Text& value, float flash) const;
 
 	Context& context;
 
@@ -63,7 +71,7 @@ private:
 	UI::NineSliceFrame legendFrame;
 	sf::RectangleShape legendFill;
 	sf::Text legendTitle;
-	std::vector<ControlRow> legendRows;
+	std::vector<ControlEntry> legendEntries;
 	bool showControls = true;
 
 	sf::Vector2f nextPreviewCentre;

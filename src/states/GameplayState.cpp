@@ -101,6 +101,7 @@ void GameplayState::Update(float deltaTime)
 {
 	effects.Update(deltaTime);
 	neonGlow.Update(deltaTime);
+	hud.Update(deltaTime);
 
 	if (introActive)
 	{
@@ -305,10 +306,16 @@ void GameplayState::ReactToEvents(const GameplaySession::Events& events)
 		Haptics::Pulse(context.gamepadHaptics, isTetris ? context.hapticSettings.tetris : context.hapticSettings.rowCleared);
 	}
 
+	if (events.rowsCleared)
+	{
+		hud.OnRowsCleared();
+	}
+
 	if (events.leveledUp)
 	{
 		context.audioPlayer.Play(Assets::SoundID::NextLevel);
 		Haptics::Pulse(context.gamepadHaptics, context.hapticSettings.levelUp);
+		hud.OnLevelUp();
 	}
 
 	if (events.gameOver)
