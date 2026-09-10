@@ -28,7 +28,7 @@ namespace
 
 	// Spawn a few pixels inside the frame edge so the jets don't visibly start
 	// from a hard line on the border.
-	constexpr float CornerInset = 7.f;
+	constexpr float CornerInset = 17.f;
 	constexpr float CornerFlashFade = 1.f / 0.09f;
 
 	const std::array<sf::Color, 6> WarmPalette = { {
