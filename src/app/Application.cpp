@@ -245,7 +245,7 @@ Application::Application()
 	textures.Load(Assets::TextureID::BlockSpritesheetWithOutline, TexturePaths::BlockSpritesheetWithOutline);
 	textures.Load(Assets::TextureID::ButtonBackground, TexturePaths::ButtonBackground);
 	textures.Load(Assets::TextureID::PanelBackground, TexturePaths::PanelBackground);
-	textures.Load(Assets::TextureID::GameBackground, TexturePaths::GameBackground);
+	textures.Load(Assets::TextureID::MenuBackground, TexturePaths::MenuBackground);
 	textures.Load(Assets::TextureID::GameplayBackground, TexturePaths::GameplayBackground);
 	textures.Load(Assets::TextureID::CompanyLogo, TexturePaths::CompanyLogo);
 	textures.Load(Assets::TextureID::Cursor, TexturePaths::Cursor);
