@@ -23,7 +23,7 @@ namespace
 
 	constexpr float Pi = 3.14159265f;
 
-	const sf::Color MoteColour{ 150, 172, 208 };
+	const sf::Color MoteColour{ 188, 206, 236 };
 
 	struct LayerSpec
 	{
@@ -35,9 +35,9 @@ namespace
 	};
 
 	constexpr std::array<LayerSpec, 3> Layers = { {
-		{ 24, 1.5f, 1.2f, 2.2f, 0.035f, 0.075f,  3.f,  8.f },   // far
-		{ 16, 2.6f, 1.8f, 3.4f, 0.055f, 0.100f,  6.f, 13.f },   // mid
-		{ 10, 3.9f, 2.8f, 5.2f, 0.070f, 0.130f, 10.f, 20.f },   // near
+		{ 26, 1.5f, 2.0f,  3.6f, 0.16f, 0.30f,  3.f,  8.f },   // far
+		{ 18, 2.6f, 3.4f,  6.0f, 0.24f, 0.42f,  6.f, 13.f },   // mid
+		{ 12, 3.9f, 5.5f, 10.0f, 0.34f, 0.58f, 10.f, 20.f },   // near
 	} };
 
 	[[nodiscard]] float Wrap(float value, float lo, float hi)
@@ -96,11 +96,11 @@ void GameplayAmbience::Render(sf::RenderTarget& target) const
 	additive.blendMode = sf::BlendAdd;
 
 	sf::CircleShape dot;
-	dot.setPointCount(10);
+	dot.setPointCount(14);
 
 	for (const Mote& mote : motes)
 	{
-		const float twinkle = 0.6f + 0.4f * std::sin(mote.twinklePhase);
+		const float twinkle = 0.72f + 0.28f * std::sin(mote.twinklePhase);
 		const float alpha = std::clamp(mote.baseAlpha * twinkle, 0.f, 1.f);
 
 		const sf::Vector2f position{
