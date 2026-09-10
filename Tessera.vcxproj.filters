@@ -186,6 +186,9 @@
     <ClCompile Include="src\rendering\GameplayHud.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\rendering\SceneMotion.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="src\input\InputBinding.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -468,6 +471,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\rendering\GameplayHud.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\SceneMotion.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\input\InputBinding.h">

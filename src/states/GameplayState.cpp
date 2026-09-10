@@ -8,6 +8,7 @@
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/RenderTexture.hpp>
 #include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/View.hpp>
 
 #include "../audio/AudioPlayer.h"
@@ -29,6 +30,17 @@ namespace
 {
 	constexpr float SoftDropInterval = 0.03f;
 	constexpr float Pi = 3.14159265f;
+	constexpr float BackgroundScale = 1.07f;
+
+	// Parallax impulses handed to SceneMotion. The backdrop lags the action, so
+	// each shove points the way the "camera" would drift.
+	constexpr float MoveNudge = 3.f;
+	constexpr float RotateNudge = 3.f;
+	constexpr float SoftDropNudge = 1.f;
+	constexpr float HardDropNudge = 16.f;
+	constexpr float LandNudge = 5.f;
+	constexpr float RowClearNudge = 12.f;
+	constexpr float TetrisNudge = 26.f;
 }
 
 GameplayState::GameplayState(Context& context, bool playIntro)
@@ -43,7 +55,12 @@ GameplayState::GameplayState(Context& context, bool playIntro)
 {
 	introActive = playIntro;
 
+	// The backdrop is drawn slightly oversized and centred so SceneMotion can
+	// slide it a little without exposing an edge.
 	backgroundSprite.setColor(sf::Color(150, 150, 150));
+	const sf::Vector2f backgroundSize(context.textures.Get(Assets::TextureID::GameplayBackground).getSize());
+	backgroundSprite.setOrigin(backgroundSize * 0.5f);
+	backgroundSprite.setScale({ BackgroundScale, BackgroundScale });
 
 	SetUpInputBindings();
 
@@ -111,6 +128,7 @@ void GameplayState::Update(float deltaTime)
 	effects.Update(deltaTime);
 	neonGlow.Update(deltaTime);
 	hud.Update(deltaTime);
+	sceneMotion.Update(deltaTime);
 
 	if (introActive)
 	{
@@ -230,6 +248,7 @@ void GameplayState::ApplyHorizontalRepeat(float deltaTime)
 
 	if (movedAny)
 	{
+		sceneMotion.Nudge({ -static_cast<float>(direction) * MoveNudge, 0.f });
 		horizontalWasBlocked = false;
 
 		// Move sound on the initial step only, not on every auto-repeat step.
@@ -264,6 +283,7 @@ void GameplayState::ApplySoftDrop(float deltaTime)
 	{
 		softDropTimer -= SoftDropInterval;
 		session.SoftDropStep();
+		sceneMotion.Nudge({ 0.f, SoftDropNudge });
 	}
 }
 
@@ -277,6 +297,7 @@ void GameplayState::TryRotate(bool clockwise)
 	if (session.Rotate(clockwise))
 	{
 		context.audioPlayer.Play(Assets::SoundID::RotatePiece);
+		sceneMotion.Nudge({ clockwise ? RotateNudge : -RotateNudge, -2.f });
 	}
 	else
 	{
@@ -295,6 +316,7 @@ void GameplayState::PerformHardDrop()
 
 	context.audioPlayer.Play(Assets::SoundID::DropPiece);
 	effects.TriggerShake(0.12f, 12.f);
+	sceneMotion.Nudge({ 0.f, HardDropNudge });
 	Haptics::Pulse(context.gamepadHaptics, context.hapticSettings.hardDrop);
 }
 
@@ -304,6 +326,7 @@ void GameplayState::ReactToEvents(const GameplaySession::Events& events)
 	{
 		effects.TriggerLandingFlash(events.landedBlocks);
 		Haptics::Pulse(context.gamepadHaptics, context.hapticSettings.pieceLanded);
+		sceneMotion.Nudge({ 0.f, LandNudge });
 	}
 
 	if (events.rowsDetected)
@@ -313,6 +336,7 @@ void GameplayState::ReactToEvents(const GameplaySession::Events& events)
 
 		const bool isTetris = events.detectedRows.size() >= 4;
 		Haptics::Pulse(context.gamepadHaptics, isTetris ? context.hapticSettings.tetris : context.hapticSettings.rowCleared);
+		sceneMotion.Nudge({ 0.f, -(isTetris ? TetrisNudge : RowClearNudge) });
 	}
 
 	if (events.rowsCleared)
@@ -325,6 +349,7 @@ void GameplayState::ReactToEvents(const GameplaySession::Events& events)
 		context.audioPlayer.Play(Assets::SoundID::NextLevel);
 		Haptics::Pulse(context.gamepadHaptics, context.hapticSettings.levelUp);
 		hud.OnLevelUp();
+		sceneMotion.Nudge({ 16.f, -12.f });
 	}
 
 	if (events.gameOver)
@@ -365,6 +390,7 @@ void GameplayState::Render(sf::RenderTarget& target)
 	shakenView.move(effects.GetViewOffset());
 	target.setView(shakenView);
 
+	backgroundSprite.setPosition(Display::DisplayManager::VirtualSize * 0.5f + sceneMotion.Offset());
 	target.draw(backgroundSprite);
 
 	const float deathProgress = dying

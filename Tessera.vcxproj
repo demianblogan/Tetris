@@ -122,6 +122,7 @@ xcopy /D /Y /Q "$(ProjectDir)libs\SFML\bin\sfml-audio-3.dll" "$(OutDir)"</Comman
     <ClCompile Include="src\rendering\EffectsController.cpp" />
     <ClCompile Include="src\rendering\GameplayHud.cpp" />
     <ClCompile Include="src\rendering\NeonGlow.cpp" />
+    <ClCompile Include="src\rendering\SceneMotion.cpp" />
     <ClCompile Include="src\resources\ShaderManager.cpp" />
     <ClCompile Include="src\states\GameOverState.cpp" />
     <ClCompile Include="src\states\PauseMenuScreen.cpp" />
@@ -225,6 +226,7 @@ xcopy /D /Y /Q "$(ProjectDir)libs\SFML\bin\sfml-audio-3.dll" "$(OutDir)"</Comman
     <ClInclude Include="src\rendering\EffectsController.h" />
     <ClInclude Include="src\rendering\GameplayHud.h" />
     <ClInclude Include="src\rendering\NeonGlow.h" />
+    <ClInclude Include="src\rendering\SceneMotion.h" />
     <ClInclude Include="src\resources\ShaderManager.h" />
     <ClInclude Include="src\states\GameOverState.h" />
     <ClInclude Include="src\states\PauseMenuScreen.h" />

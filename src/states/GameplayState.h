@@ -14,6 +14,7 @@
 #include "../rendering/EffectsController.h"
 #include "../rendering/GameplayHud.h"
 #include "../rendering/NeonGlow.h"
+#include "../rendering/SceneMotion.h"
 
 // The gameplay screen: owns the rules (GameplaySession), the input layer that
 // feeds it, the HUD, and the two renderers. It translates the session's
@@ -39,6 +40,7 @@ private:
 	NeonGlow neonGlow;
 	EffectsController effects;
 	GameplayHud hud;
+	SceneMotion sceneMotion;
 
 	ActionMap<GameplayAction> gameplayActions;
 	InputHandler<GameplayAction> gameplayInput;
