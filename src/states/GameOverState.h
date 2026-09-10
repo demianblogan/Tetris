@@ -58,7 +58,6 @@ private:
 	[[nodiscard]] bool CanSave() const;
 	void SaveRecord();
 	void BeginLeave();
-	void CycleFocus(int direction);
 	void DrawButton(sf::RenderTarget& target, UI::MenuLabel& label, sf::Vector2f centre,
 		sf::Color hue, bool selected, float alpha);
 

@@ -417,25 +417,6 @@ void GameOverState::BeginLeave()
 	leaveTimer = 0.f;
 }
 
-void GameOverState::CycleFocus(int direction)
-{
-	Focus order[3] = { Focus::Save, Focus::PlayAgain, Focus::MainMenu };
-	const std::size_t first = CanSave() ? 0u : 1u;
-	const std::size_t count = 3u - first;
-
-	std::size_t current = 0;
-	for (std::size_t i = first; i < 3u; ++i)
-	{
-		if (order[i] == focus)
-		{
-			current = i - first;
-		}
-	}
-
-	const std::size_t next = (current + static_cast<std::size_t>(direction < 0 ? count - 1 : 1)) % count;
-	focus = order[first + next];
-}
-
 void GameOverState::HandleEvent(const sf::Event& event)
 {
 	if (leaving != Leaving::No)
@@ -471,15 +452,32 @@ void GameOverState::HandleEvent(const sf::Event& event)
 		}
 	}
 
+	const auto selectSound = [this] { context.audioPlayer.Restart(Assets::SoundID::MenuItemSelected); };
+
 	switch (MenuInput::Resolve(event, context.gamepad))
 	{
+	case MenuInput::Action::Up:
+		// Save Record sits above the bottom row; reach it by going up.
+		if (CanSave() && focus != Focus::Save)
+		{
+			focus = Focus::Save;
+			selectSound();
+		}
+		return;
+	case MenuInput::Action::Down:
+		if (focus == Focus::Save)
+		{
+			focus = Focus::PlayAgain;
+			selectSound();
+		}
+		return;
 	case MenuInput::Action::Left:
-		CycleFocus(-1);
-		context.audioPlayer.Restart(Assets::SoundID::MenuItemSelected);
+		focus = Focus::PlayAgain;
+		selectSound();
 		return;
 	case MenuInput::Action::Right:
-		CycleFocus(1);
-		context.audioPlayer.Restart(Assets::SoundID::MenuItemSelected);
+		focus = Focus::MainMenu;
+		selectSound();
 		return;
 	case MenuInput::Action::Confirm:
 		if (focus == Focus::Save)
