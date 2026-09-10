@@ -11,6 +11,7 @@
 #include "../core/State.h"
 #include "../rendering/NeonGlow.h"
 #include "../ui/Celebration.h"
+#include "../ui/ConfirmDialog.h"
 #include "../ui/MenuLabel.h"
 #include "../ui/NineSliceFrame.h"
 
@@ -37,7 +38,7 @@ public:
 	[[nodiscard]] bool ShowsCursor() const override { return true; }
 
 private:
-	enum class Focus { PlayAgain, MainMenu };
+	enum class Focus { Save, PlayAgain, MainMenu };
 	enum class Leaving { No, PlayAgain, MainMenu };
 
 	struct Line
@@ -56,6 +57,8 @@ private:
 	[[nodiscard]] sf::String TrimmedName() const;
 	[[nodiscard]] bool CanSave() const;
 	void SaveRecord();
+	void BeginLeave();
+	void CycleFocus(int direction);
 	void DrawButton(sf::RenderTarget& target, UI::MenuLabel& label, sf::Vector2f centre,
 		sf::Color hue, bool selected, float alpha);
 
@@ -84,6 +87,7 @@ private:
 	NeonGlow buttonGlow;
 	NeonGlow headingGlow;
 	UI::Celebration celebration;
+	UI::ConfirmDialog leaveDialog;
 	Focus focus = Focus::PlayAgain;
 
 	sf::String playerName;

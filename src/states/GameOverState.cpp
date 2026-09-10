@@ -214,6 +214,10 @@ GameOverState::GameOverState(Context& context, int finalScore, int finalLines, i
 	, saveLabel(context.fonts.Get(Assets::FontID::Menu), SaveButtonSize)
 	, buttonGlow(context.shaders.Get(Assets::ShaderID::NeonDilate), context.shaders.Get(Assets::ShaderID::NeonBlur))
 	, headingGlow(context.shaders.Get(Assets::ShaderID::NeonDilate), context.shaders.Get(Assets::ShaderID::NeonBlur))
+	, leaveDialog(context.fonts.Get(Assets::FontID::Main), context.fonts.Get(Assets::FontID::Menu),
+		context.textures.Get(Assets::TextureID::UiFrameWarning),
+		context.shaders.Get(Assets::ShaderID::NeonDilate), context.shaders.Get(Assets::ShaderID::NeonBlur),
+		context.audioPlayer)
 {
 	backdrop.setColor(sf::Color(150, 150, 150));
 	glitchCooldown = Random::Float(1.6f, 3.4f);
@@ -387,21 +391,74 @@ void GameOverState::HandleTextInput(char32_t character)
 
 void GameOverState::Activate()
 {
-	if (leaving != Leaving::No)
+	if (leaving != Leaving::No || leaveDialog.IsOpen())
 	{
 		return;
 	}
 
+	// A typed-but-unsaved record: make the player confirm they mean to drop it.
+	if (CanSave())
+	{
+		leaveDialog.Show(context.localization.GetText(TextKey::GameOver::UnsavedRecord),
+			context.localization.GetText(TextKey::Common::Yes),
+			context.localization.GetText(TextKey::Common::No));
+		context.audioPlayer.Play(Assets::SoundID::MenuItemPressed, 0.85f);
+		return;
+	}
+
+	BeginLeave();
+}
+
+void GameOverState::BeginLeave()
+{
 	pressTime = 0.f;
 	context.audioPlayer.Play(Assets::SoundID::MenuItemPressed);
 	leaving = focus == Focus::PlayAgain ? Leaving::PlayAgain : Leaving::MainMenu;
 	leaveTimer = 0.f;
 }
 
+void GameOverState::CycleFocus(int direction)
+{
+	Focus order[3] = { Focus::Save, Focus::PlayAgain, Focus::MainMenu };
+	const std::size_t first = CanSave() ? 0u : 1u;
+	const std::size_t count = 3u - first;
+
+	std::size_t current = 0;
+	for (std::size_t i = first; i < 3u; ++i)
+	{
+		if (order[i] == focus)
+		{
+			current = i - first;
+		}
+	}
+
+	const std::size_t next = (current + static_cast<std::size_t>(direction < 0 ? count - 1 : 1)) % count;
+	focus = order[first + next];
+}
+
 void GameOverState::HandleEvent(const sf::Event& event)
 {
 	if (leaving != Leaving::No)
 	{
+		return;
+	}
+
+	if (leaveDialog.IsOpen())
+	{
+		leaveDialog.Navigate(MenuInput::Resolve(event, context.gamepad));
+
+		if (const auto* moved = event.getIf<sf::Event::MouseMoved>())
+		{
+			leaveDialog.PointerMoved(context.window.mapPixelToCoords(moved->position));
+		}
+		else if (const auto* pressed = event.getIf<sf::Event::MouseButtonPressed>())
+		{
+			if (pressed->button == sf::Mouse::Button::Left)
+			{
+				leaveDialog.PointerPressed(context.window.mapPixelToCoords(pressed->position));
+			}
+		}
+
 		return;
 	}
 
@@ -417,12 +474,15 @@ void GameOverState::HandleEvent(const sf::Event& event)
 	switch (MenuInput::Resolve(event, context.gamepad))
 	{
 	case MenuInput::Action::Left:
+		CycleFocus(-1);
+		context.audioPlayer.Restart(Assets::SoundID::MenuItemSelected);
+		return;
 	case MenuInput::Action::Right:
-		focus = focus == Focus::PlayAgain ? Focus::MainMenu : Focus::PlayAgain;
+		CycleFocus(1);
 		context.audioPlayer.Restart(Assets::SoundID::MenuItemSelected);
 		return;
 	case MenuInput::Action::Confirm:
-		if (CanSave())
+		if (focus == Focus::Save)
 		{
 			SaveRecord();
 			return;
@@ -445,7 +505,11 @@ void GameOverState::HandleEvent(const sf::Event& event)
 	if (const auto* moved = event.getIf<sf::Event::MouseMoved>())
 	{
 		const sf::Vector2f point = context.window.mapPixelToCoords(moved->position);
-		if (hit(point, playAgainLabel, { CentreX - ButtonSpacing, buttonY }))
+		if (CanSave() && hit(point, saveLabel, { SaveCentreX, panelTop + NameRowOffset }))
+		{
+			focus = Focus::Save;
+		}
+		else if (hit(point, playAgainLabel, { CentreX - ButtonSpacing, buttonY }))
 		{
 			focus = Focus::PlayAgain;
 		}
@@ -487,10 +551,21 @@ void GameOverState::Update(float deltaTime)
 	cursorTime += deltaTime;
 	savePulse = std::max(0.f, savePulse - deltaTime * 2.4f);
 
-	const bool interactive = leaving == Leaving::No;
+	leaveDialog.Update(deltaTime);
+	if (const std::optional<bool> answer = leaveDialog.TakeResult(); answer && *answer)
+	{
+		BeginLeave();
+	}
+
+	if (focus == Focus::Save && !CanSave())
+	{
+		focus = Focus::PlayAgain;
+	}
+
+	const bool interactive = leaving == Leaving::No && !leaveDialog.IsOpen();
 	playAgainLabel.SetWaveEnabled(interactive && focus == Focus::PlayAgain);
 	mainMenuLabel.SetWaveEnabled(interactive && focus == Focus::MainMenu);
-	saveLabel.SetWaveEnabled(interactive && CanSave());
+	saveLabel.SetWaveEnabled(interactive && focus == Focus::Save);
 	playAgainLabel.Update(deltaTime);
 	mainMenuLabel.Update(deltaTime);
 	saveLabel.Update(deltaTime);
@@ -672,10 +747,18 @@ void GameOverState::Render(sf::RenderTarget& target)
 				target.draw(namePrompt);
 			}
 
+			const bool saveFocused = leaving == Leaving::No && !leaveDialog.IsOpen() && focus == Focus::Save;
 			const sf::Color saveHue = recordSaved ? SavedHue : SaveHue;
 			const float saveAlpha = contentAlpha * (recordSaved ? 0.55f : (CanSave() ? 1.f : 0.32f));
 			const float pulse = savePulse > 0.f ? std::sin(std::clamp(savePulse, 0.f, 1.f) * Pi) : 0.f;
-			saveLabel.Draw(target, { SaveCentreX, rowY }, 1.f + 0.12f * pulse, saveHue, saveAlpha, PressFlash * pulse);
+			const float saveScale = (saveFocused ? 1.06f : 1.f) + 0.12f * pulse;
+
+			if (saveFocused)
+			{
+				saveLabel.DrawGlow(target, buttonGlow, { SaveCentreX, rowY }, saveScale,
+					sf::Color(saveHue.r, saveHue.g, saveHue.b, ToAlpha(contentAlpha * ButtonGlowIntensity)));
+			}
+			saveLabel.Draw(target, { SaveCentreX, rowY }, saveScale, saveHue, saveAlpha, PressFlash * pulse);
 		}
 	}
 
@@ -691,4 +774,6 @@ void GameOverState::Render(sf::RenderTarget& target)
 		fade.setFillColor(sf::Color(0, 0, 0, ToAlpha(leaveTimer / MainMenuDelay)));
 		target.draw(fade);
 	}
+
+	leaveDialog.Render(target);
 }
