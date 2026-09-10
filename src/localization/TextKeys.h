@@ -32,11 +32,13 @@ namespace TextKey
 	namespace GameOver
 	{
 		inline constexpr std::string_view Title     = "game_over.title";
-		inline constexpr std::string_view Score     = "game_over.score";      // {score}
-		inline constexpr std::string_view NewRecord = "game_over.new_record";
+		inline constexpr std::string_view Score     = "game_over.score";
+		inline constexpr std::string_view Lines     = "game_over.lines";
+		inline constexpr std::string_view Level     = "game_over.level";
+		inline constexpr std::string_view Time      = "game_over.time";
+		inline constexpr std::string_view NewRecord = "game_over.new_record";   // + " #N" in code
 		inline constexpr std::string_view EnterName = "game_over.enter_name";
-		inline constexpr std::string_view Save      = "game_over.save";
-		inline constexpr std::string_view Restart   = "game_over.restart";
+		inline constexpr std::string_view PlayAgain = "game_over.play_again";
 		inline constexpr std::string_view MainMenu  = "game_over.main_menu";
 	}
 

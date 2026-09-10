@@ -16,12 +16,14 @@ pause.main_menu = Back to Main Menu
 pause.confirm_restart = Restart the level?
 pause.confirm_quit    = Leave the level?
 
-game_over.title      = Game Over
-game_over.score      = Your score: {score}
-game_over.new_record = You broke the record!
-game_over.enter_name = Enter your name:
-game_over.save       = Save
-game_over.restart    = Restart
+game_over.title      = GAME OVER
+game_over.score      = SCORE
+game_over.lines      = LINES
+game_over.level      = LEVEL
+game_over.time       = TIME
+game_over.new_record = NEW BEST
+game_over.enter_name = Enter your name
+game_over.play_again = Play Again
 game_over.main_menu  = Main Menu
 
 options.title    = OPTIONS
