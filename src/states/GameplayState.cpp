@@ -500,7 +500,8 @@ void GameplayState::Render(sf::RenderTarget& target)
 		overlay.setFillColor(sf::Color(200, 32, 32, static_cast<std::uint8_t>(flash * 95.f)));
 		target.draw(overlay);
 
-		overlay.setFillColor(sf::Color(0, 0, 0, static_cast<std::uint8_t>(std::clamp(d * 1.15f, 0.f, 1.f) * 235.f)));
+		// Dims toward the game-over screen's SceneDim, no cut on the swap.
+		overlay.setFillColor(sf::Color(0, 0, 0, static_cast<std::uint8_t>(std::clamp(d * 1.15f, 0.f, 1.f) * 140.f)));
 		target.draw(overlay);
 	}
 

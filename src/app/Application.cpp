@@ -255,6 +255,7 @@ Application::Application()
 	textures.Load(Assets::TextureID::UiFrameGreen, TexturePaths::UiFrameGreen);
 	textures.Load(Assets::TextureID::UiFramePurple, TexturePaths::UiFramePurple);
 	textures.Load(Assets::TextureID::UiFrameBrown, TexturePaths::UiFrameBrown);
+	textures.Load(Assets::TextureID::UiFrameRed, TexturePaths::UiFrameRed);
 	textures.Load(Assets::TextureID::UiFrameWarning, TexturePaths::UiFrameWarning);
 	textures.Load(Assets::TextureID::CarouselArrow, TexturePaths::CarouselArrow);
 	textures.Load(Assets::TextureID::Checkbox, TexturePaths::Checkbox);

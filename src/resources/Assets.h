@@ -47,6 +47,7 @@ namespace Assets
 		UiFrameGreen,
 		UiFramePurple,
 		UiFrameBrown,
+		UiFrameRed,
 		UiFrameWarning,
 		CarouselArrow,
 		Checkbox,
@@ -123,6 +124,7 @@ namespace Assets
 			inline constexpr const char* UiFrameGreen  = "assets/textures/ui/menu_background_green_frame.png";
 			inline constexpr const char* UiFramePurple = "assets/textures/ui/menu_background_purple_frame.png";
 			inline constexpr const char* UiFrameBrown  = "assets/textures/ui/menu_background_brown_frame.png";
+			inline constexpr const char* UiFrameRed    = "assets/textures/ui/menu_background_red_frame.png";   // game over
 			inline constexpr const char* UiFrameWarning = "assets/textures/ui/menu_background_gold_frame.png";
 
 			// Settings widgets.

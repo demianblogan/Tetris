@@ -28,32 +28,37 @@ namespace
 	constexpr sf::Vector2f Screen{ 1920.f, 1080.f };
 	constexpr float CentreX = 960.f;
 
-	constexpr sf::Vector2f PanelPos{ 380.f, 150.f };
-	constexpr float PanelW = 1160.f;
-	constexpr float PanelHRecord = 720.f;
-	constexpr float PanelHPlain = 540.f;
-	constexpr sf::Vector2f PanelTargetBorder{ 44.f, 44.f };
+	constexpr sf::Vector2f PanelPos{ 260.f, 130.f };
+	constexpr float PanelW = 1400.f;
+	constexpr float PanelHRecord = 800.f;
+	constexpr float PanelHPlain = 600.f;
+	constexpr sf::Vector2f PanelTargetBorder{ 46.f, 46.f };
 
-	constexpr float HeadingY = 258.f;
-	constexpr float ScoreLabelY = 372.f;
-	constexpr float ScoreValueY = 444.f;
-	constexpr float StatRowY = 560.f;
-	constexpr float StatSpread = 300.f;
-	constexpr float BadgeY = 648.f;
-	constexpr float NameY = 730.f;
-	constexpr float NamePromptY = 786.f;
+	constexpr float HeadingY = 246.f;
+	constexpr float ScoreLabelY = 380.f;
+	constexpr float ScoreValueY = 476.f;
+	constexpr float StatRowY = 610.f;
+	constexpr float StatValueDrop = 66.f;
+	constexpr float StatSpread = 400.f;
+	constexpr float BadgeY = 770.f;
+	constexpr float NameY = 858.f;
+	constexpr float NamePromptY = 908.f;
 
-	constexpr unsigned int HeadingSize = 116;
-	constexpr unsigned int ScoreLabelSize = 32;
-	constexpr unsigned int ScoreValueSize = 92;
-	constexpr unsigned int StatLabelSize = 27;
-	constexpr unsigned int StatValueSize = 46;
-	constexpr unsigned int BadgeSize = 46;
-	constexpr unsigned int NameSize = 54;
-	constexpr unsigned int PromptSize = 26;
-	constexpr unsigned int ButtonSize = 42;
+	constexpr unsigned int HeadingSize = 128;
+	constexpr unsigned int ScoreLabelSize = 44;
+	constexpr unsigned int ScoreValueSize = 132;
+	constexpr unsigned int StatLabelSize = 40;
+	constexpr unsigned int StatValueSize = 68;
+	constexpr unsigned int BadgeSize = 56;
+	constexpr unsigned int NameSize = 72;
+	constexpr unsigned int PromptSize = 30;
+	constexpr unsigned int ButtonSize = 44;
 
-	constexpr float ButtonSpacing = 150.f;
+	constexpr float ButtonSpacing = 290.f;
+
+	// Matches GameplayState's dimmed backdrop at the end of the death beat, so
+	// the screen arrives with no visible cut.
+	constexpr std::uint8_t SceneDim = 140;
 
 	constexpr float AppearSpeed = 1.f / 0.26f;
 	constexpr float HeadingDropSpeed = 1.f / 0.42f;
@@ -124,7 +129,7 @@ GameOverState::GameOverState(Context& context, int finalScore, int finalLines, i
 	, isRecord(context.highScores.IsHighScore(finalScore))
 	, buttonY(PanelPos.y + (isRecord ? PanelHRecord : PanelHPlain) + 60.f)
 	, backdrop(context.textures.Get(Assets::TextureID::GameplayBackground))
-	, panel(context.textures.Get(Assets::TextureID::UiFrameWarning), PanelBoundsFor(isRecord),
+	, panel(context.textures.Get(Assets::TextureID::UiFrameRed), PanelBoundsFor(isRecord),
 		UI::MenuFrameSourceBorder, PanelTargetBorder)
 	, heading(context.fonts.Get(Assets::FontID::Main), "", HeadingSize)
 	, recordBadge(context.fonts.Get(Assets::FontID::Main), "", BadgeSize)
@@ -134,7 +139,7 @@ GameOverState::GameOverState(Context& context, int finalScore, int finalLines, i
 	, mainMenuLabel(context.fonts.Get(Assets::FontID::Menu), ButtonSize)
 	, buttonGlow(context.shaders.Get(Assets::ShaderID::NeonDilate), context.shaders.Get(Assets::ShaderID::NeonBlur))
 {
-	backdrop.setColor(sf::Color(255, 255, 255, 34));
+	backdrop.setColor(sf::Color(150, 150, 150));
 
 	if (isRecord)
 	{
@@ -185,11 +190,11 @@ void GameOverState::BuildContent()
 
 	const float leftX = CentreX - StatSpread;
 	add(text.GetText(TextKey::GameOver::Lines), StatLabelSize, { leftX, StatRowY }, LabelColour);
-	add(std::to_string(finalLines), StatValueSize, { leftX, StatRowY + 46.f }, StatValueColour);
+	add(std::to_string(finalLines), StatValueSize, { leftX, StatRowY + StatValueDrop }, StatValueColour);
 	add(text.GetText(TextKey::GameOver::Level), StatLabelSize, { CentreX, StatRowY }, LabelColour);
-	add(std::to_string(finalLevel), StatValueSize, { CentreX, StatRowY + 46.f }, StatValueColour);
+	add(std::to_string(finalLevel), StatValueSize, { CentreX, StatRowY + StatValueDrop }, StatValueColour);
 	add(text.GetText(TextKey::GameOver::Time), StatLabelSize, { CentreX + StatSpread, StatRowY }, LabelColour);
-	add(FormatTime(finalSeconds), StatValueSize, { CentreX + StatSpread, StatRowY + 46.f }, StatValueColour);
+	add(FormatTime(finalSeconds), StatValueSize, { CentreX + StatSpread, StatRowY + StatValueDrop }, StatValueColour);
 
 	if (isRecord)
 	{
@@ -407,13 +412,10 @@ void GameOverState::DrawButton(sf::RenderTarget& target, UI::MenuLabel& label, s
 
 void GameOverState::Render(sf::RenderTarget& target)
 {
-	sf::RectangleShape black(Screen);
-	black.setFillColor(sf::Color::Black);
-	target.draw(black);
 	target.draw(backdrop);
 
 	sf::RectangleShape dim(Screen);
-	dim.setFillColor(sf::Color(0, 0, 0, 150));
+	dim.setFillColor(sf::Color(0, 0, 0, SceneDim));
 	target.draw(dim);
 
 	const float in = SmoothStep(appear);
@@ -429,15 +431,6 @@ void GameOverState::Render(sf::RenderTarget& target)
 		heading.setOutlineColor(Faded(HeadingOutline, contentAlpha));
 		PlaceCentred(heading, { CentreX, HeadingY - rise });
 		target.draw(heading);
-
-		// A red flash as the heading lands.
-		if (headingDrop > 0.45f && headingDrop < 0.85f)
-		{
-			const float f = std::sin((headingDrop - 0.45f) / 0.4f * Pi);
-			sf::RectangleShape slam(Screen);
-			slam.setFillColor(sf::Color(190, 30, 30, static_cast<std::uint8_t>(f * 60.f)));
-			target.draw(slam);
-		}
 
 		for (Line& line : lines)
 		{
