@@ -40,7 +40,7 @@ GameplayState::GameplayState(Context& context, bool playIntro)
 	, neonGlow(context.shaders.Get(Assets::ShaderID::NeonDilate), context.shaders.Get(Assets::ShaderID::NeonBlur))
 	, gameplayInput(gameplayActions)
 	, horizontalRepeater({ context.hapticSettings.delayedAutoShift, context.hapticSettings.autoRepeatRate })
-	, backgroundSprite(context.textures.Get(Assets::TextureID::GameBackground))
+	, backgroundSprite(context.textures.Get(Assets::TextureID::GameplayBackground))
 {
 	introActive = playIntro;
 
