@@ -10,6 +10,7 @@
 
 #include "../core/State.h"
 #include "../rendering/NeonGlow.h"
+#include "../ui/Celebration.h"
 #include "../ui/MenuLabel.h"
 #include "../ui/NineSliceFrame.h"
 
@@ -80,6 +81,7 @@ private:
 	UI::MenuLabel mainMenuLabel;
 	NeonGlow buttonGlow;
 	NeonGlow headingGlow;
+	UI::Celebration celebration;
 	Focus focus = Focus::PlayAgain;
 
 	sf::String playerName;

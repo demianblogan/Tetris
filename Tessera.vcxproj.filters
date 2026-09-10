@@ -159,6 +159,9 @@
     <ClCompile Include="src\ui\MenuSparks.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\ui\Celebration.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="src\ui\Spacer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -420,6 +423,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\ui\MenuSparks.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\Celebration.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\ui\Layout.h">

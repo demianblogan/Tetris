@@ -87,6 +87,12 @@ namespace
 
 	const sf::Color HeadingFill{ 250, 236, 233 };
 	const sf::Color HeadingOutline{ 120, 20, 20 };
+	const sf::Color HeadingGlowTint{ 224, 34, 34 };
+
+	// The record variant swaps the red neon for warm gold.
+	const sf::Color HeadingFillGold{ 255, 246, 220 };
+	const sf::Color HeadingOutlineGold{ 132, 88, 8 };
+	const sf::Color HeadingGlowTintGold{ 255, 196, 74 };
 	const sf::Color LabelColour{ 168, 150, 158 };
 	const sf::Color ScoreColour{ 252, 244, 240 };
 	const sf::Color StatValueColour{ 224, 228, 236 };
@@ -99,6 +105,13 @@ namespace
 	[[nodiscard]] sf::FloatRect PanelBoundsFor(bool record)
 	{
 		return { { PanelX, PanelTopFor(record) }, { PanelW, PanelHeightFor(record) } };
+	}
+
+	[[nodiscard]] const sf::Texture& FrameTextureFor(Context& context, bool record)
+	{
+		return context.textures.Get(record
+			? Assets::TextureID::UiFrameWarning
+			: Assets::TextureID::UiFrameRed);
 	}
 
 	[[nodiscard]] std::uint8_t ToAlpha(float value)
@@ -141,7 +154,7 @@ GameOverState::GameOverState(Context& context, int finalScore, int finalLines, i
 	, panelTop(PanelTopFor(isRecord))
 	, buttonY(panelTop + PanelHeightFor(isRecord) + ButtonGap)
 	, backdrop(context.textures.Get(Assets::TextureID::GameplayBackground))
-	, panel(context.textures.Get(Assets::TextureID::UiFrameRed), PanelBoundsFor(isRecord),
+	, panel(FrameTextureFor(context, isRecord), PanelBoundsFor(isRecord),
 		UI::MenuFrameSourceBorder, PanelTargetBorder)
 	, heading(context.fonts.Get(Assets::FontID::Main), "", HeadingSize)
 	, recordBadge(context.fonts.Get(Assets::FontID::Main), "", BadgeSize)
@@ -157,6 +170,14 @@ GameOverState::GameOverState(Context& context, int finalScore, int finalLines, i
 
 	if (isRecord)
 	{
+		const sf::FloatRect bounds = PanelBoundsFor(true);
+		celebration.SetCorners({ {
+			bounds.position,
+			{ bounds.position.x + bounds.size.x, bounds.position.y },
+			{ bounds.position.x, bounds.position.y + bounds.size.y },
+			bounds.position + bounds.size,
+		} });
+
 		recordRank = 1;
 		for (const HighScoreEntry& entry : context.highScores.GetRecords())
 		{
@@ -413,6 +434,11 @@ void GameOverState::Update(float deltaTime)
 	buttonGlow.Update(deltaTime);
 	headingGlow.Update(deltaTime);
 
+	if (isRecord)
+	{
+		celebration.Update(deltaTime);
+	}
+
 	if (headingDrop >= 1.f)
 	{
 		idleTime += deltaTime;
@@ -482,11 +508,21 @@ void GameOverState::Render(sf::RenderTarget& target)
 	dim.setFillColor(sf::Color(0, 0, 0, SceneDim));
 	target.draw(dim);
 
+	if (isRecord)
+	{
+		celebration.RenderFireworks(target);
+	}
+
 	const float in = SmoothStep(appear);
 	const auto contentAlpha = std::clamp((appear - 0.2f) / 0.8f, 0.f, 1.f);
 
 	panel.SetColor(sf::Color(255, 255, 255, ToAlpha(in)));
 	panel.Draw(target);
+
+	if (isRecord)
+	{
+		celebration.RenderCornerSparks(target);
+	}
 
 	if (contentAlpha > 0.f)
 	{
@@ -525,15 +561,19 @@ void GameOverState::Render(sf::RenderTarget& target)
 				static_cast<std::uint8_t>(static_cast<float>(c.b) * flicker), c.a);
 		};
 
-		heading.setFillColor(Faded(lit(HeadingFill), contentAlpha));
-		heading.setOutlineColor(Faded(HeadingOutline, contentAlpha * flicker));
+		const sf::Color headingFill = isRecord ? HeadingFillGold : HeadingFill;
+		const sf::Color headingOutline = isRecord ? HeadingOutlineGold : HeadingOutline;
+		const sf::Color headingGlowTint = isRecord ? HeadingGlowTintGold : HeadingGlowTint;
+
+		heading.setFillColor(Faded(lit(headingFill), contentAlpha));
+		heading.setOutlineColor(Faded(headingOutline, contentAlpha * flicker));
 		PlaceCentred(heading, base);
 
 		const sf::FloatRect glowArea{
 			{ CentreX - 640.f, panelTop + HeadingOffset - 150.f }, { 1280.f, 280.f } };
 		headingGlow.Draw(target, glowArea,
 			[this](sf::RenderTarget& buffer, const sf::RenderStates& states) { buffer.draw(heading, states); },
-			sf::Color(224, 34, 34, ToAlpha(contentAlpha * flicker * 0.75f)), false);
+			Faded(headingGlowTint, contentAlpha * flicker * 0.75f), false);
 
 		target.draw(heading);
 
