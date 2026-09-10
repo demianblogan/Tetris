@@ -25,26 +25,26 @@ namespace
 	constexpr sf::FloatRect PanelBounds{ { 260.f, 210.f }, { 1400.f, 710.f } };
 	constexpr sf::Vector2f PanelTargetBorder{ 44.f, 44.f };
 
-	constexpr float HeaderY = 274.f;
-	constexpr float RuleY = 304.f;
-	constexpr float RowTopY = 348.f;
-	constexpr float RowStep = 52.f;
+	constexpr float HeaderY = 272.f;
+	constexpr float RuleY = 302.f;
+	constexpr float RowTopY = 338.f;
+	constexpr float RowStep = 57.f;
 
 	// Column anchors: rank / score / lines / level are right-aligned to their
 	// value, the name is left-aligned.
-	constexpr float ColRankRight = 436.f;
-	constexpr float ColNameLeft = 488.f;
-	constexpr float ColScoreRight = 1168.f;
-	constexpr float ColLinesRight = 1380.f;
-	constexpr float ColLevelRight = 1582.f;
+	constexpr float ColRankRight = 440.f;
+	constexpr float ColNameLeft = 490.f;
+	constexpr float ColScoreRight = 1226.f;
+	constexpr float ColLinesRight = 1436.f;
+	constexpr float ColLevelRight = 1596.f;
 
-	constexpr unsigned int RankSize = 26;
-	constexpr unsigned int NameSize = 32;
-	constexpr unsigned int ScoreSize = 36;
-	constexpr unsigned int SubSize = 27;
-	constexpr unsigned int HeaderSize = 22;
+	constexpr unsigned int RankSize = 32;
+	constexpr unsigned int NameSize = 42;
+	constexpr unsigned int ScoreSize = 46;
+	constexpr unsigned int SubSize = 34;
+	constexpr unsigned int HeaderSize = 27;
 
-	constexpr unsigned int ButtonTextSize = 38;
+	constexpr unsigned int ButtonTextSize = 42;
 	constexpr sf::Vector2f ResetCentre{ 838.f, 968.f };
 	constexpr sf::Vector2f BackCentre{ 1082.f, 968.f };
 
@@ -103,6 +103,22 @@ RecordsScreen::RecordsScreen(ScreenHost& host, sf::Color accent)
 
 	rule.setSize({ 1240.f, 2.f });
 	rule.setPosition({ 360.f, RuleY });
+
+	// TEMP: a sample leaderboard so the filled table can be reviewed. Only seeds
+	// when the real board is empty, and is never saved. REMOVE before shipping.
+	if (context.highScores.GetRecords().empty())
+	{
+		context.highScores.AddRecord({ sf::String("ALICE"), 128400, 612, 43 });
+		context.highScores.AddRecord({ sf::String("BOBBY"), 95220, 478, 32 });
+		context.highScores.AddRecord({ sf::String("CARMEN"), 74800, 401, 26 });
+		context.highScores.AddRecord({ sf::String("DELTA FORCE"), 61050, 355, 21 });
+		context.highScores.AddRecord({ sf::String("EVE"), 52300, 298, 18 });
+		context.highScores.AddRecord({ sf::String("FRANK"), 40120, 244, 14 });
+		context.highScores.AddRecord({ sf::String("GHOST"), 28900, 190, 10 });
+		context.highScores.AddRecord({ sf::String("HANNAH"), 19600, 142, 7 });
+		context.highScores.AddRecord({ sf::String("IVANWITHALONGNAME"), 11200, 95, 4 });
+		context.highScores.AddRecord({ sf::String("K"), 3400, 38, 2 });
+	}
 
 	BuildHeader();
 	RefreshRows();

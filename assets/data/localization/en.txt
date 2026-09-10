@@ -30,7 +30,7 @@ options.graphics = Graphics
 options.audio    = Audio
 options.controls = Controls
 options.language = Language
-options.back     = Back to Main Menu
+options.back     = Back
 options.coming_soon = Coming soon.
 
 options.controls_keyboard = Keyboard
@@ -87,7 +87,7 @@ credits.code        = This game's code: github.com/demianblogan/Tessera
 credits.portfolio   = My portfolio: github.com/demianblogan
 credits.programming = My Programming Channel: youtube.com/@BloganProgrammer
 credits.gaming      = My Gaming Channel: youtube.com/@BloganGamer
-credits.back        = Back to Main Menu
+credits.back        = Back
 
 records.title         = RECORDS
 records.header_name   = NAME
@@ -95,7 +95,7 @@ records.header_score  = SCORE
 records.header_lines  = LINES
 records.header_level  = LEVEL
 records.reset         = Reset
-records.back          = Back to Main Menu
+records.back          = Back
 records.confirm_reset = Delete every record?
 
 loading.audio     = Loading Audio...
