@@ -85,8 +85,12 @@ screen brought up to the menu-shell standard. No gameplay-rules changes.
   `states/OptionsSfx::DialogPick` (now unused) removed.
 - **Cleanup** — `states/MenuScreenState` and `ui/MenuList` deleted
   (`GameOverState` was the last consumer); dead `ScreenHost::ExitTo` removed;
-  `ui/CarouselMenu` centres each entry on its visible ink so the nav arrows
-  sit symmetrically.
+  the old widget-tree leaves `ui/Button` / `ui/Label` / `ui/Layout` / `ui/Panel`
+  / `ui/Spacer` deleted (the HUD rewrite orphaned the last of them) along with
+  the `button_background.png` / `panel_background.png` textures; `ui/CarouselMenu`
+  centres each entry on its visible ink so the nav arrows sit symmetrically.
+  *(`ui/Element` and `ui/Slider` stay — the Audio panel's volume sliders use
+  them.)*
 
 ### v1.4.0 — Menu cleanup & flow
 
@@ -507,6 +511,12 @@ The final version. After it the game is done — there is no v2.0.
 - **Project-wide refactor and polish** — tighten the feel, clean the code, pull
   back any improvements from ULA's shared helpers (`NineSliceFrame`,
   `TextLayout`, `NeonGlow`, `GamepadHaptics`), a final dead-code sweep.
+  Known dead-on-arrival for that sweep: the blurred-backdrop render path —
+  `State::Backdrop::BlurredPrevious` is returned by no state (Pause moved to
+  `mosaic.frag`), leaving the `else` branch in `Application::Render`,
+  `blur.frag` / `ShaderID::Blur`, `Application::gameplayTexture` /
+  `finalTexture`, and `StateMachine::RenderStatesExceptTop` / `RenderTopState`
+  all unreachable.
 - **Release** — README as a finished piece, screenshots / GIFs, itch.io page,
   `Tessera-v1.7.0-win64.zip`, GitHub Release as the last one.
 

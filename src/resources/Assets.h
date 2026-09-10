@@ -35,8 +35,6 @@ namespace Assets
 	enum class TextureID
 	{
 		BlockSpritesheetWithOutline,
-		ButtonBackground,
-		PanelBackground,
 		MenuBackground,
 		GameplayBackground,
 		CompanyLogo,
@@ -109,8 +107,6 @@ namespace Assets
 		namespace Textures
 		{
 			inline constexpr const char* BlockSpritesheetWithOutline = "assets/textures/block_spritesheet_with_outline.png";
-			inline constexpr const char* ButtonBackground = "assets/textures/button_background.png";
-			inline constexpr const char* PanelBackground = "assets/textures/panel_background.png";
 			inline constexpr const char* MenuBackground = "assets/textures/menu_background.png";          // main-menu backdrop
 			inline constexpr const char* GameplayBackground = "assets/textures/gameplay_background.jpg";  // in-game backdrop
 			inline constexpr const char* CompanyLogo = "assets/other/alone_bull_splash_logo.jpg";
