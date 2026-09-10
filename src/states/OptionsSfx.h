@@ -17,5 +17,4 @@ namespace OptionsSfx
 	inline void Apply(AudioPlayer& audio) { audio.Play(Assets::SoundID::MenuItemPressed); }
 	inline void Reset(AudioPlayer& audio) { audio.Play(Assets::SoundID::MenuItemPressed, 0.9f); }
 	inline void DialogOpen(AudioPlayer& audio) { audio.Play(Assets::SoundID::MenuItemPressed, 0.85f); }
-	inline void DialogPick(AudioPlayer& audio) { audio.Play(Assets::SoundID::MenuItemPressed); }
 }

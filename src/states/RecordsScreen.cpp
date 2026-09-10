@@ -239,6 +239,19 @@ void RecordsScreen::HandleEvent(const sf::Event& event)
 	if (dialog.IsOpen())
 	{
 		dialog.Navigate(MenuInput::Resolve(event, context.gamepad));
+
+		if (const auto* moved = event.getIf<sf::Event::MouseMoved>())
+		{
+			dialog.PointerMoved(context.window.mapPixelToCoords(moved->position));
+		}
+		else if (const auto* pressed = event.getIf<sf::Event::MouseButtonPressed>())
+		{
+			if (pressed->button == sf::Mouse::Button::Left)
+			{
+				dialog.PointerPressed(context.window.mapPixelToCoords(pressed->position));
+			}
+		}
+
 		return;
 	}
 

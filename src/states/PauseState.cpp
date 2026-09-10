@@ -12,6 +12,7 @@
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/System/String.hpp>
 #include <SFML/Window/Event.hpp>
+#include <SFML/Window/Mouse.hpp>
 
 #include "../audio/AudioPlayer.h"
 #include "../core/Context.h"
@@ -115,8 +116,6 @@ void PauseState::PerformPendingAction()
 	const PendingAction action = pendingAction;
 	pendingAction = PendingAction::None;
 
-	context.audioPlayer.Play(Assets::SoundID::MenuItemPressed);
-
 	switch (action)
 	{
 	case PendingAction::Restart:
@@ -145,6 +144,19 @@ void PauseState::HandleEvent(const sf::Event& event)
 	if (confirmDialog.IsOpen())
 	{
 		confirmDialog.Navigate(MenuInput::Resolve(event, context.gamepad));
+
+		if (const auto* moved = event.getIf<sf::Event::MouseMoved>())
+		{
+			confirmDialog.PointerMoved(context.window.mapPixelToCoords(moved->position));
+		}
+		else if (const auto* pressed = event.getIf<sf::Event::MouseButtonPressed>())
+		{
+			if (pressed->button == sf::Mouse::Button::Left)
+			{
+				confirmDialog.PointerPressed(context.window.mapPixelToCoords(pressed->position));
+			}
+		}
+
 		return;
 	}
 
@@ -163,7 +175,6 @@ void PauseState::Update(float deltaTime)
 		else
 		{
 			pendingAction = PendingAction::None;
-			context.audioPlayer.Play(Assets::SoundID::MenuItemSelected, 0.8f);
 		}
 	}
 
