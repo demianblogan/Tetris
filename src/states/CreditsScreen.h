@@ -18,9 +18,9 @@ namespace sf
 }
 
 // The Credits sub-screen: a 9-slice framed panel with a short note about the
-// developer, and -- below the frame -- a single "Back to Main Menu" text button
-// drawn like the main-menu entries (outline, gradient, glow, idle wave). The
-// "CREDITS" header above it is the shell's, morphed from the menu entry.
+// developer, and -- below the frame -- a single "Back" text button drawn like
+// the main-menu entries (outline, gradient, glow, idle wave). The "CREDITS"
+// header above it is the shell's, morphed from the menu entry.
 class CreditsScreen final : public MenuScreen
 {
 public:
